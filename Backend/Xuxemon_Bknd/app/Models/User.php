@@ -19,8 +19,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'surname',
         'email',
         'password',
+        'repetir_password'
     ];
 
     /**
@@ -30,6 +32,7 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'repetir_password',
         'remember_token',
     ];
 
@@ -43,6 +46,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'repetir_password' => 'hashed',
         ];
     }
 }
