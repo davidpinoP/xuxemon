@@ -26,11 +26,6 @@
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <div class="form-group">
-                <label>Usuario</label>
-                <input type="text" name="username" value="{{ old('username') }}" required>
-                @error('username')<span class="error">{{ $message }}</span>@enderror
-            </div>
-            <div class="form-group">
                 <label>Nombre</label>
                 <input type="text" name="name" value="{{ old('name') }}" required>
                 @error('name')<span class="error">{{ $message }}</span>@enderror
@@ -51,17 +46,9 @@
                 @error('password')<span class="error">{{ $message }}</span>@enderror
             </div>
             <div class="form-group">
-                <label>Confirmar Contraseña</label>
-                <input type="password" name="password_confirmation" required>
-            </div>
-            <div class="form-group">
-                <label>Rol</label>
-                <select name="role" required>
-                    <option value="">Selecciona un rol</option>
-                    <option value="user">Usuario</option>
-                    <option value="admin">Administrador</option>
-                </select>
-                @error('role')<span class="error">{{ $message }}</span>@enderror
+                <label>Repetir Contraseña</label>
+                <input type="password" name="repetir_password" required>
+                @error('repetir_password')<span class="error">{{ $message }}</span>@enderror
             </div>
             <button type="submit">Registrarse</button>
         </form>

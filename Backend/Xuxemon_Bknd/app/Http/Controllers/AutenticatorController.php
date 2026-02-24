@@ -8,7 +8,7 @@ class AutenticatorController extends Controller
 {
      public function showRegister()
     {
-        return view('Registre');
+        return view('regist.Registre');
     }
 
     public function register(Request $request)
@@ -27,14 +27,15 @@ class AutenticatorController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'repetir_password' => $request->repetir_password,
+            
         ]);
 
-        return redirect()->route('Login')->with('success', 'Registro completado. Por favor inicia sesión.');
+        return redirect()->route('regist.Login')->with('success', 'Registro completado. Por favor inicia sesión.');
     }
 
     public function showLogin()
     {
-        return view('Login');
+        return view('regist.login');
     }
 
     public function login(Request $request)
@@ -60,6 +61,6 @@ class AutenticatorController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('Login');
+        return redirect()->route('regist.Login');
     }
 }
