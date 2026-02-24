@@ -27,7 +27,6 @@ class AutenticatorController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'repetir_password' => $request->repetir_password,
-            
         ]);
 
         return redirect()->route('regist.Login')->with('success', 'Registro completado. Por favor inicia sesión.');
