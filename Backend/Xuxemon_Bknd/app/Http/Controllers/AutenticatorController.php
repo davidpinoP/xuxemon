@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
@@ -13,23 +16,29 @@ class AutenticatorController extends Controller
 
     public function register(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'repetir_password' => 'required|in:password',
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
         ]);
 
-        User::create([
-            'name' => $request->name,
-            'surname' => $request->surname,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'repetir_password' => $request->repetir_password,
+        $isFirstUser = User::count() === 0;
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'player_id' => $this->generatePlayerId($validated['name']),
+            'role' => $isFirstUser ? 'admin' : 'user',
+            'is_active' => true,
         ]);
 
-        return redirect()->route('Login')->with('success', 'Registro completado. Por favor inicia sesión.');
+        return redirect()->route('login')->with(
+            'success',
+            'Registro completado. Tu ID es '.$user->player_id.'. Inicia sesión.'
+        );
     }
 
     public function showLogin()
@@ -60,6 +69,19 @@ class AutenticatorController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('Login');
+        return redirect()->route('login');
+    }
+
+    private function generatePlayerId(string $name): string
+    {
+        $baseName = preg_replace('/\s+/', '', trim($name));
+        $baseName = $baseName !== '' ? $baseName : 'Jugador';
+
+        do {
+            $randomSuffix = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+            $playerId = '#'.$baseName.$randomSuffix;
+        } while (User::where('player_id', $playerId)->exists());
+
+        return $playerId;
     }
 }
