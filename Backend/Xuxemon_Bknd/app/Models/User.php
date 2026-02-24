@@ -22,7 +22,8 @@ class User extends Authenticatable
         'surname',
         'email',
         'password',
-        'repetir_password'
+        'repetir_password',
+        'is_active',
     ];
 
     /**
@@ -47,6 +48,7 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'repetir_password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 }
