@@ -49,18 +49,18 @@ class AutenticatorController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
+            'ID' => 'required|player_id',
             'password' => 'required',
         ]);
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+        if (Auth::attempt(['player_id' => $request->ID, 'password' => $request->password])) {
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
 
         return back()->withErrors([
-            'email' => 'Las credenciales no son correctas.',
-        ])->onlyInput('email');
+            'ID' => 'Las credenciales no son correctas.',
+        ])->onlyInput('ID');
     }
 
     public function logout(Request $request)
