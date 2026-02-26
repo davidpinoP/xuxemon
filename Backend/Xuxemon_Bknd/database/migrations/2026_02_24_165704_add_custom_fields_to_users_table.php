@@ -12,14 +12,20 @@ return new class extends Migration
    public function up(): void
 {
     Schema::table('users', function (Blueprint $table) {
-        // Añadimos surname después de name
-        $table->string('surname')->nullable()->after('name');
-        
-        // Añadimos is_active después de password (por defecto true)
-        $table->boolean('is_active')->default(true)->after('password');
-        
-        // Si necesitas 'repetir_password' en la base de datos (aunque no es común)
-        $table->string('repetir_password')->nullable()->after('password');
+        // Solo añade 'surname' si NO existe
+        if (!Schema::hasColumn('users', 'surname')) {
+            $table->string('surname')->nullable()->after('name');
+        }
+
+        // Solo añade 'is_active' si NO existe
+        if (!Schema::hasColumn('users', 'is_active')) {
+            $table->boolean('is_active')->default(true)->after('password');
+        }
+
+        // Solo añade 'repetir_password' si NO existe
+        if (!Schema::hasColumn('users', 'repetir_password')) {
+            $table->string('repetir_password')->nullable()->after('password');
+        }
     });
 }
 
