@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro</title>
+    <title>Iniciar Sesión</title>
     <style>
         * {
             margin: 0;
@@ -68,6 +68,13 @@
             margin-top: 3px;
         }
 
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
         .link {
             text-align: center;
             margin-top: 15px;
@@ -86,19 +93,14 @@
 
 <body>
     <div class="container">
-        <h1>Registro</h1>
-        <form method="POST" action="{{ route('register') }}">
+        <h1>Iniciar Sesión</h1>
+
+        @if (session('success'))
+            <div class="success">{{ session('success') }}</div>
+        @endif
+
+        <form method="POST" action="{{ route('login.post') }}">
             @csrf
-            <div class="form-group">
-                <label>Nombre</label>
-                <input type="text" name="name" value="{{ old('name') }}" required>
-                @error('name')<span class="error">{{ $message }}</span>@enderror
-            </div>
-            <div class="form-group">
-                <label>Apellidos</label>
-                <input type="text" name="surname" value="{{ old('surname') }}" required>
-                @error('surname')<span class="error">{{ $message }}</span>@enderror
-            </div>
             <div class="form-group">
                 <label>Email</label>
                 <input type="email" name="email" value="{{ old('email') }}" required>
@@ -109,14 +111,10 @@
                 <input type="password" name="password" required>
                 @error('password')<span class="error">{{ $message }}</span>@enderror
             </div>
-            <div class="form-group">
-                <label>Confirmar Contraseña</label>
-                <input type="password" name="password_confirmation" required>
-            </div>
-            <button type="submit">Registrarse</button>
+            <button type="submit">Entrar</button>
         </form>
         <div class="link">
-            ¿Ya tienes cuenta? <a href="{{ route('login') }}">Inicia sesión</a>
+            ¿No tienes cuenta? <a href="{{ route('register.form') }}">Regístrate</a>
         </div>
     </div>
 </body>

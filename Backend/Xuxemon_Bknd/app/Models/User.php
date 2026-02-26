@@ -22,7 +22,9 @@ class User extends Authenticatable
         'surname',
         'email',
         'password',
-        'repetir_password'
+        'player_id',
+        'role',
+        'is_active',
     ];
 
     /**
@@ -32,7 +34,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'repetir_password',
         'remember_token',
     ];
 
@@ -46,7 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'repetir_password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 }
