@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+
 
 class AutenticatorController extends Controller
 {
-     public function showRegister()
+    public function showRegister()
     {
         return view('Registre');
     }
@@ -29,7 +29,7 @@ class AutenticatorController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
@@ -37,7 +37,7 @@ class AutenticatorController extends Controller
 
         return redirect()->route('login')->with(
             'success',
-            'Registro completado. Tu ID es '.$user->player_id.'. Inicia sesión.'
+            'Registro completado. Tu ID es ' . $user->player_id . '. Inicia sesión.'
         );
     }
 
@@ -72,6 +72,11 @@ class AutenticatorController extends Controller
         return redirect()->route('login');
     }
 
+    public function dashboard()
+    {
+        return view('dashboard');
+    }
+
     private function generatePlayerId(string $name): string
     {
         $baseName = preg_replace('/\s+/', '', trim($name));
@@ -79,7 +84,7 @@ class AutenticatorController extends Controller
 
         do {
             $randomSuffix = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-            $playerId = '#'.$baseName.$randomSuffix;
+            $playerId = '#' . $baseName . $randomSuffix;
         } while (User::where('player_id', $playerId)->exists());
 
         return $playerId;
