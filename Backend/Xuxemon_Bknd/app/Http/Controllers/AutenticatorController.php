@@ -6,9 +6,10 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class AutenticatorController extends Controller
 {
+    // ---- Rutas WEB (sesión) ----
+
     public function showRegister()
     {
         return view('Registre');
@@ -46,23 +47,6 @@ class AutenticatorController extends Controller
         return view('Login');
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'ID' => 'required|player_id',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt(['player_id' => $request->ID, 'password' => $request->password])) {
-            $request->session()->regenerate();
-            return redirect()->route('dashboard');
-        }
-
-        return back()->withErrors([
-            'ID' => 'Las credenciales no son correctas.',
-        ])->onlyInput('ID');
-    }
-
     public function logout(Request $request)
     {
         Auth::logout();
@@ -77,6 +61,37 @@ class AutenticatorController extends Controller
         return view('dashboard');
     }
 
+    // ---- Rutas API (JWT) ----
+
+    public function login(Request $request)
+    {
+        $request->validate([
+            'player_id' => 'required|string',
+            'password' => 'required|string',
+        ]);
+
+        $credentials = [
+            'player_id' => $request->player_id,
+            'password'  => $request->password,
+        ];
+
+        if (!$token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'Credenciales incorrectas'], 401);
+        }
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+        ]);
+    }
+
+    public function me()
+    {
+        return response()->json(auth('api')->user());
+    }
+
+    // ---- Helpers ----
+
     private function generatePlayerId(string $name): string
     {
         $baseName = preg_replace('/\s+/', '', trim($name));
@@ -90,3 +105,4 @@ class AutenticatorController extends Controller
         return $playerId;
     }
 }
+
