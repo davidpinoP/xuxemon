@@ -1,0 +1,34 @@
+services:
+  bd:
+    image: mysql:8.0
+    container_name: xuxemon-bd
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: xuxemon
+      MYSQL_USER: xuxemon_user
+      MYSQL_PASSWORD: xuxemon_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  backend:
+    build: ./Backend/Xuxemon_Bknd
+    container_name: xuxemon-backend
+    ports:
+      - "8000:80"
+    depends_on:
+      - bd
+    env_file:
+      - ./Backend/Xuxemon_Bknd/.env.docker
+
+  frontend:
+    build: ./Frontend/xuxemons
+    container_name: xuxemon-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql-data:
