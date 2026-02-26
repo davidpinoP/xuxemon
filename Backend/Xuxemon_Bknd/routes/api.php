@@ -6,12 +6,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:sanctum')->group(function () {
     
-    // Ver datos del perfil
     Route::get('/user/profile', [UserController::class, 'show']);
-    
-    // Actualizar datos (nombre, apellidos, etc.)
     Route::put('/user/update', [UserController::class, 'update']);
-    
-    // Baja lógica (is_active = false)
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
+
+    Route::middleware('role:admin')->group(function () {
+        Route::get('/admin/dashboard', function () {
+            return response()->json(['message' => 'Bienvenido, Administrador']);
+        });
+    });
+
 });

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
@@ -25,11 +25,12 @@ class AutenticatorController extends Controller
 
         $isFirstUser = User::count() === 0;
 
+        // Creamos el usuario asegurando que esté activo (true)
         $user = User::create([
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']), // Encriptamos la clave
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
@@ -53,11 +54,25 @@ class AutenticatorController extends Controller
             'password' => 'required',
         ]);
 
+        // Intentamos la autenticación
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            
+            $user = Auth::user();
+
+            // BLOQUEO DE BAJA: Si el usuario no está activo, cerramos sesión y avisamos
+            if (!$user->is_active) {
+                Auth::logout();
+                return back()->withErrors([
+                    'email' => 'Esta cuenta ha sido dada de baja y no puede acceder.',
+                ])->onlyInput('email');
+            }
+
+            // Si está activo, regeneramos la sesión y entra
             $request->session()->regenerate();
             return redirect()->route('dashboard');
         }
 
+        // Si fallan las credenciales
         return back()->withErrors([
             'email' => 'Las credenciales no son correctas.',
         ])->onlyInput('email');
