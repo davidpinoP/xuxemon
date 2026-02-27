@@ -14,9 +14,9 @@ export class Registro {
 
     nombre: new FormControl('', [Validators.required]),
     apellido: new FormControl('', [Validators.required]),
-    correo: new FormControl('', [Validators.required, Validators.email]),
-    contraseña: new FormControl('', [Validators.required]),
-    confirmar_contraseña: new FormControl('', [Validators.required]),
+    correo: new FormControl('', [Validators.required], [Validators.email]),
+    contraseña: new FormControl('', [Validators.required], [Validators.equal], 'confirmar_contraseña'),
+    confirmar_contraseña: new FormControl('', [Validators.required], [Validators.equal], 'confirmar_contraseña'),
 
   });
 
