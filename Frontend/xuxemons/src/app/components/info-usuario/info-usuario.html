@@ -1,1 +1,35 @@
-<p>info-usuario works!</p>
+<div class="profile-container">
+  <h2>Mi Perfil Xuxemon</h2>
+
+  <form (ngSubmit)="saveProfile()">
+    <div>
+      <label>ID de Jugador (No editable):</label>
+      <input type="text" [value]="user.player_id" disabled>
+    </div>
+
+    <div>
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="user.name" name="name">
+    </div>
+
+    <div>
+      <label>Apellidos:</label>
+      <input type="text" [(ngModel)]="user.surname" name="surname">
+    </div>
+
+    <div>
+      <label>Email:</label>
+      <input type="email" [(ngModel)]="user.email" name="email">
+    </div>
+
+    <button type="submit" class="btn-save">Guardar Cambios</button>
+  </form>
+
+  <hr>
+
+  <div class="danger-zone">
+    <h3>Zona Peligrosa</h3>
+    <p>Si desactivas tu cuenta, no podrás volver a jugar con tus Xuxemons.</p>
+    <button (click)="confirmDeactivate()" class="btn-delete">Darme de baja</button>
+  </div>
+</div>
