@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
@@ -26,12 +27,11 @@ class AutenticatorController extends Controller
 
         $isFirstUser = User::count() === 0;
 
-        // Creamos el usuario asegurando que esté activo (true)
         $user = User::create([
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']), // Encriptamos la clave
+            'password' => Hash::make($validated['password']),
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
@@ -76,6 +76,27 @@ class AutenticatorController extends Controller
             'password'  => $request->password,
         ];
 
+        if (! $token = auth('api')->attempt($credentials)) {
+            return response()->json(['error' => 'No autorizado'], 401);
+        }
+
+        return response()->json([
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+        ]);
+    }
+
+    public function apiRegister(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6',
+        ]);
+
+        $isFirstUser = User::count() === 0;
+
         $user = User::create([
             'name' => $validated['name'],
             'surname' => $validated['surname'],
@@ -86,9 +107,12 @@ class AutenticatorController extends Controller
             'is_active' => true,
         ]);
 
+        $token = auth('api')->login($user);
+
         return response()->json([
             'access_token' => $token,
             'token_type'   => 'bearer',
+            'player_id'    => $user->player_id
         ]);
     }
 
