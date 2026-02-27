@@ -92,6 +92,33 @@ class AutenticatorController extends Controller
         return view('dashboard');
     }
 
+    public function apiRegister(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'surname' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $isFirstUser = User::count() === 0;
+
+        $user = User::create([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'],
+            'email' => $validated['email'],
+            'password' => $validated['password'],
+            'player_id' => $this->generatePlayerId($validated['name']),
+            'role' => $isFirstUser ? 'admin' : 'user',
+            'is_active' => true,
+        ]);
+
+        return response()->json([
+            'message' => 'Registro completado',
+            'user' => $user,
+        ], 201);
+    }
+
     private function generatePlayerId(string $name): string
     {
         $baseName = preg_replace('/\s+/', '', trim($name));
