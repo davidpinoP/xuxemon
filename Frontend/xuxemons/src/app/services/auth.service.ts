@@ -33,4 +33,15 @@ export class AuthService {
     savePlayerId(playerId: string): void {
         localStorage.setItem('player_id', playerId);
     }
+    getProfile(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/user/profile`);
+    }
+
+    updateProfile(userData: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/user/update`, userData);
+    }
+
+    deactivateAccount(): Observable<any> {
+        return this.http.post(`${this.apiUrl}/user/deactivate`, {});
+    }
 }

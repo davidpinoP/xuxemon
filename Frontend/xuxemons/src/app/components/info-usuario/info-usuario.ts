@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-info-usuario',
   standalone: true,
   imports: [FormsModule],
-  templateUrl: './info-usuario.component.html',
-  styleUrls: ['./info-usuario.component.css']
+  templateUrl: './info-usuario.html',
+  styleUrls: ['./info-usuario.css']
 })
 export class InfoUsuarioComponent implements OnInit {
   
@@ -19,29 +20,21 @@ export class InfoUsuarioComponent implements OnInit {
   };
 
   constructor(
-    private userService: UserService, 
+    private authService: AuthService,
     private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.userService.getProfile().subscribe({
-      next: (data: any) => {  // <--- Añadido ": any"
-        this.user = data;
-      },
-      error: (err: any) => {  // <--- Añadido ": any"
-        console.error('Error al obtener el perfil', err);
-      }
+    this.authService.getProfile().subscribe({
+      next: (data: any) => this.user = data,
+      error: (err: any) => console.error('Error al obtener el perfil', err)
     });
   }
 
   saveProfile(): void {
-    this.userService.updateProfile(this.user).subscribe({
-      next: () => {  // <--- Quitamos "res" porque no lo usábamos
-        alert('Perfil actualizado correctamente');
-      },
-      error: (err: any) => {  // <--- Añadido ": any"
-        alert('Error al actualizar los datos');
-      }
+    this.authService.updateProfile(this.user).subscribe({
+      next: () => alert('Perfil actualizado correctamente'),
+      error: (err: any) => alert('Error al actualizar los datos')
     });
   }
 
@@ -49,15 +42,13 @@ export class InfoUsuarioComponent implements OnInit {
     const confirmacion = confirm('¿Estás seguro de que quieres darte de baja? No podrás volver a entrar.');
     
     if (confirmacion) {
-      this.userService.deactivateAccount().subscribe({
+      this.authService.deactivateAccount().subscribe({
         next: () => {
           alert('Cuenta desactivada correctamente.');
-          localStorage.removeItem('token');
+          this.authService.logout();
           this.router.navigate(['/login']);
         },
-        error: (err: any) => {  // <--- Añadido ": any"
-          alert('Hubo un error al intentar darte de baja.');
-        }
+        error: (err: any) => alert('Hubo un error al intentar darte de baja.')
       });
     }
   }
