@@ -76,9 +76,15 @@ class AutenticatorController extends Controller
             'password'  => $request->password,
         ];
 
-        if (!$token = auth('api')->attempt($credentials)) {
-            return response()->json(['error' => 'Credenciales incorrectas'], 401);
-        }
+        $user = User::create([
+            'name' => $validated['name'],
+            'surname' => $validated['surname'],
+            'email' => $validated['email'],
+            'password' => Hash::make($validated['password']),
+            'player_id' => $this->generatePlayerId($validated['name']),
+            'role' => $isFirstUser ? 'admin' : 'user',
+            'is_active' => true,
+        ]);
 
         return response()->json([
             'access_token' => $token,
