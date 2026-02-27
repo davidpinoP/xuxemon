@@ -92,7 +92,7 @@ class AutenticatorController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']),
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
