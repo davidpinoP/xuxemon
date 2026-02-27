@@ -136,4 +136,4 @@ class AutenticatorController extends Controller
         return $playerId;
     }
 }
-
+ 
