@@ -1,0 +1,11 @@
+<form [formGroup]="formulariLogin">
+
+    <label>Player ID</label>
+    <input type="text" formControlName="player_id">
+
+    <label>Contraseña:</label>
+    <input type="password" formControlName="password">
+
+    <button type="submit" (click)="Submit()">ENTRAR</button>
+
+</form>

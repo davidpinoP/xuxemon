@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
+    // ---- Rutas WEB (sesión) ----
+
     public function showRegister()
     {
         return view('Registre');
@@ -47,37 +48,6 @@ class AutenticatorController extends Controller
         return view('Login');
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        // Intentamos la autenticación
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            
-            $user = Auth::user();
-
-            // BLOQUEO DE BAJA: Si el usuario no está activo, cerramos sesión y avisamos
-            if (!$user->is_active) {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'Esta cuenta ha sido dada de baja y no puede acceder.',
-                ])->onlyInput('email');
-            }
-
-            // Si está activo, regeneramos la sesión y entra
-            $request->session()->regenerate();
-            return redirect()->route('dashboard');
-        }
-
-        // Si fallan las credenciales
-        return back()->withErrors([
-            'email' => 'Las credenciales no son correctas.',
-        ])->onlyInput('email');
-    }
-
     public function logout(Request $request)
     {
         Auth::logout();
@@ -92,32 +62,42 @@ class AutenticatorController extends Controller
         return view('dashboard');
     }
 
-    public function apiRegister(Request $request)
+    // ---- Rutas API (JWT) ----
+
+    public function login(Request $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+        $request->validate([
+            'player_id' => 'required|string',
+            'password' => 'required|string',
         ]);
 
-        $isFirstUser = User::count() === 0;
+        $credentials = [
+            'player_id' => $request->player_id,
+            'password'  => $request->password,
+        ];
 
         $user = User::create([
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => $validated['password'],
+            'password' => Hash::make($validated['password']),
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
         ]);
 
         return response()->json([
-            'message' => 'Registro completado',
-            'user' => $user,
-        ], 201);
+            'access_token' => $token,
+            'token_type'   => 'bearer',
+        ]);
     }
+
+    public function me()
+    {
+        return response()->json(auth('api')->user());
+    }
+
+    // ---- Helpers ----
 
     private function generatePlayerId(string $name): string
     {
@@ -132,3 +112,4 @@ class AutenticatorController extends Controller
         return $playerId;
     }
 }
+
