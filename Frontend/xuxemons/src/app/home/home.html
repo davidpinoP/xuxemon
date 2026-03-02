@@ -1,0 +1,23 @@
+<div class="home-container">
+    <h1>¡Bienvenido a Xuxemon!</h1>
+
+    <div *ngIf="user" class="user-info">
+        <h3>Hola, {{ user.name }} {{ user.surname }}</h3>
+        <p>ID de Jugador: <strong>{{ user.player_id }}</strong></p>
+
+        <div class="role-section">
+            <p>Tu rol es: <span class="role-badge" [ngClass]="user.role">{{ user.role | uppercase }}</span></p>
+        </div>
+
+        <div *ngIf="user.role === 'admin'" class="admin-panel">
+            <h5>⚡ Panel de Administración ⚡</h5>
+            <p>Solo para administradores.</p>
+        </div>
+    </div>
+
+    <div *ngIf="!user" class="loading">
+        <p>Cargando datos...</p>
+    </div>
+
+    <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+</div>
