@@ -31,7 +31,7 @@ class AutenticatorController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
@@ -73,16 +73,16 @@ class AutenticatorController extends Controller
 
         $credentials = [
             'player_id' => $request->player_id,
-            'password'  => $request->password,
+            'password' => $request->password,
         ];
 
-        if (! $token = auth('api')->attempt($credentials)) {
+        if (!$token = auth('api')->attempt($credentials)) {
             return response()->json(['error' => 'No autorizado'], 401);
         }
 
         return response()->json([
             'access_token' => $token,
-            'token_type'   => 'bearer',
+            'token_type' => 'bearer',
         ]);
     }
 
@@ -101,7 +101,7 @@ class AutenticatorController extends Controller
             'name' => $validated['name'],
             'surname' => $validated['surname'],
             'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
+            'password' => $validated['password'],
             'player_id' => $this->generatePlayerId($validated['name']),
             'role' => $isFirstUser ? 'admin' : 'user',
             'is_active' => true,
@@ -111,8 +111,8 @@ class AutenticatorController extends Controller
 
         return response()->json([
             'access_token' => $token,
-            'token_type'   => 'bearer',
-            'player_id'    => $user->player_id
+            'token_type' => 'bearer',
+            'player_id' => $user->player_id
         ]);
     }
 

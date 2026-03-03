@@ -30,7 +30,7 @@ export class Login {
         next: (response) => {
           console.log('Login exitoso', response);
           this.authService.saveToken(response.access_token);
-          alert('¡Login completado con éxito!');
+          this.router.navigate(['/home']);
         },
         error: (err) => {
           console.error('Error en el login', err);
@@ -38,5 +38,9 @@ export class Login {
         }
       });
     }
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
   }
 }
