@@ -1,11 +1,20 @@
-<form [formGroup]="formulariLogin">
+<div class="left-panel">
+</div>
 
-    <label>Player ID</label>
-    <input type="text" formControlName="player_id">
+<div class="right-panel">
+    <div class="avatar">
+        <img src="/imagenes/avatar.png" alt="icon">
+    </div>
 
-    <label>Contraseña:</label>
-    <input type="password" formControlName="password">
+    <form [formGroup]="formulariLogin">
+        <label>Player ID</label>
+        <input type="text" formControlName="player_id" placeholder="Player ID">
 
-    <button type="submit" (click)="Submit()">ENTRAR</button>
+        <label>Contraseña:</label>
+        <input type="password" formControlName="password" placeholder="Contraseña">
 
-</form>
+        <button type="submit" (click)="Submit()">ENTRAR</button>
+    </form>
+
+    <button class="register-btn" (click)="goToRegister()">Registrarse</button>
+</div>

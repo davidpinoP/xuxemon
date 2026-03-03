@@ -1,0 +1,136 @@
+:host {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+.left-panel {
+    width: 50%;
+    background-image: url('/imagenes/lateral_xuxemon.png');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+}
+
+.left-panel .mascot-glow {
+    width: 200px;
+    filter: drop-shadow(0 0 18px #ffffff) drop-shadow(0 0 40px #c4b5fd);
+}
+
+.left-panel h1 {
+    color: #ffffff;
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.right-panel {
+    width: 50%;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 40px;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    background: #ffffff;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    overflow: hidden;
+}
+
+.avatar img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 320px;
+}
+
+form label {
+    display: none;
+}
+
+form input {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 50px;
+    background: #e0e0e0;
+    font-size: 1rem;
+    color: #333;
+    outline: none;
+    transition: background 0.2s;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+form input:focus {
+    background: #d1d5db;
+}
+
+form input::placeholder {
+    color: #666;
+}
+
+form button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    background: #9b8fe8;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    margin-top: 16px;
+}
+
+form button[type="submit"]:hover {
+    background: #7c6fd4;
+    transform: translateY(-1px);
+}
+
+button.register-btn {
+    width: 100%;
+    max-width: 320px;
+    padding: 14px;
+    background: #9b8fe8;
+    color: #ffffff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+}
+
+button.register-btn:hover {
+    background: #7c6fd4;
+    transform: translateY(-1px);
+}
