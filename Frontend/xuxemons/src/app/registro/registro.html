@@ -1,20 +1,23 @@
-<form [formGroup]="FormularioRegistro">
+<div class="registro-container">
 
-    <label>Nombre:</label>
-    <input type="text" formControlName="nombre">
+    <div class="logo-container">
+        <img src="/assets/images/xuxemon-mascot.png" alt="Xuxemon" class="mascot-logo">
+    </div>
 
-    <label>Apellido:</label>
-    <input type="text" formControlName="apellido">
+    <form [formGroup]="FormularioRegistro" (ngSubmit)="Submit()">
 
-    <label>Correo:</label>
-    <input type="email" formControlName="correo">
+        <input type="text" formControlName="nombre" placeholder="Nombre">
 
-    <label>Contraseña:</label>
-    <input type="password" formControlName="contraseña">
+        <input type="email" formControlName="correo" placeholder="Correo">
 
-    <label>Confirmar Contraseña:</label>
-    <input type="password" formControlName="confirmar_contraseña">
+        <input type="password" formControlName="password" placeholder="Contraseña">
 
-    <button type="submit" (click)="Submit()">REGISTRAR</button>
+        <input type="password" formControlName="confirmar_password" placeholder="Contraseña">
 
-</form>
+        <button type="submit" [disabled]="FormularioRegistro.invalid">Registrarse</button>
+
+    </form>
+
+    <a routerLink="/login" class="login-link">¿Ya tienes cuenta? Inicia sesión</a>
+
+</div>
