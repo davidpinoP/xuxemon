@@ -1,1 +1,35 @@
-<p>xuxedex works!</p>
+<div class="xuxedex-container">
+    <h1>Xuxedex</h1>
+    <p class="subtitulo">Catálogo general de Xuxemons</p>
+
+    @if (cargando) {
+    <div class="loading">
+        <p>Cargando xuxemons...</p>
+    </div>
+    }
+
+    @if (!cargando && xuxemons.length === 0) {
+    <div class="vacio">
+        <p>No hay xuxemons registrados todavía.</p>
+    </div>
+    }
+
+    @if (!cargando && xuxemons.length > 0) {
+    <div class="grid-xuxemons">
+        @for (xuxemon of xuxemons; track xuxemon.id) {
+        <div class="tarjeta-xuxemon">
+            @if (xuxemon.imagen) {
+            <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img">
+            }
+            <h3>{{ xuxemon.nombre }}</h3>
+            <span class="tipo-badge" [class]="'tipo-' + xuxemon.tipo">{{ xuxemon.tipo }}</span>
+            @if (xuxemon.descripcion) {
+            <p class="descripcion">{{ xuxemon.descripcion }}</p>
+            }
+        </div>
+        }
+    </div>
+    }
+
+    <button class="btn-volver" (click)="volverHome()">Volver al inicio</button>
+</div>

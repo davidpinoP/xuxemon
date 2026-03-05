@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AutenticatorController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\XuxemonController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
@@ -13,6 +14,9 @@ Route::middleware('ApiAuth')->group(function () {
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
+
+    // Xuxemons
+    Route::get('/xuxemons', [XuxemonController::class, 'index']);
 
     Route::middleware('role:admin')->group(function () {
         Route::get('/admin/dashboard', function () {
