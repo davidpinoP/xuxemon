@@ -13,9 +13,9 @@ class Xuxemon extends Model
         'nombre',
         'tipo',
         'descripcion',
-        'archivo',
         'vida',
         'ataque',
         'defensa',
+        'imagen',
     ];
 }

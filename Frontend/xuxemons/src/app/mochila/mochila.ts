@@ -8,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class Mochila {
 
+  objetos: Objeto[] = [];
+  constructor() {
+    this.objetos = [];
+  }
+
 }
