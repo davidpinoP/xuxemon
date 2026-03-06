@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AutenticatorController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\XuxemonController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
@@ -17,12 +18,9 @@ Route::middleware('ApiAuth')->group(function () {
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
 
-    // --- Endpoints de Xuxemons ---
-    // Lectura (accesible para cualquier rol logueado)
+    // Xuxemons
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
-    Route::get('/xuxemons/{id}', [XuxemonController::class, 'show']);
 
-    // Escritura/Borrado (Solo Administradores)
     Route::middleware('role:admin')->group(function () {
         Route::post('/xuxemons', [XuxemonController::class, 'create']);
         Route::put('/xuxemons/{id}', [XuxemonController::class, 'update']);
