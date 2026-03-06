@@ -7,8 +7,8 @@ import { Xuxemon } from '../services/xuxemon';
   selector: 'app-admin-panel',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule], 
-  templateUrl: './admin-panel.component.html',
-  styleUrls: ['./admin-panel.component.css']
+  templateUrl: './admin-panel.html',
+  styleUrls: ['./admin-panel.css']
 })
 export class AdminPanelComponent implements OnInit {
   

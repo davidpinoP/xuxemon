@@ -1,23 +1,59 @@
-<div class="home-container">
-    <h1>¡Bienvenido a Xuxemon!</h1>
-
-    <div *ngIf="user" class="user-info">
-        <h3>Hola, {{ user.name }} {{ user.surname }}</h3>
-        <p>ID de Jugador: <strong>{{ user.player_id }}</strong></p>
-
-        <div class="role-section">
-            <p>Tu rol es: <span class="role-badge" [ngClass]="user.role">{{ user.role | uppercase }}</span></p>
-        </div>
-
-        <div *ngIf="user.role === 'admin'" class="admin-panel">
-            <h5>⚡ Panel de Administración ⚡</h5>
-            <p>Solo para administradores.</p>
-        </div>
+<div class="dashboard-layout">
+  
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img src="/imagenes/avatar.png" alt="Logo de Xuxemons" class="logo-mini">
     </div>
+    
+    <nav aria-label="Navegación principal">
+      <ul class="nav-list">
+        <li><a href="/inicio" class="nav-link active" aria-current="page">INICIO</a></li>
+        <li><a href="/xuxedex" class="nav-link">XUXEDEX</a></li>
+        <li><a href="/mochila" class="nav-link">MOCHILA</a></li>
+        <li><a href="/perfil" class="nav-link">PERFIL</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-    <div *ngIf="!user" class="loading">
-        <p>Cargando datos...</p>
-    </div>
+  <main class="main-content">
+    
+    <header class="home-header">
+      <div class="greeting">
+        <h1>Hola, entrenador</h1>
+      </div>
+      <div class="stats-badge" aria-label="Estadísticas del jugador">
+        <span class="stat"><strong>Nivel:</strong> 1</span>
+        <span class="stat"><strong>Monedas:</strong> 1500</span>
+      </div>
+    </header>
 
-    <button class="btn-logout" (click)="logout()">Cerrar sesión</button>
+    <section class="team-section" aria-labelledby="team-heading">
+      <h2 id="team-heading">Mi Equipo Principal</h2>
+      
+      <div class="team-grid">
+        
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/assets/Gemini_Generated_Image_3xym5p3xym5p3xym-removebg-preview.png" alt="Xuxemon Loro" class="xuxemon-img">
+          <h3>Loro</h3>
+        </article>
+
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/assets/Gemini_Generated_Image_9w1w8b9w1w8b9w1w-removebg-preview.png" alt="Xuxemon Tortuga" class="xuxemon-img">
+          <h3>Tortuga</h3>
+        </article>
+
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/assets/Gemini_Generated_Image_idkz2eidkz2eidkz-removebg-preview.png" alt="Xuxemon Ballena" class="xuxemon-img">
+          <h3>Ballena</h3>
+        </article>
+
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/assets/Gemini_Generated_Image_ooaqfsooaqfsooaq-removebg-preview.png" alt="Xuxemon Caracol" class="xuxemon-img">
+          <h3>Caracol</h3>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
 </div>

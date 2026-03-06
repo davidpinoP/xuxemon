@@ -1,62 +1,147 @@
-.home-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 20px;
-    text-align: center;
-    font-family: Arial, sans-serif;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+
+.dashboard-layout {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background-color: #f4f2fb; 
+  color: #222;
+  font-size: 16px; 
 }
 
-.user-info {
-    margin: 20px 0;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.sidebar {
+  width: 250px;
+  background-color: #5a3acb; 
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 0;
+  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
 }
 
-.role-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-weight: bold;
-    color: white;
+.logo-container {
+  text-align: center;
+  margin-bottom: 40px;
 }
 
-.role-badge.admin {
-    background-color: #dc3545;
+.logo-mini {
+  max-width: 150px;
+  height: auto;
 }
 
-.role-badge.user {
-    background-color: #0d6efd;
+.nav-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.admin-panel {
-    margin-top: 20px;
-    padding: 15px;
-    background-color: #fff3cd;
-    color: #856404;
-    border: 1px solid #ffeeba;
-    border-radius: 5px;
+.nav-link {
+  display: block;
+  padding: 15px 30px;
+  color: #e0d8ff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 18px;
+  transition: all 0.3s ease;
 }
 
-.btn-logout {
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.nav-link:hover, .nav-link.active {
+  background-color: #482e9e;
+  color: white;
+  border-left: 5px solid #ffca28; 
 }
 
-.btn-logout:hover {
-    background-color: #5a6268;
+.nav-link:focus, .xuxemon-card:focus {
+  outline: 3px solid #ffca28; 
+  outline-offset: -3px;
 }
 
-.loading {
-    margin: 20px 0;
-    color: #666;
-    font-style: italic;
+.main-content {
+  flex: 1;
+  padding: 40px;
+  overflow-y: auto;
+}
+
+.home-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+  background-color: white;
+  padding: 20px 30px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+.greeting h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #111;
+}
+
+.stats-badge {
+  display: flex;
+  gap: 20px;
+  background-color: #f1edff;
+  padding: 10px 20px;
+  border-radius: 25px;
+  border: 2px solid #5a3acb;
+}
+
+.stat {
+  font-size: 18px;
+  color: #5a3acb;
+}
+
+.team-section h2 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 3px solid #5a3acb;
+  display: inline-block;
+  padding-bottom: 5px;
+}
+
+.team-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 25px;
+}
+
+
+.xuxemon-card {
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  border: 2px solid transparent;
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  cursor: pointer;
+}
+
+.xuxemon-card:hover {
+  transform: translateY(-5px);
+  border-color: #5a3acb;
+}
+
+.xuxemon-card:focus {
+  outline: 3px solid #2a52be;
+  outline-offset: 2px;
+}
+
+.xuxemon-img {
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 15px;
+  background-color: #f4f2fb;
+  border-radius: 50%;
+  padding: 10px;
+}
+
+.xuxemon-card h3 {
+  margin: 0;
+  font-size: 20px;
+  color: #111;
+  font-weight: bold;
 }
