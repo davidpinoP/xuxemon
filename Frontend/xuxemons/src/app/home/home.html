@@ -1,62 +1,59 @@
-<div class="app-layout">
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <div class="avatar-circle">
-                <img src="https://ui-avatars.com/api/?name=Xuxemon&background=random" alt="Avatar" class="avatar-img">
-            </div>
-        </div>
-        <nav class="sidebar-nav">
-            <a class="nav-item active">INICIO</a>
-            <a class="nav-item" routerLink="/xuxedex">XUXEDEX</a>
-            <a class="nav-item" routerLink="/mochila">MOCHILA</a>
-            <a class="nav-item" (click)="logout()">PERFIL</a>
-        </nav>
-    </aside>
+<div class="dashboard-layout">
+  
+  <aside class="sidebar">
+    <div class="logo-container">
+      <img src="/imagenes/logo-mini.png" alt="Logo de Xuxemons" class="logo-mini">
+    </div>
+    
+    <nav aria-label="Navegación principal">
+      <ul class="nav-list">
+        <li><a href="/inicio" class="nav-link active" aria-current="page">INICIO</a></li>
+        <li><a href="/xuxedex" class="nav-link">XUXEDEX</a></li>
+        <li><a href="/mochila" class="nav-link">MOCHILA</a></li>
+        <li><a href="/perfil" class="nav-link">PERFIL</a></li>
+      </ul>
+    </nav>
+  </aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
+  <main class="main-content">
+    
+    <header class="home-header">
+      <div class="greeting">
+        <h1>Hola, entrenador</h1>
+      </div>
+      <div class="stats-badge" aria-label="Estadísticas del jugador">
+        <span class="stat"><strong>Nivel:</strong> 1</span>
+        <span class="stat"><strong>Monedas:</strong> 1500</span>
+      </div>
+    </header>
 
-        <!-- User Greeting Card -->
-        <div class="greeting-card">
-            <div class="greeting-avatar">
-                <div class="user-avatar-circle">
-                    <img *ngIf="user?.avatar" [src]="user.avatar" alt="User Avatar">
-                    <span *ngIf="!user?.avatar">👤</span>
-                </div>
-            </div>
-            <div class="greeting-info">
-                <h2>Hola, {{ user?.name || 'entrenador' }}</h2>
-                <div class="user-stats">
-                    <span>Nivel: {{ user?.nivel || 1 }}</span>
-                    <span class="stats-separator">|</span>
-                    <span>Monedas: {{ user?.monedas || 1500 }}</span>
-                </div>
-            </div>
-        </div>
+    <section class="team-section" aria-labelledby="team-heading">
+      <h2 id="team-heading">Mi Equipo Principal</h2>
+      
+      <div class="team-grid">
+        
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/loro.png" alt="Xuxemon Loro" class="xuxemon-img">
+          <h3>Loro</h3>
+        </article>
 
-        <!-- Mi Equipo Principal -->
-        <h2 class="section-title">Mi Equipo Principal</h2>
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/tortuga.png" alt="Xuxemon Tortuga" class="xuxemon-img">
+          <h3>Tortuga</h3>
+        </article>
 
-        <div class="equipo-grid">
-            @for (xuxemon of equipo; track xuxemon.id) {
-            <div class="equipo-card">
-                <div class="equipo-img-container">
-                    <div class="equipo-circle">
-                        @if (xuxemon.imagen) {
-                        <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="equipo-img">
-                        } @else {
-                        <span class="placeholder-icon">?</span>
-                        }
-                    </div>
-                </div>
-                <div class="equipo-info">
-                    <span class="equipo-nombre">{{ xuxemon.nombre }}</span>
-                    <span class="equipo-tipo">{{ getTipoIcon(xuxemon.tipo) }}</span>
-                </div>
-            </div>
-            }
-        </div>
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/ballena.png" alt="Xuxemon Ballena" class="xuxemon-img">
+          <h3>Ballena</h3>
+        </article>
 
-    </main>
+        <article class="xuxemon-card" tabindex="0">
+          <img src="/imagenes/caracol.png" alt="Xuxemon Caracol" class="xuxemon-img">
+          <h3>Caracol</h3>
+        </article>
+
+      </div>
+    </section>
+
+  </main>
 </div>

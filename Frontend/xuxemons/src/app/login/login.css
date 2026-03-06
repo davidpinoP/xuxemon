@@ -101,7 +101,7 @@ form button[type="submit"] {
     width: 100%;
     padding: 14px;
     background: #9b8fe8;
-    color: #ffffff;
+    color: #000000;
     border: none;
     border-radius: 50px;
     font-size: 1rem;
@@ -121,7 +121,7 @@ button.register-btn {
     max-width: 320px;
     padding: 14px;
     background: #9b8fe8;
-    color: #ffffff;
+    color: #000000;
     border: none;
     border-radius: 50px;
     font-size: 1rem;
