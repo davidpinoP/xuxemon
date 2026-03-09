@@ -7,92 +7,124 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a class="nav-item">INICIO</a>
+            <a class="nav-item" (click)="volverHome()">INICIO</a>
             <a class="nav-item active">XUXEDEX</a>
             <a class="nav-item">MOCHILA</a>
-
             <a class="nav-item">
                 <span class="icon-user">👤</span> PERFIL
             </a>
         </nav>
     </aside>
 
-    <!-- Main Content -->
+    <!-- Contenido principal -->
     <main class="main-content">
         <h1 class="page-title">Xuxedex</h1>
 
+        <!-- Barra de busqueda -->
         <div class="search-container">
-            <input type="text" class="search-input" placeholder="Buscar Xuxemon">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" placeholder="Buscar Xuxemon por nombre..."
+                [(ngModel)]="textoBusqueda" (input)="onBuscar()">
         </div>
 
-        <div class="filters-container">
-            <div class="filter-group">
-                <h3 class="filter-title">Tipo</h3>
-                <div class="filter-box">
-                    <span class="filter-item">Agua</span>
-                    <span class="filter-item">Fuego</span>
-                    <span class="filter-item">Planta</span>
-                    <span class="filter-arrow">></span>
-                </div>
-            </div>
-            <div class="filter-group">
-                <h3 class="filter-title">Estado</h3>
-                <div class="filter-box">
-                    <span class="filter-item">Todos</span>
-                    <span class="filter-item">Capturados</span>
-                    <span class="filter-item">Faltantes</span>
-                    <span class="filter-arrow">></span>
-                </div>
+        <!-- Filtros de tipo -->
+        <div class="filtros-tipo">
+            <h3 class="filtros-titulo">Filtrar por tipo</h3>
+            <div class="filtros-lista">
+                @for (tipo of tiposDisponibles; track tipo) {
+                <button class="filtro-btn" [class.activo]="filtroTipo === tipo" [ngClass]="'filtro-' + tipo"
+                    (click)="seleccionarTipo(tipo)">
+                    @if (tipo !== 'todos') {
+                    <span class="filtro-icono">{{ getTipoIcon(tipo) }}</span>
+                    }
+                    {{ getTipoNombre(tipo) }}
+                </button>
+                }
             </div>
         </div>
 
+        <!-- Estado de carga -->
         @if (cargando) {
-        <div class="loading">Cargando xuxemons...</div>
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Cargando xuxemons...</p>
+        </div>
         }
 
+        <!-- Sin resultados -->
         @if (!cargando && xuxemons.length === 0) {
-        <div class="vacio">No hay xuxemons registrados.</div>
+        <div class="vacio">
+            <span class="vacio-icono">😢</span>
+            <p>No se encontraron xuxemons.</p>
+        </div>
         }
 
+        <!-- Grid de tarjetas -->
         @if (!cargando && xuxemons.length > 0) {
         <div class="grid-xuxemons">
             @for (xuxemon of xuxemons; track xuxemon.id) {
-            <div class="tarjeta-xuxemon">
+            <article class="tarjeta-xuxemon" [ngClass]="getTipoClase(xuxemon.tipo)">
+                <!-- Cabecera de la tarjeta con tipo -->
+                <div class="tarjeta-cabecera">
+                    <span class="tarjeta-tipo-badge">
+                        {{ getTipoIcon(xuxemon.tipo) }} {{ getTipoNombre(xuxemon.tipo) }}
+                    </span>
+                    <span class="tarjeta-id">#{{ xuxemon.id.toString().padStart(3, '0') }}</span>
+                </div>
+
+                <!-- Imagen -->
                 <div class="imagen-container">
                     <div class="circle-bg">
                         @if (xuxemon.imagen) {
                         <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img">
                         } @else {
-                        <img src="https://via.placeholder.com/100" alt="Unknown" class="xuxemon-img placeholder">
+                        <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder">
                         }
                     </div>
                 </div>
-                <div class="info-container">
-                    <div class="info-header">
-                        <h3>{{ xuxemon.nombre || '?????' }}</h3>
-                        <span class="xuxemon-id">#{{ xuxemon.id.toString().padStart(3, '0') }}</span>
-                    </div>
-                    <div class="xuxemon-tipo">
-                        <span class="tipo-icon">{{ getTipoIcon(xuxemon.tipo) }}</span>
-                    </div>
-                    <div class="xuxemon-estado">
-                        @if (xuxemon.nombre) {
-                        <span class="badge-capturado">Capturado</span>
-                        } @else {
-                        <span class="badge-desconocido">??????????</span>
-                        }
-                    </div>
-                </div>
-            </div>
-            }
-        </div>
 
-        <div class="pagination">
-            <button class="page-btn">&lt;</button>
-            <button class="page-btn active">1</button>
-            <button class="page-btn">2</button>
-            <button class="page-btn">3</button>
-            <button class="page-btn">&gt;</button>
+                <!-- Nombre -->
+                <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
+
+                <!-- Descripcion -->
+                @if (xuxemon.descripcion) {
+                <p class="xuxemon-descripcion">{{ xuxemon.descripcion }}</p>
+                }
+
+                <!-- Estadisticas -->
+                <div class="stats-container">
+                    <div class="stat-row">
+                        <span class="stat-label">❤️ Vida</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar stat-vida" [style.width.%]="getStat(xuxemon.id, 'vida')"></div>
+                        </div>
+                        <span class="stat-valor">{{ getStat(xuxemon.id, 'vida') }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">⚔️ Ataque</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar stat-ataque" [style.width.%]="getStat(xuxemon.id, 'ataque')"></div>
+                        </div>
+                        <span class="stat-valor">{{ getStat(xuxemon.id, 'ataque') }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">🛡️ Defensa</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar stat-defensa" [style.width.%]="getStat(xuxemon.id, 'defensa')"></div>
+                        </div>
+                        <span class="stat-valor">{{ getStat(xuxemon.id, 'defensa') }}</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">💨 Velocidad</span>
+                        <div class="stat-bar-bg">
+                            <div class="stat-bar stat-velocidad" [style.width.%]="getStat(xuxemon.id, 'velocidad')">
+                            </div>
+                        </div>
+                        <span class="stat-valor">{{ getStat(xuxemon.id, 'velocidad') }}</span>
+                    </div>
+                </div>
+            </article>
+            }
         </div>
         }
     </main>
