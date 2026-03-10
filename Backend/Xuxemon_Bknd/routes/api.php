@@ -8,17 +8,17 @@ use Illuminate\Support\Facades\Route;
 Route::post('/login', [AutenticatorController::class, 'login']);
 Route::post('/register', [AutenticatorController::class, 'apiRegister']);
 
-// Protegidas (Requieren Login)
-Route::middleware('ApiAuth')->group(function () {
+// Protegidas (Requiere Token + Cuenta Activa)
+Route::middleware(['ApiAuth', 'is_active'])->group(function () {
     Route::get('/me', [AutenticatorController::class, 'me']);
     
-    // Perfil de usuario
+    // Perfil de usuario (Gestionar el suyo propio)
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
 
     // --- Endpoints de Xuxemons ---
-    // Lectura (accesible para cualquier rol logueado)
+    // Lectura (accesible para cualquier usuario autenticado y activo)
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
     Route::get('/xuxemons/{id}', [XuxemonController::class, 'show']);
 
