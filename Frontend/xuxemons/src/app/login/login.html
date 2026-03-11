@@ -2,19 +2,19 @@
 </div>
 
 <div class="right-panel">
-    <div class="avatar">
-        <img src="/imagenes/avatar.png" alt="icon">
-    </div>
+  <div class="avatar">
+    <img src="/imagenes/avatar.png" alt="icon">
+  </div>
 
-    <form [formGroup]="formulariLogin">
-        <label>Player ID</label>
-        <input type="text" formControlName="player_id" placeholder="Player ID">
+  <form [formGroup]="formulariLogin">
+    <label>Player ID</label>
+    <input type="text" formControlName="player_id" placeholder="Player ID">
 
-        <label>Contraseña:</label>
-        <input type="password" formControlName="password" placeholder="Contraseña">
+    <label>Contraseña:</label>
+    <input type="password" formControlName="password" placeholder="Contraseña">
 
-        <button type="submit" (click)="Submit()">ENTRAR</button>
-    </form>
+    <button type="submit" (click)="Submit()">ENTRAR</button>
+  </form>
 
-    <button class="register-btn" (click)="goToRegister()">Registrarse</button>
+  <button class="register-btn" (click)="goToRegister()">Registrarse</button>
 </div>
