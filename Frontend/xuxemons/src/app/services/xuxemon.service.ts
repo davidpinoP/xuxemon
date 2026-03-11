@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
 import { IXuxemon } from '../models/xuxemon.interface';
 
 @Injectable({
@@ -19,11 +19,11 @@ export class XuxemonService {
         });
     }
 
-    // Obtener todos los xuxemons del catalogo
+    // Obtener todos los xuxemons del catalogo (timeout de 3s si el backend no responde)
     getXuxemons(): Observable<IXuxemon[]> {
         return this.http.get<IXuxemon[]>(`${this.apiUrl}/xuxemons`, {
             headers: this.getHeaders()
-        });
+        }).pipe(timeout(3000));
     }
 
     // Obtener un xuxemon por su id
