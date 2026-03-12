@@ -147,9 +147,17 @@
     color: #999;
 }
 
-/* ===== Filtros de tipo ===== */
-.filtros-tipo {
+/* ===== Filtros de tipo y tamaño ===== */
+.filtros-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
     margin-bottom: 30px;
+}
+
+.filtros-tipo, .filtros-tamano {
+    flex: 1;
+    min-width: 300px;
 }
 
 .filtros-titulo {

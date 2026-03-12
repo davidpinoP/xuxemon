@@ -27,19 +27,33 @@
                 [(ngModel)]="textoBusqueda" (input)="onBuscar()">
         </div>
 
-        <!-- Filtros de tipo -->
-        <div class="filtros-tipo">
-            <h3 class="filtros-titulo">Filtrar por tipo</h3>
-            <div class="filtros-lista">
-                @for (tipo of tiposDisponibles; track tipo) {
-                <button class="filtro-btn" [class.activo]="filtroTipo === tipo" [ngClass]="'filtro-' + tipo"
-                    (click)="seleccionarTipo(tipo)">
-                    @if (tipo !== 'todos') {
-                    <span class="filtro-icono">{{ getTipoIcon(tipo) }}</span>
+        <!-- Filtros de tipo y tamaño -->
+        <div class="filtros-container">
+            <div class="filtros-tipo">
+                <h3 class="filtros-titulo">Filtrar por tipo</h3>
+                <div class="filtros-lista">
+                    @for (tipo of tiposDisponibles; track tipo) {
+                    <button class="filtro-btn" [class.activo]="filtroTipo === tipo" [ngClass]="'filtro-' + tipo"
+                        (click)="seleccionarTipo(tipo)">
+                        @if (tipo !== 'todos') {
+                        <span class="filtro-icono">{{ getTipoIcon(tipo) }}</span>
+                        }
+                        {{ getTipoNombre(tipo) }}
+                    </button>
                     }
-                    {{ getTipoNombre(tipo) }}
-                </button>
-                }
+                </div>
+            </div>
+
+            <div class="filtros-tamano">
+                <h3 class="filtros-titulo">Filtrar por tamaño</h3>
+                <div class="filtros-lista">
+                    @for (tamano of tamanosDisponibles; track tamano) {
+                    <button class="filtro-btn" [class.activo]="filtroTamano === tamano"
+                        (click)="seleccionarTamano(tamano)">
+                        {{ tamano | titlecase }}
+                    </button>
+                    }
+                </div>
             </div>
         </div>
 
