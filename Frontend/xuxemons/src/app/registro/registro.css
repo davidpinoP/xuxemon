@@ -37,6 +37,13 @@ form {
     gap: 14px;
 }
 
+.input-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 input {
     width: 100%;
     max-width: 340px;
@@ -49,6 +56,25 @@ input {
     outline: none;
     text-align: center;
     transition: background-color 0.2s ease;
+}
+
+.error-message {
+    color: #ff4d4d;
+    font-size: 12px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.error-service {
+    color: #fff;
+    background-color: #ff4d4d;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
+    margin-top: 15px;
+    text-align: center;
+    width: 100%;
+    max-width: 340px;
 }
 
 input::placeholder {

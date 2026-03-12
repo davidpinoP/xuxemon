@@ -17,6 +17,8 @@ export class Login {
     password: new FormControl('', [Validators.required])
   });
 
+  error_msg: string = '';
+
   constructor(private authService: AuthService, private router: Router) { }
 
   Submit() {
@@ -34,7 +36,7 @@ export class Login {
         },
         error: (err) => {
           console.error('Error en el login', err);
-          alert('Credenciales incorrectas');
+          this.error_msg = 'Credenciales incorrectas. Por favor, inténtalo de nuevo.';
         }
       });
     }
