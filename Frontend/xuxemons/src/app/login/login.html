@@ -8,12 +8,28 @@
 
     <form [formGroup]="formulariLogin">
         <label>Player ID</label>
-        <input type="text" formControlName="player_id" placeholder="Player ID">
+        <div class="input-group">
+            <input type="text" formControlName="player_id" placeholder="Player ID">
+            @if (formulariLogin.get('player_id')?.invalid && (formulariLogin.get('player_id')?.dirty ||
+            formulariLogin.get('player_id')?.touched)) {
+            <div class="error-message">ID de jugador obligatorio.</div>
+            }
+        </div>
 
         <label>Contraseña:</label>
-        <input type="password" formControlName="password" placeholder="Contraseña">
+        <div class="input-group">
+            <input type="password" formControlName="password" placeholder="Contraseña">
+            @if (formulariLogin.get('password')?.invalid && (formulariLogin.get('password')?.dirty ||
+            formulariLogin.get('password')?.touched)) {
+            <div class="error-message">Contraseña obligatoria.</div>
+            }
+        </div>
 
-        <button type="submit" (click)="Submit()">ENTRAR</button>
+        <button type="submit" (click)="Submit()" [disabled]="formulariLogin.invalid">ENTRAR</button>
+
+        @if (error_msg) {
+        <div class="error-service">{{ error_msg }}</div>
+        }
     </form>
 
     <button class="register-btn" (click)="goToRegister()">Registrarse</button>

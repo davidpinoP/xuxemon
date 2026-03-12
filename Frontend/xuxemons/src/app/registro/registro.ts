@@ -19,6 +19,8 @@ export class Registro {
     confirmar_password: new FormControl('', [Validators.required]),
   });
 
+  error_msg: string = '';
+
   constructor(private authService: AuthService, private router: Router) { }
 
   Submit() {
@@ -45,7 +47,7 @@ export class Registro {
         },
         error: (err) => {
           console.error('Error en el registro', err);
-          alert('Error al registrar el usuario, revisa la consola.');
+          this.error_msg = 'Error al registrar el usuario. El correo o el nombre pueden estar ya en uso.';
         }
       });
     }

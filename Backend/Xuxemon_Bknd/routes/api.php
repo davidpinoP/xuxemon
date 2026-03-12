@@ -24,10 +24,14 @@ Route::middleware(['ApiAuth', 'is_active'])->group(function () {
 
     // Escritura/Borrado (Solo Administradores)
     Route::middleware('role:admin')->group(function () {
-        Route::post('/xuxemons', [XuxemonController::class, 'create']);
-        Route::put('/xuxemons/{id}', [XuxemonController::class, 'update']);
-        Route::delete('/xuxemons/{id}', [XuxemonController::class, 'delete']);
+        Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);
+        Route::put('/xuxemons/{id}', [\App\Http\Controllers\XuxemonController::class, 'update']);
+        Route::delete('/xuxemons/{id}', [\App\Http\Controllers\XuxemonController::class, 'delete']);
         
+        // Gestión de Usuarios e Inventarios
+        Route::get('/users', [UserController::class, 'index']);
+        Route::post('/users/{id}/inventory', [UserController::class, 'updateInventory']);
+
         Route::get('/admin/dashboard', function () {
             return response()->json(['message' => 'Bienvenido, Administrador']);
         });
