@@ -16,6 +16,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // AQUÍ REGISTRAMOS TU MIDDLEWARE DE ROLES
         $middleware->alias([
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'ApiAuth' => \App\Http\Middleware\ApiAuthMiddleware::class,
+            'is_active' => \App\Http\Middleware\IsActiveMiddleware::class,
         ]);
 
     })

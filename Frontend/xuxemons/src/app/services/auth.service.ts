@@ -44,4 +44,16 @@ export class AuthService {
     deactivateAccount(): Observable<any> {
         return this.http.post(`${this.apiUrl}/user/deactivate`, {});
     }
+
+    me(): Observable<any> {
+        return this.http.get(`${this.apiUrl}/me`);
+    }
+
+    getUsers(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/users`);
+    }
+
+    updateUserInventory(userId: number, inventory: any[]): Observable<any> {
+        return this.http.post(`${this.apiUrl}/users/${userId}/inventory`, { inventory });
+    }
 }
