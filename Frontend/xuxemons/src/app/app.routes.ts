@@ -21,5 +21,6 @@ export const routes: Routes = [
         canActivate: [adminGuard] 
     },
 
+    { path: 'home', component: Home, canActivate: [authGuard] },
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

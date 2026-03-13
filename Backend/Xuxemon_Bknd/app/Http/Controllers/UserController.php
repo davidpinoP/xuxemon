@@ -54,4 +54,28 @@ class UserController extends Controller
 
         return response()->json(['message' => 'Cuenta desactivada correctamente']);
     }
+
+    // 4. Listar todos los usuarios (Solo Admin)
+    public function index()
+    {
+        return response()->json(\App\Models\User::all());
+    }
+
+    // 5. Actualizar inventario de un usuario (Solo Admin)
+    public function updateInventory(Request $request, $id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        
+        $data = $request->validate([
+            'inventory' => 'required|array',
+        ]);
+
+        $user->inventory = $data['inventory'];
+        $user->save();
+
+        return response()->json([
+            'message' => 'Inventario actualizado con éxito',
+            'inventory' => $user->inventory
+        ]);
+    }
 }

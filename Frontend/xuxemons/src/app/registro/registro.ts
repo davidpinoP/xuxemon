@@ -32,6 +32,8 @@ export class Registro {
 
   error_msg: string = '';
 
+  error_msg: string = '';
+
   constructor(private authService: AuthService, private router: Router) { }
 
   // Generación ID visual para la rúbrica (#Nom0000)
