@@ -16,10 +16,10 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('tipo');
             $table->text('descripcion')->nullable();
-            $table->string('archivo')->nullable();
             $table->integer('vida')->default(100);
             $table->integer('ataque')->default(10);
             $table->integer('defensa')->default(10);
+            $table->string('imagen');
             $table->timestamps();
         });
     }

@@ -1,0 +1,105 @@
+:host {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f3;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.perfil-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 420px;
+    padding: 40px 20px;
+}
+
+h1 {
+    color: #333;
+    margin-bottom: 24px;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+}
+
+label {
+    font-size: 14px;
+    color: #555;
+    padding-left: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 25px;
+    background-color: #dddde0;
+    font-size: 15px;
+    color: #555;
+    outline: none;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+input:focus {
+    background-color: #d0d0d5;
+}
+
+button[type="submit"] {
+    margin-top: 12px;
+    padding: 12px 50px;
+    border: none;
+    border-radius: 25px;
+    background-color: #7c6ce7;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+button[type="submit"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.acciones {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.btn-volver {
+    padding: 10px 30px;
+    border: 2px solid #7c6ce7;
+    border-radius: 25px;
+    background: transparent;
+    color: #7c6ce7;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-desactivar {
+    padding: 10px 30px;
+    border: 2px solid #e74c3c;
+    border-radius: 25px;
+    background: transparent;
+    color: #e74c3c;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.mensaje-exito {
+    color: #27ae60;
+    font-size: 14px;
+}
+
+.mensaje-error {
+    color: #e74c3c;
+    font-size: 14px;
+}

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, timeout } from 'rxjs';
+import { IXuxemon } from '../models/xuxemon.interface';
 
 @Injectable({
     providedIn: 'root'
@@ -10,12 +11,25 @@ export class XuxemonService {
 
     constructor(private http: HttpClient) { }
 
-    // Obtener todos los xuxemons del catalogo
-    getXuxemons(): Observable<any> {
+    // Cabeceras con token de autenticacion
+    private getHeaders(): HttpHeaders {
         const token = localStorage.getItem('auth_token');
-        const headers = new HttpHeaders({
+        return new HttpHeaders({
             'Authorization': `Bearer ${token}`
         });
-        return this.http.get(`${this.apiUrl}/xuxemons`, { headers });
+    }
+
+    // Obtener todos los xuxemons del catalogo (timeout de 3s si el backend no responde)
+    getXuxemons(): Observable<IXuxemon[]> {
+        return this.http.get<IXuxemon[]>(`${this.apiUrl}/xuxemons`, {
+            headers: this.getHeaders()
+        }).pipe(timeout(3000));
+    }
+
+    // Obtener un xuxemon por su id
+    getXuxemonPorId(id: number): Observable<IXuxemon> {
+        return this.http.get<IXuxemon>(`${this.apiUrl}/xuxemons/${id}`, {
+            headers: this.getHeaders()
+        });
     }
 }

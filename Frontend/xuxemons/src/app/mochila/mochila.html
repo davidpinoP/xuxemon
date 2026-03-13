@@ -1,1 +1,50 @@
-<p>mochila works!</p>
+<div class="mochila-wrapper">
+    <h1>Mochila</h1>
+    <div class="mochila-grid">
+        @for (slot of slots; track $index) {
+        <div class="slot" [class.occupied]="slot">
+            @if (slot) {
+            <div class="item-container">
+                <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
+                @if (slot.cantidad > 1 || slot.stackable) {
+                <span class="quantity">{{ slot.cantidad }}</span>
+                }
+            </div>
+            }
+        </div>
+        }
+    </div>
+
+    @if (isAdmin) {
+    <div class="admin-panel">
+        <h2>Gestión de Jugadores (Admin)</h2>
+        <div class="admin-controls">
+            <div class="control-group">
+                <label>Jugador:</label>
+                <select [(ngModel)]="selectedPlayerId">
+                    <option [ngValue]="null">Selecciona un jugador</option>
+                    @for (player of players; track player.id) {
+                    <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
+                    }
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Xuxe:</label>
+                <select [(ngModel)]="xuxeToAdd.nombre">
+                    @for (tipo of tiposXuxe; track tipo.nombre) {
+                    <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label>Cantidad:</label>
+                <input type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
+            </div>
+
+            <button class="btn-admin" (click)="addXuxesToPlayer()">Añadir Xuxes</button>
+        </div>
+    </div>
+    }
+</div>

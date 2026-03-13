@@ -26,6 +26,7 @@ class User extends Authenticatable implements JWTSubject
         'player_id',
         'role',
         'is_active',
+        'inventory',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable implements JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_active' => 'boolean',
+            'inventory' => 'array',
         ];
     }
 
