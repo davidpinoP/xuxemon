@@ -12,8 +12,9 @@ import { adminGuard } from './guards/admin-guard';
 export const routes: Routes = [
     { path: 'login', component: Login },
     { path: 'register', component: Registro },
-    { path: 'home', component: Home },
-    { path: 'xuxedex', component: Xuxedex },
+    { path: 'home', component: Home, canActivate: [authGuard] },
+    { path: 'xuxedex', component: Xuxedex, canActivate: [authGuard] },
+    { path: 'profile', component: Perfil, canActivate: [authGuard] },
     { 
         path: 'admin', 
         component: AdminPanelComponent, 
