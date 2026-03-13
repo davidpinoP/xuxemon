@@ -2,6 +2,9 @@
 
   <div class="logo-container">
     <img src="/assets/images/xuxemon-mascot.png" alt="Xuxemon" class="mascot-logo">
+    @if (generatedId) {
+      <p class="id-preview">Previsualización ID: <strong>{{ generatedId }}</strong></p>
+    }
   </div>
 
   <form [formGroup]="FormularioRegistro" (ngSubmit)="Submit()">
@@ -11,6 +14,14 @@
             @if (FormularioRegistro.get('nombre')?.invalid && (FormularioRegistro.get('nombre')?.dirty ||
             FormularioRegistro.get('nombre')?.touched)) {
             <div class="error-message">El nombre es obligatorio.</div>
+            }
+        </div>
+
+        <div class="input-group">
+            <input type="text" formControlName="apellidos" placeholder="Apellidos">
+            @if (FormularioRegistro.get('apellidos')?.invalid && (FormularioRegistro.get('apellidos')?.dirty ||
+            FormularioRegistro.get('apellidos')?.touched)) {
+            <div class="error-message">Los apellidos son obligatorios.</div>
             }
         </div>
 
@@ -42,6 +53,9 @@
             (FormularioRegistro.get('confirmar_password')?.dirty ||
             FormularioRegistro.get('confirmar_password')?.touched)) {
             <div class="error-message">Repite la contraseña.</div>
+            }
+            @if (FormularioRegistro.errors?.['passwordMismatch'] && (FormularioRegistro.get('confirmar_password')?.dirty || FormularioRegistro.get('confirmar_password')?.touched)) {
+            <div class="error-message">Las contraseñas no coinciden.</div>
             }
         </div>
 
