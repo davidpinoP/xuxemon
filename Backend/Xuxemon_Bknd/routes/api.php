@@ -31,6 +31,8 @@ Route::middleware(['ApiAuth', 'is_active'])->group(function () {
         // Gestión de Usuarios e Inventarios
         Route::get('/users', [UserController::class, 'index']);
         Route::post('/users/{id}/inventory', [UserController::class, 'updateInventory']);
+        Route::put('/users/{id}/inventory/{itemName}', [UserController::class, 'modifyItemInInventory']);
+        Route::delete('/users/{id}/inventory/{itemName}', [UserController::class, 'deleteItemFromInventory']);
 
         Route::get('/admin/dashboard', function () {
             return response()->json(['message' => 'Bienvenido, Administrador']);
