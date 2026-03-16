@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, timeout } from 'rxjs';
+import { Observable, BehaviorSubject, timeout, tap } from 'rxjs'; // Añadimos BehaviorSubject y tap
 import { IXuxemon } from '../models/xuxemon.interface';
 
 @Injectable({
@@ -9,9 +9,14 @@ import { IXuxemon } from '../models/xuxemon.interface';
 export class XuxemonService {
     private apiUrl = 'http://localhost:8000/api';
 
+    // El Subject guarda el estado actual de los Xuxemons
+    private xuxemonsSubject = new BehaviorSubject<IXuxemon[]>([]);
+    
+    // Este es el Observable al que se suscribirán tus componentes
+    public xuxemons$: Observable<IXuxemon[]> = this.xuxemonsSubject.asObservable();
+
     constructor(private http: HttpClient) { }
 
-    // Cabeceras con token de autenticacion
     private getHeaders(): HttpHeaders {
         const token = localStorage.getItem('auth_token');
         return new HttpHeaders({
@@ -19,14 +24,24 @@ export class XuxemonService {
         });
     }
 
-    // Obtener todos los xuxemons del catalogo (timeout de 3s si el backend no responde)
+    // Modificamos getXuxemons para que actualice el Subject automáticamente
     getXuxemons(): Observable<IXuxemon[]> {
         return this.http.get<IXuxemon[]>(`${this.apiUrl}/xuxemons`, {
             headers: this.getHeaders()
-        }).pipe(timeout(3000));
+        }).pipe(
+            timeout(3000),
+            // El 'tap' hace que, cuando lleguen los datos, se avise a toda la app
+            tap(xuxemons => {
+                this.xuxemonsSubject.next(xuxemons);
+            })
+        );
     }
 
-    // Obtener un xuxemon por su id
+    // Método para obtener el valor actual sin hacer peticiones HTTP
+    getXuxemonsSnapshot(): IXuxemon[] {
+        return this.xuxemonsSubject.value;
+    }
+
     getXuxemonPorId(id: number): Observable<IXuxemon> {
         return this.http.get<IXuxemon>(`${this.apiUrl}/xuxemons/${id}`, {
             headers: this.getHeaders()
