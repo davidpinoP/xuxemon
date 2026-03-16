@@ -14,5 +14,6 @@ class Xuxemon extends Model
         'ataque',
         'defensa',
         'imagen',
+        'tamano',
     ];
 }
