@@ -3,31 +3,31 @@
     <h1>Mi Perfil</h1>
 
     @if (cargando) {
-        <p>Cargando perfil...</p>
+    <p>Cargando perfil...</p>
     }
 
     @if (mensajeExito) {
-        <p class="mensaje-exito">{{ mensajeExito }}</p>
+    <p class="mensaje-exito">{{ mensajeExito }}</p>
     }
     @if (mensajeError) {
-        <p class="mensaje-error">{{ mensajeError }}</p>
+    <p class="mensaje-error">{{ mensajeError }}</p>
     }
 
     @if (!cargando) {
-        <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
-            <label for="nombre">Nombre:</label>
-            <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
+    <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
+        <label for="nombre">Nombre:</label>
+        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
 
-            <label for="correo">Correo:</label>
-            <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
+        <label for="correo">Correo:</label>
+        <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
 
-            <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
-        </form>
+        <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
+    </form>
 
-        <div class="acciones">
-            <button class="btn-volver" (click)="volver()">Volver</button>
-            <button class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
-        </div>
+    <div class="acciones">
+        <button class="btn-volver" (click)="volver()">Volver</button>
+        <button class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
+    </div>
     }
 
 </div>
