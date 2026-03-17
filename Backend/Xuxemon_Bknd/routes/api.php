@@ -11,7 +11,7 @@ Route::post('/login', [AutenticatorController::class, 'login']);
 Route::post('/register', [AutenticatorController::class, 'apiRegister']);
 
 // Protegidas (Requiere Token + Cuenta Activa)
-Route::middleware(['ApiAuth', 'is_active'])->group(function () {
+Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Middleware\IsActiveMiddleware::class])->group(function () {
     Route::get('/me', [AutenticatorController::class, 'me']);
     
     // Perfil de usuario (Gestionar el suyo propio)
@@ -23,7 +23,7 @@ Route::middleware(['ApiAuth', 'is_active'])->group(function () {
     // Lectura (accesible para cualquier usuario autenticado y activo)
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
 
-    Route::middleware('role:admin')->group(function () {
+    Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);
         Route::put('/xuxemons/{id}', [\App\Http\Controllers\XuxemonController::class, 'update']);
         Route::delete('/xuxemons/{id}', [\App\Http\Controllers\XuxemonController::class, 'delete']);
