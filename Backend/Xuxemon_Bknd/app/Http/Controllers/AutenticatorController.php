@@ -93,6 +93,7 @@ class AutenticatorController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
+            'role' => 'sometimes|in:admin,user', // Optional role parameter
         ]);
 
         $isFirstUser = User::count() === 0;
@@ -103,7 +104,7 @@ class AutenticatorController extends Controller
             'email' => $validated['email'],
             'password' => $validated['password'],
             'player_id' => $this->generatePlayerId($validated['name']),
-            'role' => $isFirstUser ? 'admin' : 'user',
+            'role' => $request->has('role') ? $validated['role'] : ($isFirstUser ? 'admin' : 'user'),
             'is_active' => true,
         ]);
 
