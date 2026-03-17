@@ -6,30 +6,31 @@ import { Xuxemon } from '../services/xuxemon';
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule], 
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './admin-panel.html',
   styleUrls: ['./admin-panel.css']
 })
 export class AdminPanelComponent implements OnInit {
-  
-  xuxemons: any[] = []; 
-  xuxemonForm: FormGroup; 
-  isEditing: boolean = false; 
+
+  xuxemons: any[] = [];
+  xuxemonForm: FormGroup;
+  isEditing: boolean = false;
   currentId: number | null = null;
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private xuxemonService: Xuxemon
   ) {
     this.xuxemonForm = this.fb.group({
       nombre: ['', Validators.required],
       tipo: ['', Validators.required],
-      descripcion: ['']
+      descripcion: [''],
+      tamano: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
-    this.cargarXuxemons(); 
+    this.cargarXuxemons();
   }
 
 
@@ -41,13 +42,13 @@ export class AdminPanelComponent implements OnInit {
   }
 
   guardarXuxemon(): void {
-    if (this.xuxemonForm.invalid) return; 
+    if (this.xuxemonForm.invalid) return;
     if (this.isEditing && this.currentId) {
       this.xuxemonService.updateXuxemon(this.currentId, this.xuxemonForm.value).subscribe({
         next: () => {
           alert('¡Xuxemon actualizado correctamente!');
           this.resetForm();
-          this.cargarXuxemons(); 
+          this.cargarXuxemons();
         },
         error: () => alert('Error al actualizar')
       });

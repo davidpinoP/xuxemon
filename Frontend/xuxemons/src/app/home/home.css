@@ -2,19 +2,19 @@
   display: flex;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #f4f2fb; 
+  background-color: #f4f2fb;
   color: #222;
-  font-size: 16px; 
+  font-size: 16px;
 }
 
 .sidebar {
   width: 250px;
-  background-color: #5a3acb; 
+  background-color: #5a3acb;
   color: white;
   display: flex;
   flex-direction: column;
   padding: 30px 0;
-  box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .logo-container {
@@ -43,14 +43,16 @@
   transition: all 0.3s ease;
 }
 
-.nav-link:hover, .nav-link.active {
+.nav-link:hover,
+.nav-link.active {
   background-color: #482e9e;
   color: white;
-  border-left: 5px solid #ffca28; 
+  border-left: 5px solid #ffca28;
 }
 
-.nav-link:focus, .xuxemon-card:focus {
-  outline: 3px solid #ffca28; 
+.nav-link:focus,
+.xuxemon-card:focus {
+  outline: 3px solid #ffca28;
   outline-offset: -3px;
 }
 
@@ -68,7 +70,7 @@
   background-color: white;
   padding: 20px 30px;
   border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
 
 .greeting h1 {
@@ -111,7 +113,7 @@
   border-radius: 20px;
   padding: 20px;
   text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   border: 2px solid transparent;
   transition: transform 0.3s ease, border-color 0.3s ease;
   cursor: pointer;

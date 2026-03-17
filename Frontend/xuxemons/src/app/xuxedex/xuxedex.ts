@@ -121,12 +121,12 @@ export class Xuxedex implements OnInit {
         x.tipo.toLowerCase() === this.filtroTipo
       );
     }
-    
+
     // Filtrar por tamaño
     if (this.filtroTamano !== 'todos') {
-        resultado = resultado.filter(x =>
-            x.tamano?.toLowerCase() === this.filtroTamano
-        );
+      resultado = resultado.filter(x =>
+        x.tamano?.toLowerCase() === this.filtroTamano
+      );
     }
 
     this.xuxemons = resultado;
