@@ -1,15 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule, NgIf, NgFor } from '@angular/common';
 import { AuthService } from '../services/auth.service';
+import { InventoryService, Objeto } from '../services/inventory.service';
 import { FormsModule } from '@angular/forms';
-
-export interface Objeto {
-  nombre: string;
-  tipo: 'Xuxe' | 'Vacuna';
-  cantidad: number;
-  stackable: boolean;
-  imagen: string;
-}
 
 @Component({
   selector: 'app-mochila',
@@ -20,7 +13,7 @@ export interface Objeto {
 })
 export class Mochila implements OnInit {
 
-  slots: (Objeto | null)[] = Array(20).fill(null);
+  slots: (Objeto | null)[] = [];
   isAdmin: boolean = false;
   players: any[] = [];
   selectedPlayerId: number | null = null;
@@ -41,11 +34,20 @@ export class Mochila implements OnInit {
     { nombre: 'Vacuna B', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/piruleta_sola.png' },
   ];
 
-  constructor(private authService: AuthService) { }
+  constructor(
+    private authService: AuthService,
+    private inventoryService: InventoryService
+  ) { }
 
   ngOnInit() {
     this.checkUserRole();
-    this.organizarMochila();
+
+    // Suscribirse a los slots del servicio
+    this.inventoryService.slots$.subscribe(slots => {
+      this.slots = slots;
+    });
+
+    this.inventoryService.organizarMochila(this.inventarioBase);
   }
 
   checkUserRole() {
@@ -74,8 +76,8 @@ export class Mochila implements OnInit {
     // Obtener inventario actual del jugador o vacío
     let inventory = player.inventory || [];
 
-    // Simular el llenado de slots para ver si cabe
-    const totalSlotsUsed = this.calculateSlotsUsed(inventory);
+    // Calcular slots usados mediante el servicio
+    const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
     const availableSlots = 20 - totalSlotsUsed;
 
     if (availableSlots <= 0) {
@@ -94,10 +96,7 @@ export class Mochila implements OnInit {
       imagen: selectedXuxe?.imagen || ''
     };
 
-    // Añadir al inventario base del jugador
-    // Nota: Aquí lo guardamos plano, la lógica de visualización (organizarMochila) se encarga de los slots.
-    // Pero el requisito dice "si sobran se descartan", lo que significa que limitamos la cantidad antes de guardar.
-
+    // Lógica de descarte si no caben
     const slotsNeeded = Math.ceil(newItem.cantidad / 5);
     if (slotsNeeded > availableSlots) {
       const allowedAmount = availableSlots * 5;
@@ -114,42 +113,5 @@ export class Mochila implements OnInit {
       },
       error: () => alert('Error al actualizar el inventario.')
     });
-  }
-
-  calculateSlotsUsed(inventory: Objeto[]): number {
-    let slots = 0;
-    for (const item of inventory) {
-      if (item.stackable) {
-        slots += Math.ceil(item.cantidad / 5);
-      } else {
-        slots += item.cantidad;
-      }
-    }
-    return slots;
-  }
-
-  organizarMochila() {
-    let currentSlot = 0;
-    const maxSlots = 20;
-
-    for (const item of this.inventarioBase) {
-      if (currentSlot >= maxSlots) break;
-
-      if (item.stackable) {
-        let remaining = item.cantidad;
-        while (remaining > 0 && currentSlot < maxSlots) {
-          const stackSize = Math.min(remaining, 5);
-          this.slots[currentSlot] = { ...item, cantidad: stackSize };
-          remaining -= stackSize;
-          currentSlot++;
-        }
-      } else {
-        // No apilable: uno por slot
-        for (let i = 0; i < item.cantidad && currentSlot < maxSlots; i++) {
-          this.slots[currentSlot] = { ...item, cantidad: 1 };
-          currentSlot++;
-        }
-      }
-    }
   }
 }

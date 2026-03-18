@@ -21,5 +21,7 @@ class DatabaseSeeder extends Seeder
             'player_id' => 'TestUser1234',
             'password' => 'password'
         ]);
+
+        $this->call(XuxemonSeeder::class);
     }
 }
