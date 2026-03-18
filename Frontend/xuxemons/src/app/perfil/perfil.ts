@@ -13,7 +13,10 @@ export class Perfil implements OnInit {
 
   formularioPerfil = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
-    correo: new FormControl('', [Validators.required, Validators.email])
+    apellidos: new FormControl('', [Validators.required]),
+    correo: new FormControl('', [Validators.required, Validators.email]),
+    password: new FormControl(''),
+    password_confirmation: new FormControl('')
   });
 
   mensajeExito = '';
@@ -27,6 +30,7 @@ export class Perfil implements OnInit {
       next: (data: any) => {
         this.formularioPerfil.patchValue({
           nombre: data.name,
+          apellidos: data.surname,
           correo: data.email
         });
         this.cargando = false;
@@ -40,10 +44,18 @@ export class Perfil implements OnInit {
 
   guardarPerfil(): void {
     if (this.formularioPerfil.valid) {
-      const datos = {
+      const datos: any = {
         name: this.formularioPerfil.value.nombre,
+        surname: this.formularioPerfil.value.apellidos,
         email: this.formularioPerfil.value.correo
       };
+      
+      const pwd = this.formularioPerfil.value.password;
+      if (pwd) {
+        datos.password = pwd;
+        datos.password_confirmation = this.formularioPerfil.value.password_confirmation;
+      }
+      
       this.authService.updateProfile(datos).subscribe({
         next: () => {
           this.mensajeExito = 'Perfil actualizado correctamente.';
