@@ -1,13 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, NgIf, NgFor } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
-import { FormsModule } from '@angular/forms';
+import { Router, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
@@ -36,7 +36,8 @@ export class Mochila implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private inventoryService: InventoryService
+    private inventoryService: InventoryService,
+    private router: Router
   ) { }
 
   ngOnInit() {
@@ -48,6 +49,23 @@ export class Mochila implements OnInit {
     });
 
     this.inventoryService.organizarMochila(this.inventarioBase);
+  }
+
+  volverHome(): void {
+    this.router.navigate(['/home']);
+  }
+
+  // Métodos para manejar eventos sin ngModel
+  onPlayerSelected(event: any) {
+    this.selectedPlayerId = Number(event.target.value) || null;
+  }
+
+  onXuxeSelected(event: any) {
+    this.xuxeToAdd.nombre = event.target.value;
+  }
+
+  onCantidadChange(event: any) {
+    this.xuxeToAdd.cantidad = Number(event.target.value) || 1;
   }
 
   checkUserRole() {
