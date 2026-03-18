@@ -5,8 +5,8 @@ import { IXuxemon } from '../models/xuxemon.interface';
   selector: 'app-xuxemon-card',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './xuxemon-card.component.html',
-  styleUrl: './xuxemon-card.component.css' 
+  templateUrl: './xuxemon-card.html',
+  styleUrl: './xuxemon-card.css' 
 })
 export class XuxemonCardComponent {
   
