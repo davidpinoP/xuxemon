@@ -16,7 +16,7 @@ export const routes: Routes = [
     { path: 'home', component: Home, canActivate: [authGuard] },
     { path: 'xuxedex', component: Xuxedex, canActivate: [authGuard] },
 { path: 'mochila', component: Mochila, canActivate: [authGuard] },
-{ path: 'profile', component: Perfil, canActivate: [authGuard] },
+{ path: 'perfil', component: Perfil, canActivate: [authGuard] },
     { 
         path: 'admin', 
         component: AdminPanelComponent, 

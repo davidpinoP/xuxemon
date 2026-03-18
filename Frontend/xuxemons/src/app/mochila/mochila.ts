@@ -14,7 +14,7 @@ export interface Objeto {
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, NgIf, NgFor, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
