@@ -1,0 +1,56 @@
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" *ngIf="xuxemon">
+    <div class="tarjeta-cabecera">
+        <span class="tarjeta-tipo-badge">
+            {{ tipoIcono }} {{ tipoNombre }}
+        </span>
+        <span class="tarjeta-id">#{{ xuxemon.id.toString().padStart(3, '0') }}</span>
+    </div>
+
+    <div class="imagen-container">
+        <div class="circle-bg">
+            @if (xuxemon.imagen) {
+            <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img">
+            } @else {
+            <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder">
+            }
+        </div>
+    </div>
+
+    <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
+
+    @if (xuxemon.descripcion) {
+    <p class="xuxemon-descripcion">{{ xuxemon.descripcion }}</p>
+    }
+
+    <div class="stats-container">
+        <div class="stat-row">
+            <span class="stat-label">❤️ Vida</span>
+            <div class="stat-bar-bg">
+                <div class="stat-bar stat-vida" [style.width.%]="getStatValue('vida')"></div>
+            </div>
+            <span class="stat-valor">{{ getStatValue('vida') }}</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">⚔️ Ataque</span>
+            <div class="stat-bar-bg">
+                <div class="stat-bar stat-ataque" [style.width.%]="getStatValue('ataque')"></div>
+            </div>
+            <span class="stat-valor">{{ getStatValue('ataque') }}</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">🛡️ Defensa</span>
+            <div class="stat-bar-bg">
+                <div class="stat-bar stat-defensa" [style.width.%]="getStatValue('defensa')"></div>
+            </div>
+            <span class="stat-valor">{{ getStatValue('defensa') }}</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">💨 Velocidad</span>
+            <div class="stat-bar-bg">
+                <div class="stat-bar stat-velocidad" [style.width.%]="getStatValue('velocidad')">
+                </div>
+            </div>
+            <span class="stat-valor">{{ getStatValue('velocidad') }}</span>
+        </div>
+    </div>
+</article>

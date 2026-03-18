@@ -1,13 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
-import { Router } from '@angular/router';
+
+// Importamos el nuevo componente de la tarjeta (asegúrate de que la ruta sea correcta)
+import { XuxemonCardComponent } from '../xuxemon-card/xuxemon-card';
 
 @Component({
   selector: 'app-xuxedex',
-  imports: [CommonModule, FormsModule],
+  standalone: true, // Necesario para cargar imports aquí
+  imports: [CommonModule, FormsModule, XuxemonCardComponent], // Añadimos la tarjeta aquí
   templateUrl: './xuxedex.html',
   styleUrl: './xuxedex.css',
 })
@@ -147,43 +151,6 @@ export class Xuxedex implements OnInit {
   seleccionarTamano(tamano: string): void {
     this.filtroTamano = tamano;
     this.aplicarFiltros();
-  }
-
-  // Devuelve el icono emoji segun el tipo
-  getTipoIcon(tipo: string): string {
-    if (!tipo) return '?';
-    switch (tipo.toLowerCase()) {
-      case 'agua': return '💧';
-      case 'tierra': return '🪨';
-      case 'aire': return '💨';
-      default: return '⚪';
-    }
-  }
-
-  // Devuelve el nombre del tipo con la primera letra en mayuscula
-  getTipoNombre(tipo: string): string {
-    if (!tipo) return 'Desconocido';
-    return tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
-  }
-
-  // Devuelve la clase CSS segun el tipo para colorear la tarjeta
-  getTipoClase(tipo: string): string {
-    if (!tipo) return 'tipo-desconocido';
-    return 'tipo-' + tipo.toLowerCase();
-  }
-
-  // Genera estadisticas decorativas a partir del id del xuxemon
-  // (simulacion hasta que se añadan al backend)
-  getStat(id: number, stat: string): number {
-    // Genera un valor entre 30 y 100 basado en el id y el stat
-    const semilla = id * 31;
-    switch (stat) {
-      case 'vida': return 40 + (semilla % 61);
-      case 'ataque': return 30 + ((semilla * 7) % 71);
-      case 'defensa': return 35 + ((semilla * 13) % 66);
-      case 'velocidad': return 25 + ((semilla * 19) % 76);
-      default: return 50;
-    }
   }
 
   volverHome(): void {
