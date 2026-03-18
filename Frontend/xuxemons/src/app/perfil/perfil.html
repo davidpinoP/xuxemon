@@ -18,11 +18,20 @@
         <label for="nombre">Nombre:</label>
         <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
 
-        <label for="correo">Correo:</label>
-        <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
+            <label for="apellidos">Apellidos:</label>
+            <input id="apellidos" type="text" formControlName="apellidos" placeholder="Tus apellidos">
 
-        <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
-    </form>
+            <label for="correo">Correo:</label>
+            <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
+
+            <label for="password">Nueva contraseña (opcional):</label>
+            <input id="password" type="password" formControlName="password" placeholder="Nueva contraseña">
+
+            <label for="password_confirmation">Confirmar nueva contraseña:</label>
+            <input id="password_confirmation" type="password" formControlName="password_confirmation" placeholder="Repite la nueva contraseña">
+
+            <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
+        </form>
 
     <div class="acciones">
         <button class="btn-volver" (click)="volver()">Volver</button>
