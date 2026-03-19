@@ -65,7 +65,7 @@ class UserController extends Controller
     public function updateInventory(Request $request, $id)
     {
         $user = \App\Models\User::findOrFail($id);
-        
+
         $data = $request->validate([
             'inventory' => 'required|array',
         ]);
@@ -83,7 +83,7 @@ class UserController extends Controller
     public function modifyItemInInventory(Request $request, $id, $itemName)
     {
         $user = \App\Models\User::findOrFail($id);
-        
+
         $data = $request->validate([
             'cantidad' => 'required|integer|min:1',
         ]);
@@ -116,7 +116,7 @@ class UserController extends Controller
     public function deleteItemFromInventory($id, $itemName)
     {
         $user = \App\Models\User::findOrFail($id);
-        
+
         $inventory = $user->inventory ?? [];
         $itemFound = false;
 
