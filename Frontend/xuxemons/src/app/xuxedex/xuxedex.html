@@ -6,13 +6,16 @@
             </div>
         </div>
         <nav class="sidebar-nav">
-            <a class="nav-item" (click)="volverHome()">INICIO</a>
-            <a class="nav-item active">XUXEDEX</a>
-            <a class="nav-item" routerLink="/mochila">MOCHILA</a>
-            <a class="nav-item" routerLink="/perfil">
-                <span class="icon-user">👤</span> PERFIL
-            </a>
-        </nav>
+    <a class="nav-item" (click)="volverHome()" style="cursor: pointer;">INICIO</a>
+    
+    <a class="nav-item active" (click)="irAXuxedex()" style="cursor: pointer;">XUXEDEX</a>
+    
+    <a class="nav-item" (click)="irAMochila()" style="cursor: pointer;">MOCHILA</a>
+    
+    <a class="nav-item" (click)="irAPerfil()" style="cursor: pointer;">
+        <span class="icon-user">👤</span> PERFIL
+    </a>
+</nav>
     </aside>
 
     <main class="main-content">

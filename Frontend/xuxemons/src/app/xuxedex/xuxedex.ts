@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router,RouterModule } from '@angular/router';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 
@@ -11,7 +11,7 @@ import { XuxemonCardComponent } from '../xuxemon-card/xuxemon-card';
 @Component({
   selector: 'app-xuxedex',
   standalone: true, // Necesario para cargar imports aquí
-  imports: [CommonModule, FormsModule, XuxemonCardComponent], // Añadimos la tarjeta aquí
+  imports: [CommonModule, FormsModule, XuxemonCardComponent, RouterModule], // Añadimos la tarjeta aquí
   templateUrl: './xuxedex.html',
   styleUrl: './xuxedex.css',
 })
@@ -155,5 +155,16 @@ export class Xuxedex implements OnInit {
 
   volverHome(): void {
     this.router.navigate(['/home']);
+  }
+  irAXuxedex(): void {
+    this.router.navigate(['/xuxedex']);
+  }
+
+  irAMochila(): void {
+    this.router.navigate(['/mochila']);
+  }
+
+  irAPerfil(): void {
+    this.router.navigate(['/perfil']);
   }
 }
