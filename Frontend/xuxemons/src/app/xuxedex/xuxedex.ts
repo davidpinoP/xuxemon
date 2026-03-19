@@ -153,6 +153,21 @@ export class Xuxedex implements OnInit {
     this.aplicarFiltros();
   }
 
+  getTipoIcon(tipo: string): string {
+    const iconos: { [key: string]: string } = {
+      'agua': '💧',
+      'tierra': '🌿',
+      'aire': '💨',
+      'fuego': '🔥'
+    };
+    return iconos[tipo.toLowerCase()] || '❓';
+  }
+
+  getTipoNombre(tipo: string): string {
+    if (tipo === 'todos') return 'Todos';
+    return tipo.charAt(0).toUpperCase() + tipo.slice(1);
+  }
+
   volverHome(): void {
     this.router.navigate(['/home']);
   }
