@@ -11,7 +11,9 @@ class UserController extends Controller
     // 1. Ver perfil del usuario autenticado
     public function show(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user();
+        $user->mochila = $user->mochila; // Cargar mochila
+        return response()->json($user);
     }
 
     // 2. Actualizar datos del perfil
@@ -70,12 +72,21 @@ class UserController extends Controller
             'inventory' => 'required|array',
         ]);
 
-        $user->inventory = $data['inventory'];
-        $user->save();
+        // Borrar el inventario actual en la tabla
+        $user->mochila()->delete();
+
+        foreach ($data['inventory'] as $item) {
+            $user->mochila()->create([
+                'nombre' => $item['nombre'],
+                'cantidad' => $item['cantidad'] ?? 1,
+                'tipo' => $item['tipo'] ?? null,
+                'tamano' => $item['tamano'] ?? null,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Inventario actualizado con éxito',
-            'inventory' => $user->inventory
+            'inventory' => $user->mochila
         ]);
     }
 
@@ -83,32 +94,23 @@ class UserController extends Controller
     public function modifyItemInInventory(Request $request, $id, $itemName)
     {
         $user = \App\Models\User::findOrFail($id);
+        $itemName = urldecode($itemName);
 
         $data = $request->validate([
             'cantidad' => 'required|integer|min:1',
         ]);
 
-        $inventory = $user->inventory ?? [];
-        $itemFound = false;
+        $mochilaEntry = $user->mochila()->where('nombre', $itemName)->first();
 
-        foreach ($inventory as &$item) {
-            if (isset($item['nombre']) && urldecode($item['nombre']) === urldecode($itemName)) {
-                $item['cantidad'] = $data['cantidad'];
-                $itemFound = true;
-                break;
-            }
-        }
-
-        if (!$itemFound) {
+        if (!$mochilaEntry) {
             return response()->json(['message' => 'Ítem no encontrado en el inventario'], 404);
         }
 
-        $user->inventory = $inventory;
-        $user->save();
+        $mochilaEntry->update(['cantidad' => $data['cantidad']]);
 
         return response()->json([
             'message' => 'Cantidad del ítem actualizada con éxito',
-            'inventory' => $user->inventory
+            'inventory' => $user->mochila
         ]);
     }
 
@@ -116,29 +118,19 @@ class UserController extends Controller
     public function deleteItemFromInventory($id, $itemName)
     {
         $user = \App\Models\User::findOrFail($id);
+        $itemName = urldecode($itemName);
 
-        $inventory = $user->inventory ?? [];
-        $itemFound = false;
+        $mochilaEntry = $user->mochila()->where('nombre', $itemName)->first();
 
-        $filteredInventory = array_filter($inventory, function ($item) use ($itemName, &$itemFound) {
-            if (isset($item['nombre']) && urldecode($item['nombre']) === urldecode($itemName)) {
-                $itemFound = true;
-                return false; // Remove this item
-            }
-            return true; // Keep others
-        });
-
-        if (!$itemFound) {
+        if (!$mochilaEntry) {
             return response()->json(['message' => 'Ítem no encontrado en el inventario'], 404);
         }
 
-        // Reindex array so it stays as a JSON array instead of a JSON object
-        $user->inventory = array_values($filteredInventory);
-        $user->save();
+        $mochilaEntry->delete();
 
         return response()->json([
             'message' => 'Ítem eliminado con éxito',
-            'inventory' => $user->inventory
+            'inventory' => $user->mochila
         ]);
     }
 }

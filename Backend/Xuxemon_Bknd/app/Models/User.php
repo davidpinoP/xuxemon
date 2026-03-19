@@ -64,4 +64,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
+
+    /**
+     * Get the user's mochila entries.
+     */
+    public function mochila()
+    {
+        return $this->hasMany(Mochila::class);
+    }
 }

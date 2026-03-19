@@ -4,10 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Item;
-use App\Models\UserItem;
 use App\Models\Xuxemon;
-use App\Models\UserXuxemon;
+use App\Models\Mochila;
 
 class AdminController extends Controller
 {
@@ -21,20 +19,21 @@ class AdminController extends Controller
 
         $usuario = User::findOrFail($request->user_id);
 
-        // El Item 1 es la xuxe normal
-        $idXuxe = 1;
+        // Buscamos el item 1 para saber su nombre
+        $itemXuxe = \App\Models\Item::find(1);
+        $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
 
-        $inventario = UserItem::firstOrNew([
-            'user_id' => $usuario->id,
-            'item_id' => $idXuxe
+        $mochilaEntry = $usuario->mochila()->firstOrNew([
+            'nombre' => $nombreXuxe,
+            'tipo' => 'item',
         ]);
 
-        $inventario->cantidad += $request->cantidad;
-        $inventario->save();
+        $mochilaEntry->cantidad += $request->cantidad;
+        $mochilaEntry->save();
 
         return response()->json([
             'mensaje' => 'Chuches añadidas al jugador',
-            'inventario' => $inventario
+            'inventario' => $usuario->mochila
         ], 200);
     }
 
@@ -54,17 +53,19 @@ class AdminController extends Controller
             return response()->json(['error' => 'No hay xuxemons creados aun'], 404);
         }
 
-        // Se lo guarda al usuario en tamaño pequeño
-        $nuevoXuxemon = UserXuxemon::create([
-            'user_id' => $usuario->id,
-            'xuxemon_id' => $xuxemonAlea->id,
+        // Se lo guarda al usuario en tamaño pequeño en la mochila
+        $nuevoXuxemon = $usuario->mochila()->create([
+            'nombre' => $xuxemonAlea->nombre,
+            'cantidad' => 1,
+            'tipo' => 'xuxemon',
             'tamano' => 'Pequeño'
         ]);
 
         return response()->json([
             'mensaje' => 'Xuxemon asignado correctamente',
             'xuxemon' => $xuxemonAlea,
-            'registro' => $nuevoXuxemon
+            'registro' => $nuevoXuxemon,
+            'inventario' => $usuario->mochila
         ], 201);
     }
 }
