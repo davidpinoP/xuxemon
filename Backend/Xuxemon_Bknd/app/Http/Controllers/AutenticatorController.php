@@ -9,58 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
-    // ---- Rutas WEB (sesión) ----
 
-    public function showRegister()
-    {
-        return view('Registre');
-    }
-
-    public function register(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'surname' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
-
-        $isFirstUser = User::count() === 0;
-
-        $user = User::create([
-            'name' => $validated['name'],
-            'surname' => $validated['surname'],
-            'email' => $validated['email'],
-            'password' => $validated['password'],
-            'player_id' => $this->generatePlayerId($validated['name']),
-            'role' => $isFirstUser ? 'admin' : 'user',
-            'is_active' => true,
-        ]);
-
-        return redirect()->route('login')->with(
-            'success',
-            'Registro completado. Tu ID es ' . $user->player_id . '. Inicia sesión.'
-        );
-    }
-
-    public function showLogin()
-    {
-        return view('Login');
-    }
-
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('login');
-    }
-
-    public function dashboard()
-    {
-        return view('dashboard');
-    }
 
     // ---- Rutas API (JWT) ----
 
