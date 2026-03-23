@@ -1,1 +1,17 @@
-<p>admin-panel works!</p>
+<div class="admin-container">
+  <h2>Panel de Administración (Nivel 2)</h2>
+  
+  <div class="admin-section">
+    <h3>Regalar Xuxemon Aleatorio a un Jugador</h3>
+    <select #userSelect class="form-select">
+      <option value="">-- Selecciona un jugador --</option>
+      <option *ngFor="let user of users" [value]="user.id">
+        {{ user.name }} (ID: {{ user.id }})
+      </option>
+    </select>
+    
+    <button (click)="darXuxemonAleatorio(userSelect.value)" class="btn-random">
+      🎁 Dar Xuxemon Aleatorio
+    </button>
+  </div>
+</div>

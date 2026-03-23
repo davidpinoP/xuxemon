@@ -29,4 +29,10 @@ export class Xuxemon {
   deleteXuxemon(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  darXuxemonAleatorio(userId: number): Observable<any> {
+    const token = localStorage.getItem('auth_token');
+    const headers = { 'Authorization': `Bearer ${token}` };
+    return this.http.post('http://127.0.0.1:8000/api/admin/dar-xuxemon-aleatorio', { user_id: userId }, { headers });
+  }
 }
