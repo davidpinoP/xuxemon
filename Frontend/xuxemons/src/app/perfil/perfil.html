@@ -7,10 +7,10 @@
     }
 
     @if (mensajeExito) {
-    <p class="mensaje-exito">{{ mensajeExito }}</p>
+    <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
     }
     @if (mensajeError) {
-    <p class="mensaje-error">{{ mensajeError }}</p>
+    <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
     }
 
     @if (!cargando) {
@@ -34,8 +34,8 @@
         </form>
 
     <div class="acciones">
-        <button class="btn-volver" (click)="volver()">Volver</button>
-        <button class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
+        <button type="button" class="btn-volver" (click)="volver()">Volver</button>
+        <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
     </div>
     }
 

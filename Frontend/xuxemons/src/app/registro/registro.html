@@ -1,35 +1,38 @@
 <div class="registro-container">
 
   <div class="logo-container">
-    <img src="/assets/images/xuxemon-mascot.png" alt="Xuxemon" class="mascot-logo">
+    <img src="/assets/images/xuxemon-mascot.png" alt="Mascota Xuxemon" class="mascot-logo">
     @if (generatedId) {
       <p class="id-preview">Previsualización ID: <strong>{{ generatedId }}</strong></p>
     }
   </div>
 
-  <form [formGroup]="FormularioRegistro" (ngSubmit)="Submit()">
+  <form [formGroup]="FormularioRegistro" (ngSubmit)="Submit()" aria-label="Formulario de registro">
 
         <div class="input-group">
-            <input type="text" formControlName="nombre" placeholder="Nombre">
+            <label for="reg-nombre" class="sr-only">Nombre</label>
+            <input id="reg-nombre" type="text" formControlName="nombre" placeholder="Nombre">
             @if (FormularioRegistro.get('nombre')?.invalid && (FormularioRegistro.get('nombre')?.dirty ||
             FormularioRegistro.get('nombre')?.touched)) {
-            <div class="error-message">El nombre es obligatorio.</div>
+            <div class="error-message" role="alert">El nombre es obligatorio.</div>
             }
         </div>
 
         <div class="input-group">
-            <input type="text" formControlName="apellidos" placeholder="Apellidos">
+            <label for="reg-apellidos" class="sr-only">Apellidos</label>
+            <input id="reg-apellidos" type="text" formControlName="apellidos" placeholder="Apellidos">
             @if (FormularioRegistro.get('apellidos')?.invalid && (FormularioRegistro.get('apellidos')?.dirty ||
             FormularioRegistro.get('apellidos')?.touched)) {
-            <div class="error-message">Los apellidos son obligatorios.</div>
+            <div class="error-message" role="alert">Los apellidos son obligatorios.</div>
             }
         </div>
 
         <div class="input-group">
-            <input type="email" formControlName="correo" placeholder="Correo">
+            <label for="reg-correo" class="sr-only">Correo</label>
+            <input id="reg-correo" type="email" formControlName="correo" placeholder="Correo">
             @if (FormularioRegistro.get('correo')?.invalid && (FormularioRegistro.get('correo')?.dirty ||
             FormularioRegistro.get('correo')?.touched)) {
-            <div class="error-message">
+            <div class="error-message" role="alert">
                 @if (FormularioRegistro.get('correo')?.errors?.['required']) { Correo obligatorio. }
                 @if (FormularioRegistro.get('correo')?.errors?.['email']) { Formato de correo inválido. }
             </div>
@@ -37,10 +40,11 @@
         </div>
 
         <div class="input-group">
-            <input type="password" formControlName="password" placeholder="Contraseña">
+            <label for="reg-password" class="sr-only">Contraseña</label>
+            <input id="reg-password" type="password" formControlName="password" placeholder="Contraseña">
             @if (FormularioRegistro.get('password')?.invalid && (FormularioRegistro.get('password')?.dirty ||
             FormularioRegistro.get('password')?.touched)) {
-            <div class="error-message">
+            <div class="error-message" role="alert">
                 @if (FormularioRegistro.get('password')?.errors?.['required']) { Contraseña obligatoria. }
                 @if (FormularioRegistro.get('password')?.errors?.['minlength']) { Mínimo 6 caracteres. }
             </div>
@@ -48,21 +52,22 @@
         </div>
 
         <div class="input-group">
-            <input type="password" formControlName="confirmar_password" placeholder="Repite la contraseña">
+            <label for="reg-confirmar" class="sr-only">Repite la contraseña</label>
+            <input id="reg-confirmar" type="password" formControlName="confirmar_password" placeholder="Repite la contraseña">
             @if (FormularioRegistro.get('confirmar_password')?.invalid &&
             (FormularioRegistro.get('confirmar_password')?.dirty ||
             FormularioRegistro.get('confirmar_password')?.touched)) {
-            <div class="error-message">Repite la contraseña.</div>
+            <div class="error-message" role="alert">Repite la contraseña.</div>
             }
             @if (FormularioRegistro.errors?.['passwordMismatch'] && (FormularioRegistro.get('confirmar_password')?.dirty || FormularioRegistro.get('confirmar_password')?.touched)) {
-            <div class="error-message">Las contraseñas no coinciden.</div>
+            <div class="error-message" role="alert">Las contraseñas no coinciden.</div>
             }
         </div>
 
     <button type="submit" [disabled]="FormularioRegistro.invalid">Registrarse</button>
 
         @if (error_msg) {
-        <div class="error-service">{{ error_msg }}</div>
+        <div class="error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
         }
 
     </form>

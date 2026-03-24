@@ -1,13 +1,14 @@
 <div class="mochila-wrapper">
     <h1>Mochila</h1>
-    <div class="mochila-grid">
+    <div class="mochila-grid" role="grid" aria-label="Inventario de la mochila">
         @for (slot of slots; track $index) {
-        <div class="slot" [class.occupied]="slot">
+        <div class="slot" [class.occupied]="slot" role="gridcell"
+             [attr.aria-label]="slot ? slot.nombre + ' x' + slot.cantidad : 'Slot vacío'">
             @if (slot) {
             <div class="item-container">
                 <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
                 @if (slot.cantidad > 1 || slot.stackable) {
-                <span class="quantity">{{ slot.cantidad }}</span>
+                <span class="quantity" aria-hidden="true">{{ slot.cantidad }}</span>
                 }
             </div>
             }
@@ -16,24 +17,25 @@
     </div>
 
     <!-- Botón para abrir el modal de alimentación -->
-    <button class="btn-alimentar" (click)="abrirModal()">🍬 Alimentar Xuxemon</button>
+    <button class="btn-alimentar" (click)="abrirModal()" type="button">🍬 Alimentar Xuxemon</button>
 
     <!-- ═══ MODAL DE ALIMENTACIÓN ═══ -->
     @if (mostrarModal) {
     <div class="modal-overlay" (click)="cerrarModal()">
-        <div class="modal-contenido" (click)="$event.stopPropagation()">
+        <div class="modal-contenido" (click)="$event.stopPropagation()"
+             role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
 
             <!-- Botón cerrar (X) -->
-            <button class="modal-cerrar" (click)="cerrarModal()">✕</button>
+            <button class="modal-cerrar" (click)="cerrarModal()" type="button" aria-label="Cerrar modal">✕</button>
 
             <!-- ── PASO 1: Selección ── -->
             @if (pasoModal === 1) {
-            <h2>🍬 Alimentar Xuxemon</h2>
+            <h2 id="modal-titulo">🍬 Alimentar Xuxemon</h2>
 
             <!-- Selector de Xuxemon -->
             <div class="campo">
-                <label>Xuxemon:</label>
-                <select [(ngModel)]="xuxemonSeleccionado">
+                <label for="select-xuxemon">Xuxemon:</label>
+                <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
                     <option [ngValue]="null">-- Elige un Xuxemon --</option>
                     @for (xuxe of misXuxemons; track xuxe.id) {
                     <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }})</option>
@@ -43,8 +45,8 @@
 
             <!-- Selector de Xuxe (caramelo) -->
             <div class="campo">
-                <label>Xuxe (caramelo):</label>
-                <select [(ngModel)]="xuxeSeleccionada">
+                <label for="select-xuxe">Xuxe (caramelo):</label>
+                <select id="select-xuxe" [(ngModel)]="xuxeSeleccionada">
                     <option value="">-- Elige una Xuxe --</option>
                     @for (item of getXuxesDisponibles(); track item.nombre) {
                     <option [value]="item.nombre">{{ item.nombre }} (x{{ item.cantidad }})</option>
@@ -54,21 +56,21 @@
 
             <!-- Cantidad -->
             <div class="campo">
-                <label>Cantidad:</label>
-                <input type="number" [(ngModel)]="cantidadAlimentar" min="1" [max]="getMaxCantidad()">
+                <label for="cantidad-alimentar">Cantidad:</label>
+                <input id="cantidad-alimentar" type="number" [(ngModel)]="cantidadAlimentar" min="1" [max]="getMaxCantidad()">
             </div>
 
             <!-- Mensaje de error -->
             @if (mensajeError) {
-            <p class="error">{{ mensajeError }}</p>
+            <p class="error" role="alert" aria-live="assertive">{{ mensajeError }}</p>
             }
 
-            <button class="btn-siguiente" (click)="irAPreview()">Ver Preview ➡️</button>
+            <button class="btn-siguiente" (click)="irAPreview()" type="button">Ver Preview ➡️</button>
             }
 
             <!-- ── PASO 2: Preview ── -->
             @if (pasoModal === 2) {
-            <h2>📋 Vista Previa</h2>
+            <h2 id="modal-titulo">📋 Vista Previa</h2>
 
             <div class="preview-card">
                 <div class="preview-fila">
@@ -95,8 +97,8 @@
             </div>
 
             <div class="preview-botones">
-                <button class="btn-volver" (click)="volverASeleccion()">⬅️ Volver</button>
-                <button class="btn-confirmar" (click)="confirmarAlimentacion()">✅ Confirmar</button>
+                <button class="btn-volver" (click)="volverASeleccion()" type="button">⬅️ Volver</button>
+                <button class="btn-confirmar" (click)="confirmarAlimentacion()" type="button">✅ Confirmar</button>
             </div>
             }
 
@@ -109,8 +111,8 @@
         <h2>Gestión de Jugadores (Admin)</h2>
         <div class="admin-controls">
             <div class="control-group">
-                <label>Jugador:</label>
-                <select [(ngModel)]="selectedPlayerId">
+                <label for="admin-jugador">Jugador:</label>
+                <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
                     <option [ngValue]="null">Selecciona un jugador</option>
                     @for (player of players; track player.id) {
                     <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
@@ -119,8 +121,8 @@
             </div>
 
             <div class="control-group">
-                <label>Xuxe:</label>
-                <select [(ngModel)]="xuxeToAdd.nombre">
+                <label for="admin-xuxe">Xuxe:</label>
+                <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
                     @for (tipo of tiposXuxe; track tipo.nombre) {
                     <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
                     }
@@ -128,11 +130,11 @@
             </div>
 
             <div class="control-group">
-                <label>Cantidad:</label>
-                <input type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
+                <label for="admin-cantidad">Cantidad:</label>
+                <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
             </div>
 
-            <button class="btn-admin" (click)="addXuxesToPlayer()">Añadir Xuxes</button>
+            <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
         </div>
     </div>
     }
