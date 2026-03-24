@@ -17,6 +17,11 @@
     </div>
 
     <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
+    @if (xuxemon.enfermedad) {
+    <div class="badge-enfermedad" aria-live="assertive">
+        🤒 <strong>¡Malito!</strong> {{ xuxemon.enfermedad }}
+    </div>
+    }
 
     @if (xuxemon.descripcion) {
     <p class="xuxemon-descripcion">{{ xuxemon.descripcion }}</p>

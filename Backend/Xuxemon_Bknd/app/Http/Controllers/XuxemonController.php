@@ -4,16 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Xuxemon;
 use Illuminate\Http\Request; 
+
 class XuxemonController extends Controller
 {
-
     public function index()
     {
         $xuxemons = Xuxemon::all();
         return response()->json($xuxemons);
     }
-
- 
 
     public function alimentar(Request $request, $id)
     {
@@ -52,4 +50,28 @@ class XuxemonController extends Controller
         ], 200);
     }
 
-}
+    public function aplicarVacuna(Request $request, $id)
+    {
+        $xuxemon = Xuxemon::findOrFail($id);
+
+        if ($xuxemon->enfermedad === null) {
+            return response()->json([
+                'message' => 'Este Xuxemon ya está sano, no necesita vacunas.',
+                'estado' => 'sano'
+            ], 400); 
+        }
+
+        $vacunaUsada = $request->input('vacuna'); 
+
+
+        $xuxemon->enfermedad = null;
+        $xuxemon->save();
+
+        return response()->json([
+            'message' => '¡Éxito! El Xuxemon ha sido curado usando ' . $vacunaUsada . '.',
+            'estado' => 'sano',
+            'xuxemon' => $xuxemon
+        ], 200);
+    }
+
+} 
