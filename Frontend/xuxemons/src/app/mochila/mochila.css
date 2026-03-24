@@ -180,7 +180,243 @@
     border: 2px solid white;
 }
 
-/* ===== Admin Panel ===== */
+/* ═══ BOTÓN ALIMENTAR ═══ */
+
+.btn-alimentar {
+    margin-top: 25px;
+    padding: 14px 35px;
+    background: linear-gradient(135deg, #7c6ce7, #a78bfa);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(124, 108, 231, 0.3);
+}
+
+.btn-alimentar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 108, 231, 0.4);
+}
+
+/* ═══ MODAL OVERLAY ═══ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ═══ CONTENIDO DEL MODAL ═══ */
+
+.modal-contenido {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 25px;
+    padding: 35px;
+    width: 400px;
+    max-width: 90vw;
+    position: relative;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-cerrar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #999;
+    transition: color 0.2s;
+}
+
+.modal-cerrar:hover {
+    color: #444;
+}
+
+.modal-contenido h2 {
+    margin: 0 0 25px 0;
+    font-size: 1.5rem;
+    color: #444;
+    text-align: center;
+}
+
+/* ═══ CAMPOS DEL FORMULARIO ═══ */
+
+.campo {
+    margin-bottom: 18px;
+}
+
+.campo label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.campo select,
+.campo input {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    background: white;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+}
+
+.campo select:focus,
+.campo input:focus {
+    border-color: #7c6ce7;
+}
+
+/* Error */
+.error {
+    color: #e74c3c;
+    font-size: 0.85rem;
+    margin: 10px 0;
+    text-align: center;
+    font-weight: 600;
+}
+
+/* Botón siguiente */
+.btn-siguiente {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #7c6ce7, #a78bfa);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.2s;
+}
+
+.btn-siguiente:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(124, 108, 231, 0.3);
+}
+
+/* ═══ PREVIEW ═══ */
+
+.preview-card {
+    background: #f8f7ff;
+    border: 1px solid #e8e5ff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.preview-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.preview-fila:last-child {
+    border-bottom: none;
+}
+
+.preview-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.preview-valor {
+    font-weight: 700;
+    color: #444;
+    font-size: 0.95rem;
+}
+
+.preview-xuxe {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.preview-img {
+    width: 30px;
+    height: 30px;
+    object-fit: contain;
+}
+
+.cantidad-highlight {
+    color: #7c6ce7;
+    font-size: 1.2rem;
+}
+
+/* Botones del preview */
+.preview-botones {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-volver {
+    flex: 1;
+    padding: 12px;
+    background: #eee;
+    color: #555;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-volver:hover {
+    background: #ddd;
+}
+
+.btn-confirmar {
+    flex: 1;
+    padding: 12px;
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-confirmar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+}
+
+/* ═══ ADMIN PANEL (existente) ═══ */
+
 .admin-panel {
     width: 100%;
     max-width: 800px;
