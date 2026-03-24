@@ -15,5 +15,6 @@ class Xuxemon extends Model
         'defensa',
         'imagen',
         'tamano',
+        'enfermedad',
     ];
 }
