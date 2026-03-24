@@ -16,6 +16,10 @@ export class AdminPanelComponent implements OnInit {
   xuxemonForm: FormGroup;
   isEditing: boolean = false;
   currentId: number | null = null;
+  // nuevas propiedades simples
+  fConfig: FormGroup;
+  users: any[] = [];
+
 
   constructor(
     private fb: FormBuilder,
@@ -27,11 +31,22 @@ export class AdminPanelComponent implements OnInit {
       descripcion: [''],
       tamano: ['', Validators.required]
     });
+    // form de configuracion
+    this.fConfig = this.fb.group({
+      infection_pct: [0],
+      evolve_xuxes: [0],
+      reward_hour: [0]
+    });
   }
+
 
   ngOnInit(): void {
     this.cargarXuxemons();
+    // cargar todo al inicio
+    this.xuxemonService.getConfigs().subscribe((d: any) => this.fConfig.patchValue(d));
+    this.xuxemonService.getUsers().subscribe((d: any) => this.users = d);
   }
+
 
 
   cargarXuxemons(): void {
@@ -90,5 +105,15 @@ export class AdminPanelComponent implements OnInit {
     this.isEditing = false;
     this.currentId = null;
     this.xuxemonForm.reset();
+  }
+
+  // guardar configs
+  saveConf() {
+    this.xuxemonService.saveConfigs(this.fConfig.value).subscribe(() => alert('guardado'));
+  }
+
+  // dar vacuna
+  vacuna(id: number, n: string) {
+    this.xuxemonService.darVacuna(id, n).subscribe(() => alert('vacuna enviada'));
   }
 }

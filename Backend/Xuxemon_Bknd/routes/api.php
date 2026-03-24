@@ -38,8 +38,13 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
             return response()->json(['message' => 'Bienvenido, Administrador']);
         });
 
-        // Funciones del Nivel 2 para el admin
+        // admin: chuches, xuxemons y vacunas
         Route::post('/admin/dar-chuches', [AdminController::class, 'darChuches']);
         Route::post('/admin/dar-xuxemon-aleatorio', [AdminController::class, 'darXuxemonAleatorio']);
+        Route::post('/admin/users/{id}/vaccine', [AdminController::class, 'darVacuna']);
+
+        // admin: configuracion global
+        Route::get('/admin/configs', [ConfigController::class, 'index']);
+        Route::post('/admin/configs', [ConfigController::class, 'store']);
     });
 });

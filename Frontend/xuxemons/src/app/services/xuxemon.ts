@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 export class Xuxemon {
   private apiUrl = 'http://127.0.0.1:8000/api/xuxemons';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getXuxemons(): Observable<any> {
     return this.http.get(this.apiUrl);
@@ -29,4 +29,10 @@ export class Xuxemon {
   deleteXuxemon(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  // metodos para admin: config y vacunas
+  getConfigs() { return this.http.get('http://127.0.0.1:8000/api/admin/configs'); }
+  saveConfigs(c: any) { return this.http.post('http://127.0.0.1:8000/api/admin/configs', c); }
+  getUsers() { return this.http.get('http://127.0.0.1:8000/api/users'); }
+  darVacuna(id: number, n: string) { return this.http.post(`http://127.0.0.1:8000/api/admin/users/${id}/vaccine`, { nombre: n }); }
 }

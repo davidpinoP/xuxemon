@@ -61,11 +61,19 @@ class AdminController extends Controller
             'tamano' => 'Pequeño'
         ]);
 
-        return response()->json([
-            'mensaje' => 'Xuxemon asignado correctamente',
-            'xuxemon' => $xuxemonAlea,
-            'registro' => $nuevoXuxemon,
-            'inventario' => $usuario->mochila
-        ], 201);
+        return response()->json(['ok' => true], 201);
+    }
+
+    // dar una vacuna a un jugador
+    public function darVacuna(Request $request, $id)
+    {
+        $u = User::findOrFail($id);
+        $u->mochila()->create([
+            'nombre' => $request->nombre,
+            'cantidad' => 1,
+            'tipo' => 'item'
+        ]);
+        return response()->json(['ok' => true]);
     }
 }
+
