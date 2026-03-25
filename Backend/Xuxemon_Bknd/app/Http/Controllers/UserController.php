@@ -133,4 +133,25 @@ class UserController extends Controller
             'inventory' => $user->mochila
         ]);
     }
+
+    // comprobar si hay recompensas (minimo)
+    public function checkRewards(Request $request)
+    {
+        $u = $request->user();
+        $h = \App\Models\Config::where('key', 'reward_hour')->first()->value ?? 0;
+        
+        $now = now();
+        $canShow = ($now->hour >= $h) && (!$u->last_reward_at || !$u->last_reward_at->isToday());
+
+        return response()->json(['can_claim' => $canShow]);
+    }
+
+    // reclamar recompensa (minimo)
+    public function claimReward(Request $request)
+    {
+        $u = $request->user();
+        $u->mochila()->create(['nombre' => 'Xuxe', 'cantidad' => 5, 'tipo' => 'item']);
+        $u->update(['last_reward_at' => now()]);
+        return response()->json(['ok' => true]);
+    }
 }

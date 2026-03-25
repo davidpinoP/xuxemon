@@ -18,6 +18,11 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
+    
+    // recompensas
+    Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
+    Route::post('/user/claim-reward', [UserController::class, 'claimReward']);
+
 
     // --- Endpoints de Xuxemons ---
     // Lectura (accesible para cualquier usuario autenticado y activo)

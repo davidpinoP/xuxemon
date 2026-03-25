@@ -27,7 +27,9 @@ class User extends Authenticatable implements JWTSubject
         'role',
         'is_active',
         'inventory',
+        'last_reward_at',
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -51,7 +53,9 @@ class User extends Authenticatable implements JWTSubject
             'password' => 'hashed',
             'is_active' => 'boolean',
             'inventory' => 'array',
+            'last_reward_at' => 'datetime',
         ];
+
     }
 
     // JWT
