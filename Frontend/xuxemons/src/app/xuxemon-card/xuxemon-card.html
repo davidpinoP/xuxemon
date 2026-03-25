@@ -1,5 +1,4 @@
-@if (xuxemon) {
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase">
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" *ngIf="xuxemon">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
@@ -19,6 +18,11 @@
 
     <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
 
+    @if (xuxemon.enfermedad) {
+    <div class="badge-enfermedad" aria-live="assertive">
+        🤒 <strong>¡Malito!</strong> {{ xuxemon.enfermedad }}
+    </div>
+    }
     @if (xuxemon.descripcion) {
     <p class="xuxemon-descripcion">{{ xuxemon.descripcion }}</p>
     }
@@ -27,37 +31,31 @@
         <div class="stat-row">
             <span class="stat-label">❤️ Vida</span>
             <div class="stat-bar-bg">
-                <div class="stat-bar stat-vida" [style.width.%]="getStatValue('vida')"
-                     role="progressbar" [attr.aria-valuenow]="getStatValue('vida')" aria-valuemin="0" aria-valuemax="100" aria-label="Vida"></div>
+                <div class="stat-bar stat-vida" [style.width.%]="getStatValue('vida')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('vida') }}</span>
         </div>
         <div class="stat-row">
             <span class="stat-label">⚔️ Ataque</span>
             <div class="stat-bar-bg">
-                <div class="stat-bar stat-ataque" [style.width.%]="getStatValue('ataque')"
-                     role="progressbar" [attr.aria-valuenow]="getStatValue('ataque')" aria-valuemin="0" aria-valuemax="100" aria-label="Ataque"></div>
+                <div class="stat-bar stat-ataque" [style.width.%]="getStatValue('ataque')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('ataque') }}</span>
         </div>
         <div class="stat-row">
             <span class="stat-label">🛡️ Defensa</span>
             <div class="stat-bar-bg">
-                <div class="stat-bar stat-defensa" [style.width.%]="getStatValue('defensa')"
-                     role="progressbar" [attr.aria-valuenow]="getStatValue('defensa')" aria-valuemin="0" aria-valuemax="100" aria-label="Defensa"></div>
+                <div class="stat-bar stat-defensa" [style.width.%]="getStatValue('defensa')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('defensa') }}</span>
         </div>
         <div class="stat-row">
             <span class="stat-label">💨 Velocidad</span>
             <div class="stat-bar-bg">
-                <div class="stat-bar stat-velocidad" [style.width.%]="getStatValue('velocidad')"
-                     role="progressbar" [attr.aria-valuenow]="getStatValue('velocidad')" aria-valuemin="0" aria-valuemax="100" aria-label="Velocidad">
+                <div class="stat-bar stat-velocidad" [style.width.%]="getStatValue('velocidad')">
                 </div>
             </div>
             <span class="stat-valor">{{ getStatValue('velocidad') }}</span>
         </div>
     </div>
-
 </article>
-}
