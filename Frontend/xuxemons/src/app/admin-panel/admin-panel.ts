@@ -21,8 +21,6 @@ export class AdminPanelComponent implements OnInit {
   currentId: number | null = null;
   // nuevas propiedades simples
   fConfig: FormGroup;
-  users: any[] = [];
-
 
   selectedPlayerId: number | null = null;
   xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
