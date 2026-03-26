@@ -11,7 +11,7 @@ export class XuxemonService {
 
     // El Subject guarda el estado actual de los Xuxemons
     private xuxemonsSubject = new BehaviorSubject<IXuxemon[]>([]);
-    
+
     // Este es el Observable al que se suscribirán tus componentes
     public xuxemons$: Observable<IXuxemon[]> = this.xuxemonsSubject.asObservable();
 
@@ -42,6 +42,12 @@ export class XuxemonService {
         return this.xuxemonsSubject.value;
     }
 
+    feedXuxemon(id: number, xuxe: string, cantidad: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/xuxemons/${id}/feed`, { xuxe, cantidad }, {
+            headers: this.getHeaders()
+        });
+    }
+
     getXuxemonPorId(id: number): Observable<IXuxemon> {
         return this.http.get<IXuxemon>(`${this.apiUrl}/xuxemons/${id}`, {
             headers: this.getHeaders()
@@ -50,6 +56,54 @@ export class XuxemonService {
 
     darXuxemonAleatorio(userId: number): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/admin/dar-xuxemon-aleatorio`, { user_id: userId }, {
+            headers: this.getHeaders()
+        });
+    }
+
+    createXuxemon(xuxemonData: any): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/xuxemons`, xuxemonData, {
+            headers: this.getHeaders()
+        });
+    }
+
+    updateXuxemon(id: number, xuxemonData: any): Observable<any> {
+        return this.http.put<any>(`${this.apiUrl}/xuxemons/${id}`, xuxemonData, {
+            headers: this.getHeaders()
+        });
+    }
+
+    deleteXuxemon(id: number): Observable<any> {
+        return this.http.delete<any>(`${this.apiUrl}/xuxemons/${id}`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    getConfigs(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/admin/configs`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    saveConfigs(c: any): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/admin/configs`, c, {
+            headers: this.getHeaders()
+        });
+    }
+
+    darVacuna(id: number, n: string): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/admin/users/${id}/vaccine`, { nombre: n }, {
+            headers: this.getHeaders()
+        });
+    }
+
+    checkRewards(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/user/check-rewards`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    claimReward(): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/user/claim-reward`, {}, {
             headers: this.getHeaders()
         });
     }

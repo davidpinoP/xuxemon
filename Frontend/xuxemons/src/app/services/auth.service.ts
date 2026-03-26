@@ -68,6 +68,10 @@ export class AuthService {
         return this.http.get<any[]>(`${this.apiUrl}/users`);
     }
 
+    getPlayers(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/users/players`);
+    }
+
     updateUserInventory(userId: number, inventory: any[]): Observable<any> {
         return this.http.post(`${this.apiUrl}/users/${userId}/inventory`, { inventory });
     }

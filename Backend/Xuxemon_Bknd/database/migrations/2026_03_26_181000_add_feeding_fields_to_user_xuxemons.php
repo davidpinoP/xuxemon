@@ -11,10 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'surname')) {
-                $table->string('surname')->nullable();
-            }
+        Schema::table('user_xuxemons', function (Blueprint $table) {
+            $table->integer('comidas')->default(0);
+            $table->string('imagen')->nullable();
         });
     }
 
@@ -23,8 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['surname']);
+        Schema::table('user_xuxemons', function (Blueprint $table) {
+            $table->dropColumn(['comidas', 'imagen']);
         });
     }
 };

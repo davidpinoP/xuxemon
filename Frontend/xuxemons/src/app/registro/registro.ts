@@ -50,14 +50,14 @@ export class Registro {
       };
 
       this.authService.register(userData).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           console.log('Registro exitoso', response);
           this.authService.saveToken(response.access_token);
           this.authService.savePlayerId(response.player_id);
           alert('¡Registro completado! Tu ID de jugador es: ' + response.player_id);
           this.router.navigate(['/login']);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error en el registro', err);
           this.error_msg = 'Error al registrar el usuario. El correo o el nombre pueden estar ya en uso.';
         }

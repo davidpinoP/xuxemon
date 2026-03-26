@@ -29,7 +29,7 @@ export class Login {
       };
 
       this.authService.login(credentials).subscribe({
-        next: (response) => {
+        next: (response: any) => {
           console.log('Login exitoso', response);
           this.authService.saveToken(response.access_token);
           if (response.user && response.user.role) {
@@ -37,7 +37,7 @@ export class Login {
           }
           this.router.navigate(['/home']);
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Error en el login', err);
           this.error_msg = 'Credenciales incorrectas. Por favor, inténtalo de nuevo.';
         }

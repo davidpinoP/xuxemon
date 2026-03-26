@@ -45,7 +45,7 @@ export class Xuxedex implements OnInit {
         this.aplicarFiltros();
         this.cargando = false;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error('Error al cargar los xuxemons', err);
         this.cargarDatosEjemplo();
         this.aplicarFiltros();

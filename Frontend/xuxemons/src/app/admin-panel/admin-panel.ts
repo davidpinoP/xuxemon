@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Xuxemon } from '../services/xuxemon';
+import { XuxemonService } from '../services/xuxemon.service';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 
@@ -16,12 +16,10 @@ export class AdminPanelComponent implements OnInit {
 
   xuxemons: any[] = [];
   users: any[] = [];
-  xuxemonForm: FormGroup;
+  xuxemonForm!: FormGroup;
   isEditing: boolean = false;
   currentId: number | null = null;
-  // nuevas propiedades simples
-  fConfig: FormGroup;
-  users: any[] = [];
+  fConfig!: FormGroup;
 
 
   selectedPlayerId: number | null = null;
@@ -34,7 +32,7 @@ export class AdminPanelComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private xuxemonService: Xuxemon,
+    private xuxemonService: XuxemonService,
     private authService: AuthService,
     private inventoryService: InventoryService
   ) {
@@ -56,8 +54,8 @@ export class AdminPanelComponent implements OnInit {
   ngOnInit(): void {
     this.cargarXuxemons();
     // cargar todo al inicio
-    this.xuxemonService.getConfigs().subscribe((d: any) => this.fConfig.patchValue(d));
-    this.xuxemonService.getUsers().subscribe((d: any) => this.users = d);
+    this.xuxemonService.getConfigs().subscribe((d: any) => { if(this.fConfig) this.fConfig.patchValue(d); });
+    this.authService.getUsers().subscribe((d: any) => this.users = d);
   }
 
   cargarUsuarios(): void {

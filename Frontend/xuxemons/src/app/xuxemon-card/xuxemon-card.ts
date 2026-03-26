@@ -12,7 +12,7 @@ export class XuxemonCardComponent {
 
   @Input() xuxemon!: IXuxemon;
   @Input() xuxesDisponibles: number = 0;
-  @Output() evolucionar$ = new EventEmitter<{xuxemonId: number, nuevoTamano: string, coste: number}>();
+  @Output() evolucionar$ = new EventEmitter<{ xuxemonId: number, nuevoTamano: string, coste: number }>();
 
   evolucionando: boolean = false;
 
@@ -35,6 +35,13 @@ export class XuxemonCardComponent {
   get tipoClase(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return 'tipo-desconocido';
     return 'tipo-' + this.xuxemon.tipo.toLowerCase();
+  }
+
+  get tamanoClase(): string {
+    const tamano = this.xuxemon?.tamano?.toLowerCase() || 'pequeño';
+    if (tamano === 'mediano') return 'tamano-render-mediano';
+    if (tamano === 'grande') return 'tamano-render-grande';
+    return 'tamano-render-pequeño';
   }
 
   getStatValue(stat: string): number {
