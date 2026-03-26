@@ -11,7 +11,9 @@ class UserController extends Controller
     // 1. Ver perfil del usuario autenticado
     public function show(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user();
+        $user->mochila = $user->mochila; // Cargar mochila
+        return response()->json($user);
     }
 
     // 2. Actualizar datos del perfil
@@ -65,17 +67,91 @@ class UserController extends Controller
     public function updateInventory(Request $request, $id)
     {
         $user = \App\Models\User::findOrFail($id);
-        
+
         $data = $request->validate([
             'inventory' => 'required|array',
         ]);
 
-        $user->inventory = $data['inventory'];
-        $user->save();
+        // Borrar el inventario actual en la tabla
+        $user->mochila()->delete();
+
+        foreach ($data['inventory'] as $item) {
+            $user->mochila()->create([
+                'nombre' => $item['nombre'],
+                'cantidad' => $item['cantidad'] ?? 1,
+                'tipo' => $item['tipo'] ?? null,
+                'tamano' => $item['tamano'] ?? null,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Inventario actualizado con éxito',
-            'inventory' => $user->inventory
+            'inventory' => $user->mochila
         ]);
+    }
+
+    // 6. Modificar un ítem específico del inventario (Solo Admin)
+    public function modifyItemInInventory(Request $request, $id, $itemName)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $itemName = urldecode($itemName);
+
+        $data = $request->validate([
+            'cantidad' => 'required|integer|min:1',
+        ]);
+
+        $mochilaEntry = $user->mochila()->where('nombre', $itemName)->first();
+
+        if (!$mochilaEntry) {
+            return response()->json(['message' => 'Ítem no encontrado en el inventario'], 404);
+        }
+
+        $mochilaEntry->update(['cantidad' => $data['cantidad']]);
+
+        return response()->json([
+            'message' => 'Cantidad del ítem actualizada con éxito',
+            'inventory' => $user->mochila
+        ]);
+    }
+
+    // 7. Eliminar un ítem específico del inventario (Solo Admin)
+    public function deleteItemFromInventory($id, $itemName)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $itemName = urldecode($itemName);
+
+        $mochilaEntry = $user->mochila()->where('nombre', $itemName)->first();
+
+        if (!$mochilaEntry) {
+            return response()->json(['message' => 'Ítem no encontrado en el inventario'], 404);
+        }
+
+        $mochilaEntry->delete();
+
+        return response()->json([
+            'message' => 'Ítem eliminado con éxito',
+            'inventory' => $user->mochila
+        ]);
+    }
+
+    // comprobar si hay recompensas (minimo)
+    public function checkRewards(Request $request)
+    {
+        $u = $request->user();
+        $h = \App\Models\Config::where('key', 'reward_hour')->first()->value ?? 0;
+        
+        $now = now();
+        $canShow = ($now->hour >= $h) && (!$u->last_reward_at || !$u->last_reward_at->isToday());
+
+        return response()->json(['can_claim' => $canShow]);
+    }
+
+    // reclamar recompensa (minimo)
+    public function claimReward(Request $request)
+    {
+        $u = $request->user();
+        $u->mochila()->create(['nombre' => 'Xuxe', 'cantidad' => 5, 'tipo' => 'item']);
+        $u->update(['last_reward_at' => now()]);
+        return response()->json(['ok' => true]);
     }
 }

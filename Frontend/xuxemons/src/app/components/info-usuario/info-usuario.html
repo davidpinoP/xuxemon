@@ -1,24 +1,30 @@
 <div class="perfil-card">
   <div class="perfil-header">
-    <div class="avatar-placeholder"></div>
+    <div class="avatar-placeholder" aria-hidden="true"></div>
     <h2>Mi Perfil</h2>
   </div>
 
-  <form (ngSubmit)="saveProfile()" class="perfil-form">
+  <form (ngSubmit)="saveProfile()" class="perfil-form" aria-label="Formulario de perfil">
     <div class="input-group">
-      <input type="text" [value]="user.player_id" disabled placeholder="ID de Jugador (No editable)">
+      <label for="info-player-id" class="sr-only">ID de Jugador</label>
+      <input id="info-player-id" type="text" [value]="user.player_id" disabled placeholder="ID de Jugador (No editable)"
+             aria-describedby="info-player-id-desc">
+      <span id="info-player-id-desc" class="sr-only">Este campo no es editable</span>
     </div>
 
     <div class="input-group">
-      <input type="text" [(ngModel)]="user.name" name="name" placeholder="Nombre">
+      <label for="info-name" class="sr-only">Nombre</label>
+      <input id="info-name" type="text" [(ngModel)]="user.name" name="name" placeholder="Nombre">
     </div>
 
     <div class="input-group">
-      <input type="text" [(ngModel)]="user.surname" name="surname" placeholder="Apellidos">
+      <label for="info-surname" class="sr-only">Apellidos</label>
+      <input id="info-surname" type="text" [(ngModel)]="user.surname" name="surname" placeholder="Apellidos">
     </div>
 
     <div class="input-group">
-      <input type="email" [(ngModel)]="user.email" name="email" placeholder="Correo electrónico">
+      <label for="info-email" class="sr-only">Correo electrónico</label>
+      <input id="info-email" type="email" [(ngModel)]="user.email" name="email" placeholder="Correo electrónico">
     </div>
 
     <button type="submit" class="btn-primary">Guardar Cambios</button>
@@ -26,6 +32,6 @@
 
   <div class="danger-zone">
     <p>¿Quieres dejar de ser entrenador?</p>
-    <button (click)="confirmDeactivate()" class="btn-danger">Darme de baja</button>
+    <button type="button" (click)="confirmDeactivate()" class="btn-danger">Darme de baja</button>
   </div>
 </div>

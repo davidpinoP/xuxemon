@@ -2,40 +2,39 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="avatar-circle">
-                <img src="https://ui-avatars.com/api/?name=Xuxemon&background=random" alt="Avatar" class="avatar-img">
+                <img src="https://ui-avatars.com/api/?name=Xuxemon&background=random" alt="Avatar del usuario" class="avatar-img">
             </div>
         </div>
         <nav class="sidebar-nav">
-    <a class="nav-item" (click)="volverHome()" style="cursor: pointer;">INICIO</a>
-    
-    <a class="nav-item active" (click)="irAXuxedex()" style="cursor: pointer;">XUXEDEX</a>
-    
-    <a class="nav-item" (click)="irAMochila()" style="cursor: pointer;">MOCHILA</a>
-    
-    <a class="nav-item" (click)="irAPerfil()" style="cursor: pointer;">
-        <span class="icon-user">👤</span> PERFIL
-    </a>
-</nav>
+            <a class="nav-item" routerLink="/home">INICIO</a>
+            <a class="nav-item active" routerLink="/xuxedex">XUXEDEX</a>
+            <a class="nav-item" routerLink="/mochila">MOCHILA</a>
+            <a class="nav-item" routerLink="/perfil">
+                <span class="icon-user">👤</span> PERFIL
+            </a>
+        </nav>
+
     </aside>
 
     <main class="main-content">
         <h1 class="page-title">Xuxedex</h1>
 
         <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" class="search-input" placeholder="Buscar Xuxemon por nombre..."
+            <span class="search-icon" aria-hidden="true">🔍</span>
+            <label for="buscar-xuxemon" class="sr-only">Buscar Xuxemon por nombre</label>
+            <input id="buscar-xuxemon" type="text" class="search-input" placeholder="Buscar Xuxemon por nombre..."
                 [(ngModel)]="textoBusqueda" (input)="onBuscar()">
         </div>
 
         <div class="filtros-container">
             <div class="filtros-tipo">
                 <h3 class="filtros-titulo">Filtrar por tipo</h3>
-                <div class="filtros-lista">
+                <div class="filtros-lista" role="group" aria-label="Filtros por tipo">
                     @for (tipo of tiposDisponibles; track tipo) {
                     <button class="filtro-btn" [class.activo]="filtroTipo === tipo" [ngClass]="'filtro-' + tipo"
-                        (click)="seleccionarTipo(tipo)">
+                        (click)="seleccionarTipo(tipo)" [attr.aria-pressed]="filtroTipo === tipo">
                         @if (tipo !== 'todos') {
-                        <span class="filtro-icono">{{ getTipoIcon(tipo) }}</span>
+                        <span class="filtro-icono" aria-hidden="true">{{ getTipoIcon(tipo) }}</span>
                         }
                         {{ getTipoNombre(tipo) }}
                     </button>
@@ -45,10 +44,10 @@
 
             <div class="filtros-tamano">
                 <h3 class="filtros-titulo">Filtrar por tamaño</h3>
-                <div class="filtros-lista">
+                <div class="filtros-lista" role="group" aria-label="Filtros por tamaño">
                     @for (tamano of tamanosDisponibles; track tamano) {
                     <button class="filtro-btn" [class.activo]="filtroTamano === tamano"
-                        (click)="seleccionarTamano(tamano)">
+                        (click)="seleccionarTamano(tamano)" [attr.aria-pressed]="filtroTamano === tamano">
                         {{ tamano | titlecase }}
                     </button>
                     }
@@ -57,25 +56,25 @@
         </div>
 
         @if (cargando) {
-        <div class="loading">
-            <div class="spinner"></div>
+        <div class="loading" role="status" aria-live="polite">
+            <div class="spinner" aria-hidden="true"></div>
             <p>Cargando xuxemons...</p>
         </div>
         }
 
         @if (!cargando && xuxemons.length === 0) {
-        <div class="vacio">
-            <span class="vacio-icono">😢</span>
+        <div class="vacio" role="status">
+            <span class="vacio-icono" aria-hidden="true">😢</span>
             <p>No se encontraron xuxemons.</p>
         </div>
         }
 
         @if (!cargando && xuxemons.length > 0) {
-        <div class="grid-xuxemons">
+        <div class="grid-xuxemons" role="list" aria-label="Lista de Xuxemons">
             @for (xuxemon of xuxemons; track xuxemon.id) {
-            
-                <app-xuxemon-card [xuxemon]="xuxemon"></app-xuxemon-card>
-            
+
+            <app-xuxemon-card [xuxemon]="xuxemon"></app-xuxemon-card>
+
             }
         </div>
         }

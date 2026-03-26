@@ -47,4 +47,10 @@ export class XuxemonService {
             headers: this.getHeaders()
         });
     }
+
+    darXuxemonAleatorio(userId: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/admin/dar-xuxemon-aleatorio`, { user_id: userId }, {
+            headers: this.getHeaders()
+        });
+    }
 }

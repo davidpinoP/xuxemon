@@ -23,6 +23,11 @@
     </div>
     }
 
+    @if (xuxemon.enfermedad) {
+    <div class="badge-enfermedad" aria-live="assertive">
+        🤒 <strong>¡Malito!</strong> {{ xuxemon.enfermedad }}
+    </div>
+    }
     @if (xuxemon.descripcion) {
     <p class="xuxemon-descripcion">{{ xuxemon.descripcion }}</p>
     }
@@ -58,4 +63,40 @@
             <span class="stat-valor">{{ getStatValue('velocidad') }}</span>
         </div>
     </div>
+
+    <!-- Sección de evolución -->
+    <div class="evolucion-container">
+        <span class="tamano-badge">📏 {{ xuxemon.tamano | titlecase }}</span>
+
+        @if (xuxesNecesarias > 0) {
+        <p class="evolucion-info">
+            Necesitas <strong>{{ xuxesNecesarias }} xuxes</strong> para evolucionar a {{ siguienteTamano }}
+        </p>
+        <button class="btn-evolucionar"
+            [disabled]="!puedeEvolucionar || evolucionando"
+            (click)="evolucionar()">
+            @if (evolucionando) {
+                ✨ Evolucionando...
+            } @else {
+                ⬆️ Evolucionar
+            }
+        </button>
+        } @else {
+        <p class="evolucion-info evolucion-max">🏆 ¡Tamaño máximo alcanzado!</p>
+        }
+    </div>
+
+    <!-- Overlay de animación -->
+    @if (evolucionando) {
+    <div class="evolucion-overlay">
+        <div class="particula"></div>
+        <div class="particula"></div>
+        <div class="particula"></div>
+        <div class="particula"></div>
+        <div class="particula"></div>
+        <span class="texto-evolucion">✨ ¡Evolucionando! ✨</span>
+    </div>
+    }
+
 </article>
+}

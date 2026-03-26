@@ -1,1 +1,36 @@
-<p>admin-panel works!</p>
+<div style="padding: 20px; font-family: sans-serif;">
+  <h1>panel de control admin</h1>
+
+  <!-- parametros -->
+  <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+    <h3>ajustes globales</h3>
+    <form [formGroup]="fConfig" (ngSubmit)="saveConf()">
+      <p>% infeccion: <input type="number" formControlName="infection_pct"></p>
+      <p>xuxes para evolucion: <input type="number" formControlName="evolve_xuxes"></p>
+      <p>hora recompensa: <input type="number" formControlName="reward_hour"></p>
+      <button type="submit">guardar ajustes</button>
+    </form>
+  </div>
+
+  <!-- jugadores -->
+  <div style="border: 1px solid #ccc; padding: 10px;">
+    <h3>lista de jugadores</h3>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <th>id</th>
+        <th>nombre</th>
+        <th>accion</th>
+      </tr>
+      @for (u of users; track u.id) {
+      <tr>
+        <td>{{ u.player_id }}</td>
+        <td>{{ u.name }}</td>
+        <td>
+          <input #vacName type="text" placeholder="nombre vacuna">
+          <button (click)="vacuna(u.id, vacName.value)">dar vacuna</button>
+        </td>
+      </tr>
+      }
+    </table>
+  </div>
+</div>

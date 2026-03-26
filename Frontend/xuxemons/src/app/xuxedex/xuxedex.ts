@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router,RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 
@@ -153,18 +153,19 @@ export class Xuxedex implements OnInit {
     this.aplicarFiltros();
   }
 
-  volverHome(): void {
-    this.router.navigate(['/home']);
-  }
-  irAXuxedex(): void {
-    this.router.navigate(['/xuxedex']);
+  getTipoIcon(tipo: string): string {
+    const iconos: { [key: string]: string } = {
+      'agua': '💧',
+      'tierra': '🌿',
+      'aire': '💨',
+      'fuego': '🔥'
+    };
+    return iconos[tipo.toLowerCase()] || '❓';
   }
 
-  irAMochila(): void {
-    this.router.navigate(['/mochila']);
+  getTipoNombre(tipo: string): string {
+    if (tipo === 'todos') return 'Todos';
+    return tipo.charAt(0).toUpperCase() + tipo.slice(1);
   }
 
-  irAPerfil(): void {
-    this.router.navigate(['/perfil']);
-  }
 }

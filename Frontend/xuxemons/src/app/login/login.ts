@@ -32,6 +32,9 @@ export class Login {
         next: (response) => {
           console.log('Login exitoso', response);
           this.authService.saveToken(response.access_token);
+          if (response.user && response.user.role) {
+            localStorage.setItem('userRole', response.user.role);
+          }
           this.router.navigate(['/home']);
         },
         error: (err) => {

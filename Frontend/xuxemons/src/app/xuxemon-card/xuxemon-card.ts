@@ -1,17 +1,20 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IXuxemon } from '../models/xuxemon.interface'; 
+import { IXuxemon } from '../models/xuxemon.interface';
 @Component({
   selector: 'app-xuxemon-card',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './xuxemon-card.html',
-  styleUrl: './xuxemon-card.css' 
+  styleUrl: './xuxemon-card.css'
 })
 export class XuxemonCardComponent {
-  
 
   @Input() xuxemon!: IXuxemon;
+  @Input() xuxesDisponibles: number = 0;
+  @Output() evolucionar$ = new EventEmitter<{xuxemonId: number, nuevoTamano: string, coste: number}>();
+
+  evolucionando: boolean = false;
 
   get tipoIcono(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return '?';
@@ -44,5 +47,44 @@ export class XuxemonCardComponent {
       case 'velocidad': return 25 + ((semilla * 19) % 76);
       default: return 50;
     }
+  }
+
+  // Calcula cuántas xuxes necesita para evolucionar
+  get xuxesNecesarias(): number {
+    if (!this.xuxemon) return 0;
+    const tamano = this.xuxemon.tamano?.toLowerCase();
+    if (tamano === 'pequeño') return 3;  // Pequeño -> Mediano
+    if (tamano === 'mediano') return 5;  // Mediano -> Grande
+    return 0; // Grande ya no evoluciona
+  }
+
+  // Comprueba si puede evolucionar
+  get puedeEvolucionar(): boolean {
+    return this.xuxesNecesarias > 0 && this.xuxesDisponibles >= this.xuxesNecesarias;
+  }
+
+  // Devuelve el siguiente tamaño
+  get siguienteTamano(): string {
+    const tamano = this.xuxemon?.tamano?.toLowerCase();
+    if (tamano === 'pequeño') return 'Mediano';
+    if (tamano === 'mediano') return 'Grande';
+    return '';
+  }
+
+  // Lanza la evolución con animación
+  evolucionar(): void {
+    if (!this.puedeEvolucionar || this.evolucionando) return;
+
+    this.evolucionando = true;
+
+    // Esperamos 1.5s (duración de la animación) y luego emitimos el evento
+    setTimeout(() => {
+      this.evolucionar$.emit({
+        xuxemonId: this.xuxemon.id,
+        nuevoTamano: this.siguienteTamano,
+        coste: this.xuxesNecesarias
+      });
+      this.evolucionando = false;
+    }, 1500);
   }
 }

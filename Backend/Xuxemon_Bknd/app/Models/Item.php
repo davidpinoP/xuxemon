@@ -11,4 +11,12 @@ class Item extends Model
         'descripcion',
         'es_apilable',
     ];
+
+    /**
+     * Get all of the item's mochila entries.
+     */
+    public function mochilas()
+    {
+        return $this->morphMany(Mochila::class, 'itemable');
+    }
 }
