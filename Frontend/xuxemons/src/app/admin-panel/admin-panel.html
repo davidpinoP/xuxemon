@@ -2,35 +2,35 @@
   <h1>panel de control admin</h1>
 
   <!-- parametros -->
-  <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
-    <h3>ajustes globales</h3>
+  <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px;">
+    <legend style="font-weight: bold; padding: 0 10px; font-variant: small-caps;">ajustes globales</legend>
     <form [formGroup]="fConfig" (ngSubmit)="saveConf()">
       <p>% infeccion: <input type="number" formControlName="infection_pct"></p>
       <p>xuxes para evolucion: <input type="number" formControlName="evolve_xuxes"></p>
       <p>hora recompensa: <input type="number" formControlName="reward_hour"></p>
-      <button type="submit">guardar ajustes</button>
+      <button type="submit" style="cursor: pointer;">guardar ajustes</button>
     </form>
-  </div>
+  </fieldset>
 
   <!-- jugadores -->
-  <div style="border: 1px solid #ccc; padding: 10px;">
-    <h3>lista de jugadores</h3>
+  <fieldset style="border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
+    <legend style="font-weight: bold; padding: 0 10px; font-variant: small-caps;">lista de jugadores</legend>
     <table border="1" style="width: 100%; border-collapse: collapse;">
-      <tr>
+      <tr style="background-color: #f2f2f2;">
         <th>id</th>
         <th>nombre</th>
         <th>accion</th>
       </tr>
       @for (u of users; track u.id) {
-      <tr>
+      <tr style="text-align: center;">
         <td>{{ u.player_id }}</td>
         <td>{{ u.name }}</td>
         <td>
           <input #vacName type="text" placeholder="nombre vacuna">
-          <button (click)="vacuna(u.id, vacName.value)">dar vacuna</button>
+          <button (click)="vacuna(u.id, vacName.value)" style="cursor: pointer;">dar vacuna</button>
         </td>
       </tr>
       }
     </table>
-  </div>
+  </fieldset>
 </div>

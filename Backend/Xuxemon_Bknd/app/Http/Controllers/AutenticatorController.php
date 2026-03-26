@@ -29,10 +29,13 @@ class AutenticatorController extends Controller
             return response()->json(['error' => 'No autorizado'], 401);
         }
 
+        $user = auth('api')->user();
+        $this->checkDailyRewards($user);
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'user' => auth('api')->user()
+            'user' => $user
         ]);
     }
 
@@ -58,6 +61,8 @@ class AutenticatorController extends Controller
             'is_active' => true,
         ]);
 
+        $this->checkDailyRewards($user);
+
         $token = auth('api')->login($user);
 
         return response()->json([
@@ -73,6 +78,51 @@ class AutenticatorController extends Controller
     }
 
     // ---- Helpers ----
+
+    /**
+     * Comprueba si el usuario tiene derecho a la recompensa diaria (después de las 08:00 AM)
+     */
+    private function checkDailyRewards(User $user)
+    {
+        $now = now();
+
+        // Solo si son más de las 08:00 AM
+        if ($now->hour < 8) {
+            return;
+        }
+
+        // Si ya ha recibido el premio hoy, no hacer nada
+        if ($user->last_reward_at && $user->last_reward_at->isToday()) {
+            return;
+        }
+
+        // 1. Dar 10 Xuxes
+        $xuxeEntry = $user->mochila()->where('nombre', 'Xuxe')->first();
+        if ($xuxeEntry) {
+            $xuxeEntry->increment('cantidad', 10);
+        } else {
+            $user->mochila()->create([
+                'nombre' => 'Xuxe',
+                'tipo' => 'item',
+                'cantidad' => 10
+            ]);
+        }
+
+        // 2. Dar Xuxemon Aleatorio Pequeño
+        $xuxemonAlea = \App\Models\Xuxemon::inRandomOrder()->first();
+        if ($xuxemonAlea) {
+            $user->mochila()->create([
+                'nombre' => $xuxemonAlea->nombre,
+                'tipo' => 'xuxemon',
+                'tamano' => 'Pequeño',
+                'cantidad' => 1
+            ]);
+        }
+
+        // 3. Actualizar la fecha de la última recompensa
+        $user->last_reward_at = $now;
+        $user->save();
+    }
 
     private function generatePlayerId(string $name): string
     {
