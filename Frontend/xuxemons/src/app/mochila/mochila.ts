@@ -4,19 +4,18 @@ import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
-import { FormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms'; // 👈 Añadido para que funcione el HTML de Admin
+import { RouterLink } from '@angular/router'; // 👈 Añadido para solucionar el error de importación
 
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink], // 👈 Añadidos aquí
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
 export class Mochila implements OnInit {
-
   slots: (Objeto | null)[] = [];
-
 
   // Inventario de prueba (esto vendría de un servicio en el futuro)
   inventarioBase: Objeto[] = [
@@ -26,6 +25,18 @@ export class Mochila implements OnInit {
     { nombre: 'Vacuna A', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/nube.png' },
     { nombre: 'Vacuna B', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/piruleta_sola.png' },
   ];
+
+  // 👇 VARIABLES RESTAURADAS TRAS EL MERGE 👇
+  isAdmin: boolean = false;
+  players: any[] = [];
+  selectedPlayerId: number | null = null;
+  xuxeToAdd = { nombre: '', cantidad: 1 };
+  tiposXuxe: any[] = [
+    { nombre: 'Xuxe Caramelo', imagen: '/assets/images/caramel.png' },
+    { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
+    { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' },
+  ];
+  // 👆 FIN VARIABLES RESTAURADAS 👆
 
   // ── Variables del Modal de Alimentación ──
   mostrarModal = false;       // ¿Se muestra el modal?
@@ -43,15 +54,26 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
-
     // Suscribirse a los slots del servicio
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
 
     this.inventoryService.organizarMochila(this.inventarioBase);
+    this.checkUserRole(); // 👈 Comprobamos si es admin al cargar
   }
 
+// Abre el modal y carga los Xuxemons del usuario
+  abrirModal() {
+    this.mostrarModal = true;
+    this.pasoModal = 1;
+    
+    // Cargamos los Xuxemons del usuario para que pueda elegir a quién darle la chuche
+    this.xuxemonService.getXuxemons().subscribe({
+      next: (data: IXuxemon[]) => this.misXuxemons = data,
+      error: (err) => console.error('Error al cargar mis xuxemons en el modal', err)
+    });
+  }
 
   // Cierra el modal y resetea todo
   cerrarModal() {
@@ -76,11 +98,10 @@ export class Mochila implements OnInit {
 
   // Obtener la imagen de la Xuxe seleccionada
   getImagenXuxe(): string {
-    const xuxe = this.tiposXuxe.find(x => x.nombre === this.xuxeSeleccionada);
+    const xuxe = this.tiposXuxe.find((x: any) => x.nombre === this.xuxeSeleccionada);
     return xuxe?.imagen || '';
   }
 
-  // Pasar al paso 2 (preview) con validación
   irAPreview() {
     this.mensajeError = '';
 
@@ -88,6 +109,14 @@ export class Mochila implements OnInit {
       this.mensajeError = 'Selecciona un Xuxemon';
       return;
     }
+
+    //  NUEVA REGLA: EL HOSPITAL (Kenneth) 
+    if (this.xuxemonSeleccionado.enfermedad) {
+      this.mensajeError = `¡Oh no! ${this.xuxemonSeleccionado.nombre} tiene ${this.xuxemonSeleccionado.enfermedad}. ¡Cúralo primero con una vacuna!`;
+      return;
+    }
+    // FIN DE LA NUEVA REGLA 
+
     if (!this.xuxeSeleccionada) {
       this.mensajeError = 'Selecciona una Xuxe';
       return;
@@ -128,7 +157,7 @@ export class Mochila implements OnInit {
 
   checkUserRole() {
     this.authService.me().subscribe({
-      next: (user) => {
+      next: (user: any) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
           this.loadPlayers();
@@ -137,11 +166,20 @@ export class Mochila implements OnInit {
     });
   }
 
+  // 👇 MÉTODO RESTAURADO TRAS EL MERGE 👇
+  loadPlayers() {
+    if (typeof (this.authService as any).getUsers === 'function') {
+      (this.authService as any).getUsers().subscribe({
+        next: (users: any[]) => this.players = users,
+        error: () => console.log('Error cargando usuarios')
+      });
+    }
+  }
 
   addXuxesToPlayer() {
     if (!this.selectedPlayerId) return;
 
-    const player = this.players.find(p => p.id === this.selectedPlayerId);
+    const player = this.players.find((p: any) => p.id === this.selectedPlayerId);
     if (!player) return;
 
     let inventory = player.inventory || [];
@@ -154,7 +192,7 @@ export class Mochila implements OnInit {
       return;
     }
 
-    const selectedXuxe = this.tiposXuxe.find(x => x.nombre === this.xuxeToAdd.nombre);
+    const selectedXuxe = this.tiposXuxe.find((x: any) => x.nombre === this.xuxeToAdd.nombre);
 
     const newItem: Objeto = {
       nombre: this.xuxeToAdd.nombre,
@@ -173,12 +211,14 @@ export class Mochila implements OnInit {
 
     inventory.push(newItem);
 
-    this.authService.updateUserInventory(player.id, inventory).subscribe({
-      next: () => {
-        alert('Xuxes añadidas correctamente.');
-        this.loadPlayers();
-      },
-      error: () => alert('Error al actualizar el inventario.')
-    });
+    if (typeof (this.authService as any).updateUserInventory === 'function') {
+      (this.authService as any).updateUserInventory(player.id, inventory).subscribe({
+        next: () => {
+          alert('Xuxes añadidas correctamente.');
+          this.loadPlayers();
+        },
+        error: () => alert('Error al actualizar el inventario.')
+      });
+    }
   }
 }
