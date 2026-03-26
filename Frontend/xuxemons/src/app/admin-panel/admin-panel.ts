@@ -19,6 +19,10 @@ export class AdminPanelComponent implements OnInit {
   xuxemonForm: FormGroup;
   isEditing: boolean = false;
   currentId: number | null = null;
+  // nuevas propiedades simples
+  fConfig: FormGroup;
+  users: any[] = [];
+
 
   selectedPlayerId: number | null = null;
   xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
@@ -40,11 +44,20 @@ export class AdminPanelComponent implements OnInit {
       descripcion: [''],
       tamano: ['', Validators.required]
     });
+    // form de configuracion
+    this.fConfig = this.fb.group({
+      infection_pct: [0],
+      evolve_xuxes: [0],
+      reward_hour: [0]
+    });
   }
+
 
   ngOnInit(): void {
     this.cargarXuxemons();
-    this.cargarUsuarios();
+    // cargar todo al inicio
+    this.xuxemonService.getConfigs().subscribe((d: any) => this.fConfig.patchValue(d));
+    this.xuxemonService.getUsers().subscribe((d: any) => this.users = d);
   }
 
   cargarUsuarios(): void {
@@ -53,6 +66,7 @@ export class AdminPanelComponent implements OnInit {
       error: (err: any) => console.error('Error al cargar usuarios', err)
     });
   }
+
 
   cargarXuxemons(): void {
     this.xuxemonService.getXuxemons().subscribe({
@@ -112,76 +126,13 @@ export class AdminPanelComponent implements OnInit {
     this.xuxemonForm.reset();
   }
 
-  darXuxemonAleatorio(userIdStr: string): void {
-    if (!userIdStr) {
-      alert('Por favor, selecciona un jugador primero.');
-      return;
-    }
-    const userId = Number(userIdStr);
-    this.xuxemonService.darXuxemonAleatorio(userId).subscribe({
-      next: (res) => {
-        alert(`¡Éxito! Xuxemon ${res.xuxemon.nombre} asignado al jugador correctamente.`);
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Error al asignar Xuxemon aleatorio.');
-      }
-    });
+  // guardar configs
+  saveConf() {
+    this.xuxemonService.saveConfigs(this.fConfig.value).subscribe(() => alert('guardado'));
   }
 
-  // Métodos para Xuxes
-  onPlayerSelected(event: any) {
-    this.selectedPlayerId = Number(event.target.value) || null;
-  }
-
-  onXuxeSelected(event: any) {
-    this.xuxeToAdd.nombre = event.target.value;
-  }
-
-  onCantidadChange(event: any) {
-    this.xuxeToAdd.cantidad = Number(event.target.value) || 1;
-  }
-
-  addXuxesToPlayer() {
-    if (!this.selectedPlayerId) return;
-
-    const player = this.users.find(p => p.id === this.selectedPlayerId);
-    if (!player) return;
-
-    let inventory = player.inventory || [];
-    const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
-    const availableSlots = 20 - totalSlotsUsed;
-
-    if (availableSlots <= 0) {
-      alert('La mochila del jugador está llena. No se pueden añadir más Xuxes.');
-      return;
-    }
-
-    const selectedXuxe = this.tiposXuxe.find(x => x.nombre === this.xuxeToAdd.nombre);
-
-    const newItem: Objeto = {
-      nombre: this.xuxeToAdd.nombre,
-      tipo: 'Xuxe',
-      cantidad: this.xuxeToAdd.cantidad,
-      stackable: true,
-      imagen: selectedXuxe?.imagen || ''
-    };
-
-    const slotsNeeded = Math.ceil(newItem.cantidad / 5);
-    if (slotsNeeded > availableSlots) {
-      const allowedAmount = availableSlots * 5;
-      alert(`Solo caben ${allowedAmount} Xuxes. El resto se descartará.`);
-      newItem.cantidad = allowedAmount;
-    }
-
-    inventory.push(newItem);
-
-    this.authService.updateUserInventory(player.id, inventory).subscribe({
-      next: () => {
-        alert('Xuxes añadidas correctamente.');
-        this.cargarUsuarios(); 
-      },
-      error: () => alert('Error al actualizar el inventario.')
-    });
+  // dar vacuna
+  vacuna(id: number, n: string) {
+    this.xuxemonService.darVacuna(id, n).subscribe(() => alert('vacuna enviada'));
   }
 }

@@ -1,49 +1,36 @@
-<div class="admin-container">
-  <h2>Panel de Administración (Nivel 2)</h2>
-  
-  <div class="admin-section">
-    <h3>Regalar Xuxemon Aleatorio a un Jugador</h3>
-    <select #userSelect class="form-select">
-      <option value="">-- Selecciona un jugador --</option>
-      <option *ngFor="let user of users" [value]="user.id">
-        {{ user.name }} (ID: {{ user.id }})
-      </option>
-    </select>
-    
-    <button (click)="darXuxemonAleatorio(userSelect.value)" class="btn-random">
-      🎁 Dar Xuxemon Aleatorio
-    </button>
+<div style="padding: 20px; font-family: sans-serif;">
+  <h1>panel de control admin</h1>
+
+  <!-- parametros -->
+  <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
+    <h3>ajustes globales</h3>
+    <form [formGroup]="fConfig" (ngSubmit)="saveConf()">
+      <p>% infeccion: <input type="number" formControlName="infection_pct"></p>
+      <p>xuxes para evolucion: <input type="number" formControlName="evolve_xuxes"></p>
+      <p>hora recompensa: <input type="number" formControlName="reward_hour"></p>
+      <button type="submit">guardar ajustes</button>
+    </form>
   </div>
-  
-  <div class="admin-section" style="margin-top: 20px;">
-    <h3>Regalar Xuxes a un Jugador</h3>
-    <div class="admin-controls" style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-        <div class="control-group">
-            <label style="font-weight: bold; margin-right: 5px;">Jugador:</label>
-            <select (change)="onPlayerSelected($event)" class="form-select">
-                <option value="">Selecciona un jugador</option>
-                <option *ngFor="let user of users" [value]="user.id">
-                  {{ user.name }} (ID: {{ user.id }})
-                </option>
-            </select>
-        </div>
 
-        <div class="control-group">
-            <label style="font-weight: bold; margin-right: 5px;">Xuxe:</label>
-            <select (change)="onXuxeSelected($event)" class="form-select">
-                <option *ngFor="let tipo of tiposXuxe" [value]="tipo.nombre">{{ tipo.nombre }}</option>
-            </select>
-        </div>
-
-        <div class="control-group">
-            <label style="font-weight: bold; margin-right: 5px;">Cant:</label>
-            <input type="number" [value]="xuxeToAdd.cantidad" (input)="onCantidadChange($event)" min="1"
-                class="form-select" style="width: 80px;">
-        </div>
-
-        <button class="btn-random" (click)="addXuxesToPlayer()">
-            🍬 Añadir Xuxes
-        </button>
-    </div>
+  <!-- jugadores -->
+  <div style="border: 1px solid #ccc; padding: 10px;">
+    <h3>lista de jugadores</h3>
+    <table border="1" style="width: 100%; border-collapse: collapse;">
+      <tr>
+        <th>id</th>
+        <th>nombre</th>
+        <th>accion</th>
+      </tr>
+      @for (u of users; track u.id) {
+      <tr>
+        <td>{{ u.player_id }}</td>
+        <td>{{ u.name }}</td>
+        <td>
+          <input #vacName type="text" placeholder="nombre vacuna">
+          <button (click)="vacuna(u.id, vacName.value)">dar vacuna</button>
+        </td>
+      </tr>
+      }
+    </table>
   </div>
 </div>

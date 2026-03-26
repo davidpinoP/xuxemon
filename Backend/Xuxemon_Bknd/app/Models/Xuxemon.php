@@ -18,4 +18,12 @@ class Xuxemon extends Model
         'imagen',
         'tamano',
     ];
+
+    /**
+     * Get all of the xuxemon's mochila entries.
+     */
+    public function mochilas()
+    {
+        return $this->morphMany(Mochila::class, 'itemable');
+    }
 }

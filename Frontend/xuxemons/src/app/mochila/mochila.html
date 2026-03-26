@@ -1,14 +1,34 @@
-<div class="mochila-wrapper">
-    <h1>Mochila</h1>
-    <div class="mochila-grid" role="grid" aria-label="Inventario de la mochila">
-        @for (slot of slots; track $index) {
-        <div class="slot" [class.occupied]="slot" role="gridcell"
-             [attr.aria-label]="slot ? slot.nombre + ' x' + slot.cantidad : 'Slot vacío'">
-            @if (slot) {
-            <div class="item-container">
-                <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
-                @if (slot.cantidad > 1 || slot.stackable) {
-                <span class="quantity" aria-hidden="true">{{ slot.cantidad }}</span>
+<div class="app-layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="avatar-circle">
+                <img src="https://ui-avatars.com/api/?name=Xuxemon&background=random" alt="Avatar" class="avatar-img">
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a class="nav-item" routerLink="/home">INICIO</a>
+            <a class="nav-item" routerLink="/xuxedex">XUXEDEX</a>
+            <a class="nav-item active">MOCHILA</a>
+            <a class="nav-item" routerLink="/perfil">
+                <span class="icon-user"></span> PERFIL
+            </a>
+        </nav>
+
+    </aside>
+
+    <main class="main-content">
+        <h1 class="page-title">Mochila</h1>
+
+        <div class="mochila-grid">
+            @for (slot of slots; track $index) {
+            <div class="slot" [class.occupied]="slot">
+                @if (slot) {
+                <div class="item-container">
+                    <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
+                    @if (slot.cantidad > 1 || slot.stackable) {
+                    <span class="quantity">{{ slot.cantidad }}</span>
+                    }
+                </div>
                 }
             </div>
             }

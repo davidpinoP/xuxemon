@@ -52,23 +52,6 @@ export class Mochila implements OnInit {
     this.inventoryService.organizarMochila(this.inventarioBase);
   }
 
-  // ── Métodos del Modal de Alimentación ──
-
-  // Abre el modal y carga los Xuxemons
-  abrirModal() {
-    this.mostrarModal = true;
-    this.pasoModal = 1;
-    this.xuxemonSeleccionado = null;
-    this.xuxeSeleccionada = '';
-    this.cantidadAlimentar = 1;
-    this.mensajeError = '';
-
-    // Cargar la lista de Xuxemons desde el servicio
-    this.xuxemonService.getXuxemons().subscribe({
-      next: (lista) => this.misXuxemons = lista,
-      error: () => this.mensajeError = 'Error al cargar Xuxemons'
-    });
-  }
 
   // Cierra el modal y resetea todo
   cerrarModal() {

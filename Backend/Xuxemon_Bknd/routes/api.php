@@ -4,6 +4,7 @@ use App\Http\Controllers\AutenticatorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ConfigController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
@@ -18,6 +19,11 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
+    
+    // recompensas
+    Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
+    Route::post('/user/claim-reward', [UserController::class, 'claimReward']);
+
 
     // --- Endpoints de Xuxemons ---
     // Lectura (accesible para cualquier usuario autenticado y activo)
@@ -38,8 +44,13 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
             return response()->json(['message' => 'Bienvenido, Administrador']);
         });
 
-        // Funciones del Nivel 2 para el admin
+        // admin: chuches, xuxemons y vacunas
         Route::post('/admin/dar-chuches', [AdminController::class, 'darChuches']);
         Route::post('/admin/dar-xuxemon-aleatorio', [AdminController::class, 'darXuxemonAleatorio']);
+        Route::post('/admin/users/{id}/vaccine', [AdminController::class, 'darVacuna']);
+
+        // admin: configuracion global
+        Route::get('/admin/configs', [ConfigController::class, 'index']);
+        Route::post('/admin/configs', [ConfigController::class, 'store']);
     });
 });

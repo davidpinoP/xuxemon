@@ -1,1 +1,28 @@
 <router-outlet />
+
+<!-- notificacion de recompensa -->
+@if (showReward) {
+<div
+    style="position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div
+        style="background: white; padding: 40px; border-radius: 20px; text-align: center; box-shadow: 0 0 20px #ffcc00; animation: jump 0.5s infinite alternate;">
+        <h2 style="margin-top: 0;">¡tienes una recompensa diaria!</h2>
+        <p>5 xuxes te estan esperando</p>
+        <button (click)="claim()"
+            style="padding: 10px 20px; background: #ffcc00; border: none; border-radius: 10px; cursor: pointer; font-weight: bold;">reclamar
+            ya</button>
+    </div>
+</div>
+}
+
+<style>
+    @keyframes jump {
+        from {
+            transform: translateY(0);
+        }
+
+        to {
+            transform: translateY(-10px);
+        }
+    }
+</style>
