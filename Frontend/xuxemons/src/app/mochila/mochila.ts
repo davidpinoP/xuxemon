@@ -51,9 +51,6 @@ export class Mochila implements OnInit {
     this.inventoryService.organizarMochila(this.inventarioBase);
   }
 
-  volverHome(): void {
-    this.router.navigate(['/home']);
-  }
 
   // Métodos para manejar eventos sin ngModel
   onPlayerSelected(event: any) {

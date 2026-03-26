@@ -4,6 +4,7 @@ use App\Http\Controllers\AutenticatorController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ConfigController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
