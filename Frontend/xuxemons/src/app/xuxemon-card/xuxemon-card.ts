@@ -37,6 +37,20 @@ export class XuxemonCardComponent {
     return 'tipo-' + this.xuxemon.tipo.toLowerCase();
   }
 
+  get tamanoClase(): string {
+    const tamano = (this.xuxemon?.tamano || 'Pequeño').toLowerCase();
+
+    if (tamano === 'grande') {
+      return 'tamano-render-grande';
+    }
+
+    if (tamano === 'mediano') {
+      return 'tamano-render-mediano';
+    }
+
+    return 'tamano-render-pequeno';
+  }
+
   getStatValue(stat: string): number {
     if (!this.xuxemon) return 50;
     const semilla = this.xuxemon.id * 31;

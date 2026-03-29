@@ -16,3 +16,21 @@
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
 }
+
+.transition-size {
+    transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.tamano-render-pequeno {
+    transform: scale(1);
+}
+
+.tamano-render-mediano {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 8px rgba(90, 58, 203, 0.35));
+}
+
+.tamano-render-grande {
+    transform: scale(1.4);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+}

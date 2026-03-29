@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\UserXuxemon;
 use App\Models\User;
 use App\Models\Xuxemon;
 use App\Models\Mochila;
@@ -61,6 +62,18 @@ class AdminController extends Controller
             'tamano' => 'Pequeño'
         ]);
 
+        UserXuxemon::firstOrCreate(
+            [
+                'user_id' => $usuario->id,
+                'xuxemon_id' => $xuxemonAlea->id,
+            ],
+            [
+                'tamano' => 'Pequeño',
+                'comidas' => 0,
+                'imagen' => $xuxemonAlea->imagen,
+            ]
+        );
+
         return response()->json(['ok' => true], 201);
     }
 
@@ -76,4 +89,3 @@ class AdminController extends Controller
         return response()->json(['ok' => true]);
     }
 }
-

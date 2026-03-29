@@ -28,10 +28,8 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     // --- Endpoints de Xuxemons ---
     // Lectura (accesible para cualquier usuario autenticado y activo)
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
-    
-    //  NUEVAS RUTAS NIVEL 3 (Alimentar y Curar)
+    Route::get('/user/xuxemons', [XuxemonController::class, 'misXuxemons']);
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
-    Route::post('/xuxemons/{id}/curar', [XuxemonController::class, 'aplicarVacuna']);
 
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);
