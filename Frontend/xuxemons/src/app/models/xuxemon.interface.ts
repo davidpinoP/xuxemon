@@ -3,9 +3,11 @@ export interface IXuxemon {
     id: number;
     nombre: string;
     tipo: string;
-    descripcion: string;
-    imagen: string;
+    descripcion?: string;
+    imagen?: string;
     tamano: string;
-    created_at: string;
-    updated_at: string;
+    created_at?: string;
+    updated_at?: string;
+    comidas?: number;
+    enfermedad?: string;
 }

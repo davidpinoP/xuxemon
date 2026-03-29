@@ -2,29 +2,39 @@
   display: flex;
   min-height: 100vh;
   font-family: 'Segoe UI', Tahoma, sans-serif;
-  background-color: #f4f2fb;
+  background:
+    radial-gradient(circle at top right, rgba(124, 108, 240, 0.12), transparent 25%),
+    #f4f2fb;
   color: #222;
   font-size: 16px;
 }
 
 .sidebar {
   width: 250px;
-  background-color: #5a3acb;
+  background: linear-gradient(180deg, #978def 0%, #8f84ec 45%, #745fe0 100%);
   color: white;
   display: flex;
   flex-direction: column;
-  padding: 30px 0;
-  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.1);
+  padding: 42px 0 30px;
+  box-shadow: 10px 0 30px rgba(90, 58, 203, 0.16);
+  position: fixed;
+  inset: 0 auto 0 0;
+  z-index: 10;
 }
 
 .logo-container {
-  text-align: center;
-  margin-bottom: 40px;
+  width: 156px;
+  margin: 0 auto 40px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
 .logo-mini {
-  max-width: 150px;
+  display: block;
+  width: 100%;
   height: auto;
+  border-radius: 0;
 }
 
 .nav-list {
@@ -35,7 +45,7 @@
 
 .nav-link {
   display: block;
-  padding: 15px 30px;
+  padding: 18px 30px;
   color: #e0d8ff;
   text-decoration: none;
   font-weight: 600;
@@ -45,9 +55,9 @@
 
 .nav-link:hover,
 .nav-link.active {
-  background-color: #482e9e;
+  background-color: #4f34b7;
   color: white;
-  border-left: 5px solid #ffca28;
+  border-left: 5px solid #f3c84a;
 }
 
 .nav-link:focus,
@@ -58,7 +68,8 @@
 
 .main-content {
   flex: 1;
-  padding: 40px;
+  margin-left: 250px;
+  padding: 44px 48px 52px;
   overflow-y: auto;
 }
 
@@ -66,11 +77,37 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 50px;
+  margin-bottom: 42px;
   background-color: white;
   padding: 20px 30px;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    width: 72px;
+    padding-top: 18px;
+  }
+
+  .logo-container {
+    width: 54px;
+    margin-bottom: 20px;
+  }
+
+  .nav-link {
+    font-size: 0;
+    padding: 16px 10px;
+  }
+
+  .nav-link.active {
+    border-left-width: 4px;
+  }
+
+  .main-content {
+    margin-left: 72px;
+    padding: 24px 16px 30px;
+  }
 }
 
 .greeting h1 {

@@ -10,5 +10,17 @@ class UserXuxemon extends Model
         'user_id',
         'xuxemon_id',
         'tamano',
+        'comidas',
+        'imagen',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function xuxemon()
+    {
+        return $this->belongsTo(Xuxemon::class);
+    }
 }
