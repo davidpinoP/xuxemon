@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { XuxemonService } from './services/xuxemon.service';
+import { Xuxemon } from './services/xuxemon';
 
 
 @Component({
@@ -15,7 +15,7 @@ export class App {
   title = 'xuxemons';
   showReward = false;
 
-  constructor(private xuxemonService: XuxemonService) { }
+  constructor(private xuxemonService: Xuxemon) { }
 
   ngOnInit() {
     // comprobar si hay recompensa al entrar

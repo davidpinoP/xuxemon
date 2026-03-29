@@ -10,7 +10,5 @@ class UserXuxemon extends Model
         'user_id',
         'xuxemon_id',
         'tamano',
-        'comidas',
-        'imagen',
     ];
 }

@@ -1,16 +1,15 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
@@ -37,17 +36,6 @@ export class Mochila implements OnInit {
   cantidadAlimentar: number = 1;  // Cantidad de Xuxes a dar
   mensajeError: string = '';      // Para mostrar errores
 
-  // ── Variables Admin ──
-  isAdmin = false;
-  players: any[] = [];
-  selectedPlayerId: number | null = null;
-  tiposXuxe = [
-    { nombre: 'Xuxe Caramelo', imagen: '/assets/images/caramel.png' },
-    { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
-    { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' }
-  ];
-  xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
-
   constructor(
     private authService: AuthService,
     private inventoryService: InventoryService,
@@ -55,49 +43,17 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
+
     // Suscribirse a los slots del servicio
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
 
     this.inventoryService.organizarMochila(this.inventarioBase);
-
-    // Cargar Xuxemons del usuario
-    this.cargarMisXuxemons();
-    
-    // Verificar si es admin
-    this.checkUserRole();
-  }
-
-  deleteXuxemon(id: number) {
-    // Implementar si es necesario
-  }
-
-  cargarMisXuxemons() {
-    this.xuxemonService.getXuxemons().subscribe({
-      next: (xuxemons: IXuxemon[]) => {
-        this.misXuxemons = xuxemons;
-      },
-      error: (err: any) => console.error('Error cargando Xuxemons', err)
-    });
-  }
-
-  loadPlayers() {
-     this.authService.getPlayers().subscribe({
-       next: (data: any[]) => this.players = data,
-       error: (err: any) => console.error('Error cargando jugadores', err)
-     });
   }
 
 
-  // Abrir el modal
-  abrirModal() {
-    this.mostrarModal = true;
-    this.pasoModal = 1;
-    this.mensajeError = '';
-  }
-
-  // Cierra el modal and resetea todo
+  // Cierra el modal y resetea todo
   cerrarModal() {
     this.mostrarModal = false;
     this.pasoModal = 1;
@@ -153,93 +109,26 @@ export class Mochila implements OnInit {
     this.pasoModal = 1;
   }
 
-  // Lógica para el preview: ¿evolucionará?
-  vaAEvolucionar(): boolean {
-    if (!this.xuxemonSeleccionado) return false;
-    const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
-    const tamanoActual = this.xuxemonSeleccionado.tamano?.toLowerCase();
-
-    if (tamanoActual === 'pequeño' && nuevasComidas >= 3) return true;
-    if (tamanoActual === 'mediano' && nuevasComidas >= 5) return true;
-    
-    return false;
-  }
-
-  getNuevoTamano(): string {
-    if (!this.xuxemonSeleccionado) return '';
-    const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
-    
-    if (nuevasComidas >= 5) return 'Grande';
-    if (nuevasComidas >= 3) return 'Mediano';
-    return this.xuxemonSeleccionado.tamano || 'Pequeño';
-  }
-
   // Confirmar la alimentación: descontar del inventario
   confirmarAlimentacion() {
-    if (!this.xuxemonSeleccionado) return;
-
-    this.xuxemonService.feedXuxemon(this.xuxemonSeleccionado.id, this.xuxeSeleccionada, this.cantidadAlimentar)
-      .subscribe({
-        next: (res: any) => {
-          // Buscar la Xuxe en el inventario y restar la cantidad
-          const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
-          if (xuxe) {
-            xuxe.cantidad -= this.cantidadAlimentar;
-          }
-
-          // Reorganizar la mochila para reflejar el cambio
-          this.inventoryService.organizarMochila(this.inventarioBase);
-
-          alert(`¡${this.xuxemonSeleccionado?.nombre} ha sido alimentado con ${this.cantidadAlimentar}x ${this.xuxeSeleccionada}!`);
-          this.cerrarModal();
-        },
-        error: (err: any) => {
-          this.mensajeError = err.error?.message || 'Error al alimentar al Xuxemon';
-        }
-      });
-  }
-
-  // ── Accesibilidad ──
-
-  @HostListener('document:keydown.escape', ['$event'])
-  handleEscape(event: any) {
-    if (this.mostrarModal) {
-      this.cerrarModal();
+    // Buscar la Xuxe en el inventario y restar la cantidad
+    const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
+    if (xuxe) {
+      xuxe.cantidad -= this.cantidadAlimentar;
     }
-  }
 
-  trapFocus(event: any) {
-    const modal = document.querySelector('.modal-contenido') as HTMLElement;
-    if (!modal) return;
-    
-    const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
-    if (focusableElements.length === 0) return;
+    // Reorganizar la mochila para reflejar el cambio
+    this.inventoryService.organizarMochila(this.inventarioBase);
 
-    const firstElement = focusableElements[0] as HTMLElement;
-    const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
-
-    if (event.key === 'Tab') {
-      if (event.shiftKey) {
-        if (document.activeElement === firstElement) {
-          event.preventDefault();
-          lastElement.focus();
-        }
-      } else {
-        if (document.activeElement === lastElement) {
-          event.preventDefault();
-          firstElement.focus();
-        }
-      }
-    }
+    alert(`¡${this.xuxemonSeleccionado?.nombre} ha sido alimentado con ${this.cantidadAlimentar}x ${this.xuxeSeleccionada}!`);
+    this.cerrarModal();
   }
 
   // ── Métodos existentes (Admin) ──
 
   checkUserRole() {
     this.authService.me().subscribe({
-      next: (user: any) => {
+      next: (user) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
           this.loadPlayers();
