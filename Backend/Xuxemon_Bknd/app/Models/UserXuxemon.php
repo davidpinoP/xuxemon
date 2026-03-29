@@ -12,6 +12,7 @@ class UserXuxemon extends Model
         'tamano',
         'comidas',
         'imagen',
+        'enfermedad',
     ];
 
     public function user()

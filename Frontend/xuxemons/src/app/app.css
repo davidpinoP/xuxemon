@@ -1,0 +1,47 @@
+.reward-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.reward-card {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 20px #ffcc00;
+  animation: jump 0.5s infinite alternate;
+}
+
+.reward-card h2 {
+  margin-top: 0;
+}
+
+.reward-button {
+  padding: 10px 20px;
+  background: #ffcc00;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+@keyframes jump {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(-10px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reward-card {
+    animation: none;
+  }
+}

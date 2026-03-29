@@ -454,6 +454,19 @@
     margin-top: 20px;
 }
 
+.admin-fieldset {
+    border: 1px solid #e6e0f4;
+    border-radius: 18px;
+    padding: 20px;
+}
+
+.admin-legend {
+    font-weight: 600;
+    padding: 0 10px;
+    font-variant: small-caps;
+    color: #5a3acb;
+}
+
 .admin-title {
     font-size: 1.4rem;
     color: #1a1a2e;

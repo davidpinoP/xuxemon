@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IXuxemon } from '../models/xuxemon.interface';
+import { GameConfigService } from '../services/game-config.service';
 @Component({
   selector: 'app-xuxemon-card',
   standalone: true,
@@ -16,6 +17,8 @@ export class XuxemonCardComponent {
 
   evolucionando: boolean = false;
   imagenConError = false;
+
+  constructor(private gameConfigService: GameConfigService) {}
 
   get tipoIcono(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return '?';
@@ -92,8 +95,9 @@ export class XuxemonCardComponent {
   get xuxesNecesarias(): number {
     if (!this.xuxemon) return 0;
     const tamano = this.xuxemon.tamano?.toLowerCase();
-    if (tamano === 'pequeño') return 3;  // Pequeño -> Mediano
-    if (tamano === 'mediano') return 5;  // Mediano -> Grande
+    const base = this.getEvolveBase();
+    if (tamano === 'pequeño') return base;  // Pequeño -> Mediano
+    if (tamano === 'mediano') return base + 2;  // Mediano -> Grande
     return 0; // Grande ya no evoluciona
   }
 
@@ -142,5 +146,10 @@ export class XuxemonCardComponent {
     const extension = imagenBase.substring(indicePunto);
 
     return `${nombre}-${tamano}-ia${extension}`;
+  }
+
+  private getEvolveBase(): number {
+    const base = this.gameConfigService.snapshot.evolve_xuxes;
+    return base > 0 ? base : 3;
   }
 }

@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\DailyRewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
+    private DailyRewardService $dailyRewardService;
+
+    public function __construct(DailyRewardService $dailyRewardService)
+    {
+        $this->dailyRewardService = $dailyRewardService;
+    }
 
 
     // ---- Rutas API (JWT) ----
@@ -80,48 +87,11 @@ class AutenticatorController extends Controller
     // ---- Helpers ----
 
     /**
-     * Comprueba si el usuario tiene derecho a la recompensa diaria (después de las 08:00 AM)
+     * Comprueba si el usuario tiene derecho a la recompensa diaria (después de la hora configurada).
      */
     private function checkDailyRewards(User $user)
     {
-        $now = now();
-
-        // Solo si son más de las 08:00 AM
-        if ($now->hour < 8) {
-            return;
-        }
-
-        // Si ya ha recibido el premio hoy, no hacer nada
-        if ($user->last_reward_at && $user->last_reward_at->isToday()) {
-            return;
-        }
-
-        // 1. Dar 10 Xuxes
-        $xuxeEntry = $user->mochila()->where('nombre', 'Xuxe')->first();
-        if ($xuxeEntry) {
-            $xuxeEntry->increment('cantidad', 10);
-        } else {
-            $user->mochila()->create([
-                'nombre' => 'Xuxe',
-                'tipo' => 'item',
-                'cantidad' => 10
-            ]);
-        }
-
-        // 2. Dar Xuxemon Aleatorio Pequeño
-        $xuxemonAlea = \App\Models\Xuxemon::inRandomOrder()->first();
-        if ($xuxemonAlea) {
-            $user->mochila()->create([
-                'nombre' => $xuxemonAlea->nombre,
-                'tipo' => 'xuxemon',
-                'tamano' => 'Pequeño',
-                'cantidad' => 1
-            ]);
-        }
-
-        // 3. Actualizar la fecha de la última recompensa
-        $user->last_reward_at = $now;
-        $user->save();
+        $this->dailyRewardService->grantIfEligible($user);
     }
 
     private function generatePlayerId(string $name): string
@@ -137,4 +107,3 @@ class AutenticatorController extends Controller
         return $playerId;
     }
 }
-

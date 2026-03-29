@@ -133,33 +133,36 @@
     @if (isAdmin) {
     <div class="admin-panel">
         <h2>Gestión de Jugadores (Admin)</h2>
-        <div class="admin-controls">
-            <div class="control-group">
-                <label for="admin-jugador">Jugador:</label>
-                <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
-                    <option [ngValue]="null">Selecciona un jugador</option>
-                    @for (player of players; track player.id) {
-                    <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
-                    }
-                </select>
-            </div>
+        <fieldset class="admin-fieldset">
+            <legend class="admin-legend">Entrega de Xuxes</legend>
+            <div class="admin-controls">
+                <div class="control-group">
+                    <label for="admin-jugador">Jugador:</label>
+                    <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
+                        <option [ngValue]="null">Selecciona un jugador</option>
+                        @for (player of players; track player.id) {
+                        <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
+                        }
+                    </select>
+                </div>
 
-            <div class="control-group">
-                <label for="admin-xuxe">Xuxe:</label>
-                <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
-                    @for (tipo of tiposXuxe; track tipo.nombre) {
-                    <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
-                    }
-                </select>
-            </div>
+                <div class="control-group">
+                    <label for="admin-xuxe">Xuxe:</label>
+                    <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
+                        @for (tipo of tiposXuxe; track tipo.nombre) {
+                        <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
+                        }
+                    </select>
+                </div>
 
-            <div class="control-group">
-                <label for="admin-cantidad">Cantidad:</label>
-                <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
-            </div>
+                <div class="control-group">
+                    <label for="admin-cantidad">Cantidad:</label>
+                    <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
+                </div>
 
-            <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
-        </div>
+                <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
+            </div>
+        </fieldset>
     </div>
     }
     </main>

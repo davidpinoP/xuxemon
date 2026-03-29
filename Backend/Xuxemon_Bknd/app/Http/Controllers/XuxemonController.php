@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\UserXuxemon;
 use App\Models\Xuxemon;
+use App\Models\Config;
 use Illuminate\Http\Request;
 
 class XuxemonController extends Controller
@@ -39,6 +40,7 @@ class XuxemonController extends Controller
                 'imagen' => $registro->imagen ?: $registro->xuxemon->imagen,
                 'tamano' => $registro->tamano ?: 'Pequeño',
                 'comidas' => $registro->comidas ?? 0,
+                'enfermedad' => $registro->enfermedad,
                 'created_at' => $registro->xuxemon->created_at,
                 'updated_at' => $registro->xuxemon->updated_at,
             ];
@@ -87,15 +89,59 @@ class XuxemonController extends Controller
             $item->save();
         }
 
-        $registro->comidas = ($registro->comidas ?? 0) + $datos['cantidad'];
         $tamanoAnterior = $registro->tamano ?: 'Pequeño';
+        $seInfecto = false;
+        $curado = false;
 
-        if ($registro->comidas >= 5) {
-            $registro->tamano = 'Grande';
-        } elseif ($registro->comidas >= 3) {
-            $registro->tamano = 'Mediano';
-        } else {
-            $registro->tamano = 'Pequeño';
+        $infectionPct = Config::getFloat('infection_pct', 0);
+        $infectionPct = max(0, min(100, $infectionPct));
+
+        if (!$registro->enfermedad && $infectionPct > 0) {
+            $roll = random_int(1, 100);
+            if ($roll <= $infectionPct) {
+                $registro->enfermedad = 'Resfriado';
+                $seInfecto = true;
+            }
+        }
+
+        if ($registro->enfermedad) {
+            $vacuna = $user->mochila()
+                ->where('tipo', '!=', 'xuxemon')
+                ->whereRaw('LOWER(nombre) LIKE ?', ['%vacuna%'])
+                ->first();
+
+            if ($vacuna) {
+                $vacuna->cantidad -= 1;
+                if ($vacuna->cantidad <= 0) {
+                    $vacuna->delete();
+                } else {
+                    $vacuna->save();
+                }
+                $registro->enfermedad = null;
+                $curado = true;
+            }
+        }
+
+        $evolveBase = Config::getInt('evolve_xuxes', 3);
+        if ($evolveBase < 1) {
+            $evolveBase = 3;
+        }
+
+        $toMediano = $evolveBase;
+        $toGrande = $evolveBase + 2;
+
+        if (!$registro->enfermedad) {
+            $registro->comidas = ($registro->comidas ?? 0) + $datos['cantidad'];
+        }
+
+        if (!$registro->enfermedad) {
+            if ($registro->comidas >= $toGrande) {
+                $registro->tamano = 'Grande';
+            } elseif ($registro->comidas >= $toMediano) {
+                $registro->tamano = 'Mediano';
+            } else {
+                $registro->tamano = 'Pequeño';
+            }
         }
 
         $registro->imagen = $registro->xuxemon->imagen;
@@ -114,6 +160,8 @@ class XuxemonController extends Controller
         return response()->json([
             'message' => 'Xuxemon alimentado correctamente.',
             'evoluciono' => $tamanoAnterior !== $registro->tamano,
+            'se_infecto' => $seInfecto,
+            'curado' => $curado,
             'xuxemon' => [
                 'id' => $registro->xuxemon->id,
                 'nombre' => $registro->xuxemon->nombre,
@@ -122,6 +170,7 @@ class XuxemonController extends Controller
                 'imagen' => $registro->imagen ?: $registro->xuxemon->imagen,
                 'tamano' => $registro->tamano,
                 'comidas' => $registro->comidas,
+                'enfermedad' => $registro->enfermedad,
                 'created_at' => $registro->xuxemon->created_at,
                 'updated_at' => $registro->xuxemon->updated_at,
             ],
@@ -150,6 +199,7 @@ class XuxemonController extends Controller
                     'tamano' => $entrada->tamano ?: 'Pequeño',
                     'comidas' => 0,
                     'imagen' => $xuxemon->imagen,
+                    'enfermedad' => null,
                 ]
             );
         }

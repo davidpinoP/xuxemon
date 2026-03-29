@@ -24,6 +24,9 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
     Route::post('/user/claim-reward', [UserController::class, 'claimReward']);
 
+    // configs globales para el juego
+    Route::get('/configs', [ConfigController::class, 'publicIndex']);
+
 
     // --- Endpoints de Xuxemons ---
     // Lectura (accesible para cualquier usuario autenticado y activo)

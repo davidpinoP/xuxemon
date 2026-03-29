@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Services\DailyRewardService;
 
 class DeliverDailyRewards extends Command
 {
@@ -18,18 +19,19 @@ class DeliverDailyRewards extends Command
      *
      * @var string
      */
-    protected $description = 'Reparte 10 xuxes y 1 xuxemon aleatorio a las 08:00 AM';
+    protected $description = 'Reparte 10 xuxes y 1 xuxemon pequeno a la hora configurada';
 
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(DailyRewardService $dailyRewardService)
     {
         $now = now();
+        $rewardHour = $dailyRewardService->getRewardHour();
         
-        // Comprobar si es después de las 08:00 AM
-        if ($now->hour < 8) {
-            $this->info('Aún no son las 08:00 AM. No se repartirán recompensas.');
+        // Comprobar si es después de la hora configurada
+        if ($now->hour < $rewardHour) {
+            $this->info('Aun no es la hora configurada. No se repartiran recompensas.');
             return 0;
         }
 
@@ -47,32 +49,7 @@ class DeliverDailyRewards extends Command
         $this->info('Repartiendo premios a ' . $users->count() . ' usuarios...');
 
         foreach ($users as $user) {
-            // 1. Dar 10 Xuxes (Asegurar que existe el item o usar el nombre)
-            $xuxeEntry = $user->mochila()->where('nombre', 'Xuxe')->first();
-            if ($xuxeEntry) {
-                $xuxeEntry->increment('cantidad', 10);
-            } else {
-                $user->mochila()->create([
-                    'nombre' => 'Xuxe',
-                    'tipo' => 'item',
-                    'cantidad' => 10
-                ]);
-            }
-
-            // 2. Dar Xuxemon Aleatorio Pequeño
-            $xuxemonAlea = \App\Models\Xuxemon::inRandomOrder()->first();
-            if ($xuxemonAlea) {
-                $user->mochila()->create([
-                    'nombre' => $xuxemonAlea->nombre,
-                    'tipo' => 'xuxemon',
-                    'tamano' => 'Pequeño',
-                    'cantidad' => 1
-                ]);
-            }
-
-            // 3. Actualizar fecha de la última recompensa
-            $user->last_reward_at = $now;
-            $user->save();
+            $dailyRewardService->grantIfEligible($user, $now);
         }
 
         $this->info('Proceso completado.');
