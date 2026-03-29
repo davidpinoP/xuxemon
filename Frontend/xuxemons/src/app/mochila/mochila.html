@@ -40,8 +40,8 @@
     <!-- ═══ MODAL DE ALIMENTACIÓN ═══ -->
     @if (mostrarModal) {
     <div class="modal-overlay" (click)="cerrarModal()">
-        <div class="modal-contenido" (click)="$event.stopPropagation()"
-             role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+        <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
+             role="dialog" aria-modal="true" aria-labelledby="modal-titulo" tabindex="-1">
 
             <!-- Botón cerrar (X) -->
             <button class="modal-cerrar" (click)="cerrarModal()" type="button" aria-label="Cerrar modal">✕</button>
@@ -112,6 +112,12 @@
                     <span class="preview-label">Cantidad:</span>
                     <span class="preview-valor cantidad-highlight">x{{ cantidadAlimentar }}</span>
                 </div>
+
+                @if (vaAEvolucionar()) {
+                <div class="preview-evolucion-alert">
+                    ✨ Evolucionará a <strong>{{ getNuevoTamano() }}</strong>
+                </div>
+                }
             </div>
 
             <div class="preview-botones">
@@ -156,4 +162,5 @@
         </div>
     </div>
     }
+    </main>
 </div>

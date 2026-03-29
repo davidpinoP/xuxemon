@@ -1,40 +1,43 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
 export class Mochila implements OnInit {
-
   slots: (Objeto | null)[] = [];
-
-
-  // Inventario de prueba (esto vendría de un servicio en el futuro)
-  inventarioBase: Objeto[] = [
-    { nombre: 'Xuxe Caramelo', tipo: 'Xuxe', cantidad: 12, stackable: true, imagen: '/assets/images/caramel.png' },
-    { nombre: 'Xuxe CHOCO', tipo: 'Xuxe', cantidad: 3, stackable: true, imagen: '/assets/images/choco.png' },
-    { nombre: 'Xuxe Menta', tipo: 'Xuxe', cantidad: 7, stackable: true, imagen: '/assets/images/menta.png' },
-    { nombre: 'Vacuna A', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/nube.png' },
-    { nombre: 'Vacuna B', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/piruleta_sola.png' },
-  ];
+  inventarioBase: Objeto[] = [];
 
   // ── Variables del Modal de Alimentación ──
-  mostrarModal = false;       // ¿Se muestra el modal?
-  pasoModal = 1;              // Paso 1 = selección, Paso 2 = preview
-  misXuxemons: IXuxemon[] = []; // Lista de Xuxemons del usuario
-  xuxemonSeleccionado: IXuxemon | null = null; // Xuxemon elegido
-  xuxeSeleccionada: string = '';  // Nombre de la Xuxe elegida
-  cantidadAlimentar: number = 1;  // Cantidad de Xuxes a dar
-  mensajeError: string = '';      // Para mostrar errores
+  mostrarModal = false;
+  pasoModal = 1;
+  misXuxemons: IXuxemon[] = [];
+  xuxemonSeleccionado: IXuxemon | null = null;
+  xuxeSeleccionada = '';
+  cantidadAlimentar = 1;
+  mensajeError = '';
+
+  // ── Variables Admin ──
+  isAdmin = false;
+  players: any[] = [];
+  selectedPlayerId: number | null = null;
+  tiposXuxe = [
+    { nombre: 'Xuxe', imagen: '/assets/images/caramel.png' },
+    { nombre: 'Xuxe Caramelo', imagen: '/assets/images/caramel.png' },
+    { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
+    { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' }
+  ];
+  xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
 
   constructor(
     private authService: AuthService,
@@ -43,17 +46,28 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
-
-    // Suscribirse a los slots del servicio
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
 
-    this.inventoryService.organizarMochila(this.inventarioBase);
+    this.cargarInventario();
+    this.cargarMisXuxemons();
+    this.checkUserRole();
   }
 
+  abrirModal() {
+    this.mostrarModal = true;
+    this.pasoModal = 1;
+    this.mensajeError = '';
 
-  // Cierra el modal y resetea todo
+    setTimeout(() => {
+      const primerCampo = document.getElementById('select-xuxemon') as HTMLElement | null;
+      if (primerCampo) {
+        primerCampo.focus();
+      }
+    }, 0);
+  }
+
   cerrarModal() {
     this.mostrarModal = false;
     this.pasoModal = 1;
@@ -63,24 +77,45 @@ export class Mochila implements OnInit {
     this.mensajeError = '';
   }
 
-  // Obtener las Xuxes disponibles del inventario (solo tipo 'Xuxe')
+  cargarInventario() {
+    this.authService.getProfile().subscribe({
+      next: (user: any) => {
+        const mochila = Array.isArray(user?.mochila) ? user.mochila : [];
+        this.inventarioBase = this.convertirMochilaAObjetos(mochila);
+        this.inventoryService.organizarMochila(this.inventarioBase);
+      },
+      error: () => {
+        this.inventarioBase = [];
+        this.inventoryService.organizarMochila(this.inventarioBase);
+      }
+    });
+  }
+
+  cargarMisXuxemons() {
+    this.xuxemonService.getMisXuxemons().subscribe({
+      next: (xuxemons: IXuxemon[]) => {
+        this.misXuxemons = xuxemons;
+      },
+      error: () => {
+        this.misXuxemons = [];
+      }
+    });
+  }
+
   getXuxesDisponibles(): Objeto[] {
     return this.inventarioBase.filter(item => item.tipo === 'Xuxe' && item.cantidad > 0);
   }
 
-  // Obtener la cantidad máxima de la Xuxe seleccionada
   getMaxCantidad(): number {
     const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
     return xuxe ? xuxe.cantidad : 0;
   }
 
-  // Obtener la imagen de la Xuxe seleccionada
   getImagenXuxe(): string {
     const xuxe = this.tiposXuxe.find(x => x.nombre === this.xuxeSeleccionada);
     return xuxe?.imagen || '';
   }
 
-  // Pasar al paso 2 (preview) con validación
   irAPreview() {
     this.mensajeError = '';
 
@@ -101,34 +136,120 @@ export class Mochila implements OnInit {
       return;
     }
 
-    this.pasoModal = 2; // Ir al preview
+    this.pasoModal = 2;
   }
 
-  // Volver al paso 1 desde el preview
   volverASeleccion() {
     this.pasoModal = 1;
   }
 
-  // Confirmar la alimentación: descontar del inventario
-  confirmarAlimentacion() {
-    // Buscar la Xuxe en el inventario y restar la cantidad
-    const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
-    if (xuxe) {
-      xuxe.cantidad -= this.cantidadAlimentar;
+  vaAEvolucionar(): boolean {
+    if (!this.xuxemonSeleccionado) {
+      return false;
     }
 
-    // Reorganizar la mochila para reflejar el cambio
-    this.inventoryService.organizarMochila(this.inventarioBase);
+    const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
+    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+    const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
 
-    alert(`¡${this.xuxemonSeleccionado?.nombre} ha sido alimentado con ${this.cantidadAlimentar}x ${this.xuxeSeleccionada}!`);
-    this.cerrarModal();
+    if (tamanoActual === 'pequeño' && nuevasComidas >= 3) {
+      return true;
+    }
+
+    if (tamanoActual === 'mediano' && nuevasComidas >= 5) {
+      return true;
+    }
+
+    return false;
   }
 
-  // ── Métodos existentes (Admin) ──
+  getNuevoTamano(): string {
+    if (!this.xuxemonSeleccionado) {
+      return '';
+    }
+
+    const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
+    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+
+    if (nuevasComidas >= 5) {
+      return 'Grande';
+    }
+
+    if (nuevasComidas >= 3) {
+      return 'Mediano';
+    }
+
+    return this.xuxemonSeleccionado.tamano || 'Pequeño';
+  }
+
+  confirmarAlimentacion() {
+    if (!this.xuxemonSeleccionado) {
+      return;
+    }
+
+    this.xuxemonService.alimentarXuxemon(
+      this.xuxemonSeleccionado.id,
+      this.xuxeSeleccionada,
+      this.cantidadAlimentar
+    ).subscribe({
+      next: (respuesta: any) => {
+        const nombre = this.xuxemonSeleccionado?.nombre || 'Tu Xuxemon';
+        const mensaje = respuesta?.evoluciono
+          ? `${nombre} ha evolucionado a ${respuesta?.xuxemon?.tamano}.`
+          : `${nombre} ha sido alimentado correctamente.`;
+
+        this.cargarInventario();
+        this.cargarMisXuxemons();
+        this.cerrarModal();
+        alert(mensaje);
+      },
+      error: (error: any) => {
+        this.mensajeError = error?.error?.message || 'No se ha podido alimentar al Xuxemon.';
+      }
+    });
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape() {
+    if (this.mostrarModal) {
+      this.cerrarModal();
+    }
+  }
+
+  trapFocus(event: KeyboardEvent) {
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const modal = document.querySelector('.modal-contenido') as HTMLElement | null;
+
+    if (!modal) {
+      return;
+    }
+
+    const focusables = modal.querySelectorAll(
+      'button, select, input, [href], textarea, [tabindex]:not([tabindex="-1"])'
+    );
+
+    if (focusables.length === 0) {
+      return;
+    }
+
+    const primero = focusables[0] as HTMLElement;
+    const ultimo = focusables[focusables.length - 1] as HTMLElement;
+
+    if (event.shiftKey && document.activeElement === primero) {
+      event.preventDefault();
+      ultimo.focus();
+    } else if (!event.shiftKey && document.activeElement === ultimo) {
+      event.preventDefault();
+      primero.focus();
+    }
+  }
 
   checkUserRole() {
     this.authService.me().subscribe({
-      next: (user) => {
+      next: (user: any) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
           this.loadPlayers();
@@ -137,6 +258,16 @@ export class Mochila implements OnInit {
     });
   }
 
+  loadPlayers() {
+    this.authService.getUsers().subscribe({
+      next: (users: any[]) => {
+        this.players = users;
+      },
+      error: () => {
+        this.players = [];
+      }
+    });
+  }
 
   addXuxesToPlayer() {
     if (!this.selectedPlayerId) return;
@@ -180,5 +311,46 @@ export class Mochila implements OnInit {
       },
       error: () => alert('Error al actualizar el inventario.')
     });
+  }
+
+  private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
+    const objetos: Objeto[] = [];
+
+    for (const item of mochila) {
+      if (item?.tipo === 'xuxemon') {
+        continue;
+      }
+
+      const nombre = item?.nombre || 'Item';
+      const esVacuna = nombre.toLowerCase().includes('vacuna');
+
+      objetos.push({
+        nombre,
+        tipo: esVacuna ? 'Vacuna' : 'Xuxe',
+        cantidad: Number(item?.cantidad || 1),
+        stackable: !esVacuna,
+        imagen: this.obtenerImagenItem(nombre),
+      });
+    }
+
+    return objetos;
+  }
+
+  private obtenerImagenItem(nombre: string): string {
+    const nombreNormalizado = nombre.toLowerCase();
+
+    if (nombreNormalizado.includes('choco')) {
+      return '/assets/images/choco.png';
+    }
+
+    if (nombreNormalizado.includes('menta')) {
+      return '/assets/images/menta.png';
+    }
+
+    if (nombreNormalizado.includes('vacuna')) {
+      return '/assets/images/nube.png';
+    }
+
+    return '/assets/images/caramel.png';
   }
 }

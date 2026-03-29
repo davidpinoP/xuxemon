@@ -1,4 +1,4 @@
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase" *ngIf="xuxemon">
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" *ngIf="xuxemon">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
@@ -9,9 +9,9 @@
     <div class="imagen-container">
         <div class="circle-bg">
             @if (xuxemon.imagen) {
-            <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img">
+            <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase">
             } @else {
-            <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder">
+            <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
             }
         </div>
     </div>
@@ -94,4 +94,3 @@
     }
 
 </article>
-}

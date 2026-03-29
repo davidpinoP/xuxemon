@@ -42,6 +42,21 @@ export class XuxemonService {
         return this.xuxemonsSubject.value;
     }
 
+    getMisXuxemons(): Observable<IXuxemon[]> {
+        return this.http.get<IXuxemon[]>(`${this.apiUrl}/user/xuxemons`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    alimentarXuxemon(id: number, xuxe: string, cantidad: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/xuxemons/${id}/alimentar`, {
+            xuxe,
+            cantidad
+        }, {
+            headers: this.getHeaders()
+        });
+    }
+
     getXuxemonPorId(id: number): Observable<IXuxemon> {
         return this.http.get<IXuxemon>(`${this.apiUrl}/xuxemons/${id}`, {
             headers: this.getHeaders()

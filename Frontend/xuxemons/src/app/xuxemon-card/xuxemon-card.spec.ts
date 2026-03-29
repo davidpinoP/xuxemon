@@ -1,19 +1,25 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { XuxemonCard } from './xuxemon-card';
+import { XuxemonCardComponent } from './xuxemon-card';
 
 describe('XuxemonCard', () => {
-  let component: XuxemonCard;
-  let fixture: ComponentFixture<XuxemonCard>;
+  let component: XuxemonCardComponent;
+  let fixture: ComponentFixture<XuxemonCardComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [XuxemonCard]
+      imports: [XuxemonCardComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(XuxemonCard);
+    fixture = TestBed.createComponent(XuxemonCardComponent);
     component = fixture.componentInstance;
+    component.xuxemon = {
+      id: 1,
+      nombre: 'Demo',
+      tipo: 'agua',
+      tamano: 'Pequeño'
+    };
     fixture.detectChanges();
   });
 

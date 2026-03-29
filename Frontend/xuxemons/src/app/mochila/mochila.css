@@ -376,6 +376,29 @@
     font-size: 1.2rem;
 }
 
+.preview-evolucion-alert {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    text-align: center;
+    font-weight: 700;
+    color: #5a3acb;
+    background: linear-gradient(135deg, #f7f3ff, #ece4ff);
+    animation: brilloPreview 1s ease-in-out infinite alternate;
+}
+
+@keyframes brilloPreview {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 0 rgba(124, 108, 231, 0.15);
+    }
+
+    to {
+        transform: scale(1.02);
+        box-shadow: 0 8px 20px rgba(124, 108, 231, 0.2);
+    }
+}
+
 /* Botones del preview */
 .preview-botones {
     display: flex;
