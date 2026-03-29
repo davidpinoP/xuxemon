@@ -15,6 +15,7 @@ export class XuxemonCardComponent {
   @Output() evolucionar$ = new EventEmitter<{xuxemonId: number, nuevoTamano: string, coste: number}>();
 
   evolucionando: boolean = false;
+  imagenConError = false;
 
   get tipoIcono(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return '?';
@@ -49,6 +50,30 @@ export class XuxemonCardComponent {
     }
 
     return 'tamano-render-pequeno';
+  }
+
+  get imagenMostrada(): string {
+    if (!this.xuxemon) {
+      return '';
+    }
+
+    const imagenBase = this.xuxemon.imagen || `/imagenes/assets/${this.xuxemon.id}.png`;
+
+    if (this.imagenConError) {
+      return imagenBase;
+    }
+
+    const tamano = (this.xuxemon.tamano || 'Pequeño').toLowerCase();
+
+    if (tamano === 'grande') {
+      return this.crearRutaPorTamano(imagenBase, 'grande');
+    }
+
+    if (tamano === 'pequeño') {
+      return this.crearRutaPorTamano(imagenBase, 'pequeno');
+    }
+
+    return imagenBase;
   }
 
   getStatValue(stat: string): number {
@@ -100,5 +125,22 @@ export class XuxemonCardComponent {
       });
       this.evolucionando = false;
     }, 1500);
+  }
+
+  onImageError(): void {
+    this.imagenConError = true;
+  }
+
+  private crearRutaPorTamano(imagenBase: string, tamano: 'pequeno' | 'grande'): string {
+    const indicePunto = imagenBase.lastIndexOf('.');
+
+    if (indicePunto === -1) {
+      return `${imagenBase}-${tamano}-ia.png`;
+    }
+
+    const nombre = imagenBase.substring(0, indicePunto);
+    const extension = imagenBase.substring(indicePunto);
+
+    return `${nombre}-${tamano}-ia${extension}`;
   }
 }

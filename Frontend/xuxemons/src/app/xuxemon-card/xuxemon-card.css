@@ -1,20 +1,350 @@
+:host {
+    display: block;
+    height: 100%;
+}
+
+.tarjeta-xuxemon {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
+    border-radius: 28px;
+    border: 1px solid rgba(124, 108, 240, 0.14);
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(90, 58, 203, 0.09);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+}
+
+.tarjeta-xuxemon:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 26px 46px rgba(90, 58, 203, 0.16);
+}
+
+.tarjeta-xuxemon.evolucionando {
+    pointer-events: none;
+}
+
+.tarjeta-cabecera {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #ece8fb 0%, #f7f5ff 100%);
+    border-bottom: 1px solid rgba(124, 108, 240, 0.08);
+}
+
+.tipo-agua .tarjeta-cabecera {
+    background: linear-gradient(135deg, #dff1fb 0%, #eff8ff 100%);
+}
+
+.tipo-tierra .tarjeta-cabecera {
+    background: linear-gradient(135deg, #efe4db 0%, #f8f2ed 100%);
+}
+
+.tipo-aire .tarjeta-cabecera {
+    background: linear-gradient(135deg, #e7eff6 0%, #f3f8fc 100%);
+}
+
+.tarjeta-tipo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.78);
+    color: #5f5a76;
+    font-size: 0.83rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.tarjeta-id {
+    color: #9a93b6;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.imagen-container {
+    padding: 24px 24px 10px;
+    display: flex;
+    justify-content: center;
+}
+
+.circle-bg {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: radial-gradient(circle at top, #ffffff 0%, #f1eefb 65%, #e3ddf6 100%);
+    border: 4px solid #d8d3ee;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 6px 10px rgba(255, 255, 255, 0.78), 0 14px 28px rgba(90, 58, 203, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.tarjeta-xuxemon:hover .circle-bg {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: inset 0 6px 10px rgba(255, 255, 255, 0.78), 0 18px 32px rgba(90, 58, 203, 0.12);
+}
+
+.xuxemon-img {
+    width: 82%;
+    height: 82%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 12px rgba(63, 42, 148, 0.12));
+}
+
+.xuxemon-img.placeholder {
+    opacity: 0.45;
+}
+
+.xuxemon-nombre {
+    margin: 2px 20px 6px;
+    color: #171628;
+    font-size: 1.45rem;
+    font-weight: 800;
+    text-align: center;
+    letter-spacing: -0.04em;
+}
+
+.xuxemon-descripcion {
+    margin: 0 22px 16px;
+    color: #7e7896;
+    font-size: 0.92rem;
+    line-height: 1.45;
+    text-align: center;
+    min-height: 54px;
+}
+
 .badge-enfermedad {
-  background-color: #ff4d4d;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.9em;
-  text-align: center;
-  margin: 10px 0;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-  display: inline-block;
-  animation: latido 1.5s infinite;
+    align-self: center;
+    margin: 0 auto 12px;
+    background: linear-gradient(135deg, #ff6f7d, #e74c61);
+    color: white;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    text-align: center;
+    box-shadow: 0 10px 18px rgba(231, 76, 97, 0.18);
+    display: inline-block;
+    animation: latido 1.5s infinite;
+}
+
+.stats-container {
+    margin: 0 18px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8f6ff;
+    border: 1px solid #ece8fb;
+    border-radius: 22px;
+}
+
+.stat-row {
+    display: grid;
+    grid-template-columns: 92px 1fr 34px;
+    align-items: center;
+    gap: 8px;
+}
+
+.stat-label {
+    color: #756f8b;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.stat-bar-bg {
+    height: 9px;
+    background-color: #ece8f8;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.stat-bar {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.8s ease;
+}
+
+.stat-vida {
+    background: linear-gradient(90deg, #ff7b7b, #ef5f79);
+}
+
+.stat-ataque {
+    background: linear-gradient(90deg, #ffb24c, #f08d2d);
+}
+
+.stat-defensa {
+    background: linear-gradient(90deg, #69b7ff, #4788ec);
+}
+
+.stat-velocidad {
+    background: linear-gradient(90deg, #74d689, #49b96a);
+}
+
+.stat-valor {
+    color: #9c97b2;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-align: right;
+}
+
+.evolucion-container {
+    margin: 18px 18px 20px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: linear-gradient(180deg, #f8f5ff 0%, #ffffff 100%);
+    border: 1px solid rgba(124, 108, 240, 0.16);
+    border-radius: 22px;
+}
+
+.tamano-badge {
+    align-self: flex-start;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(124, 108, 240, 0.12);
+    color: #5b3cc8;
+    font-size: 0.82rem;
+    font-weight: 700;
+}
+
+.evolucion-info {
+    color: #706987;
+    font-size: 0.92rem;
+    line-height: 1.45;
+}
+
+.evolucion-max {
+    color: #47a968;
+    font-weight: 700;
+}
+
+.btn-evolucionar {
+    width: 100%;
+    border: none;
+    border-radius: 16px;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #8b7ff3, #6b53e0);
+    color: white;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 14px 24px rgba(90, 58, 203, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-evolucionar:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 28px rgba(90, 58, 203, 0.24);
+}
+
+.btn-evolucionar:disabled {
+    cursor: not-allowed;
+    background: #d4cef0;
+    box-shadow: none;
+    opacity: 0.82;
+}
+
+.evolucion-overlay {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(244, 242, 251, 0.88);
+    backdrop-filter: blur(3px);
+}
+
+.particula {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #ffffff 0%, #a494ff 55%, #7b63ef 100%);
+    box-shadow: 0 0 18px rgba(123, 99, 239, 0.45);
+    animation: flotar 1.4s ease-in-out infinite;
+}
+
+.particula:nth-child(1) {
+    top: 20%;
+    left: 24%;
+}
+
+.particula:nth-child(2) {
+    top: 28%;
+    right: 22%;
+    animation-delay: 0.2s;
+}
+
+.particula:nth-child(3) {
+    bottom: 26%;
+    left: 20%;
+    animation-delay: 0.35s;
+}
+
+.particula:nth-child(4) {
+    bottom: 20%;
+    right: 24%;
+    animation-delay: 0.55s;
+}
+
+.particula:nth-child(5) {
+    top: 14%;
+    left: 48%;
+    animation-delay: 0.15s;
+}
+
+.texto-evolucion {
+    position: relative;
+    z-index: 1;
+    padding: 14px 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #5a3acb;
+    font-size: 1rem;
+    font-weight: 800;
+    box-shadow: 0 18px 28px rgba(90, 58, 203, 0.12);
 }
 
 @keyframes latido {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes flotar {
+    0% {
+        transform: translateY(0) scale(0.9);
+        opacity: 0.75;
+    }
+
+    50% {
+        transform: translateY(-14px) scale(1.08);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(0) scale(0.92);
+        opacity: 0.75;
+    }
 }
 
 .transition-size {
@@ -26,11 +356,30 @@
 }
 
 .tamano-render-mediano {
-    transform: scale(1.2);
-    filter: drop-shadow(0 0 8px rgba(90, 58, 203, 0.35));
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 8px rgba(90, 58, 203, 0.3));
 }
 
 .tamano-render-grande {
-    transform: scale(1.4);
-    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+    transform: scale(1.34);
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.34));
+}
+
+@media (max-width: 768px) {
+    .tarjeta-xuxemon {
+        border-radius: 24px;
+    }
+
+    .circle-bg {
+        width: 132px;
+        height: 132px;
+    }
+
+    .xuxemon-nombre {
+        font-size: 1.3rem;
+    }
+
+    .stat-row {
+        grid-template-columns: 82px 1fr 30px;
+    }
 }

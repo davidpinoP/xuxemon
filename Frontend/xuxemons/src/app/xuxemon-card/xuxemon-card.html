@@ -9,7 +9,8 @@
     <div class="imagen-container">
         <div class="circle-bg">
             @if (xuxemon.imagen) {
-            <img [src]="xuxemon.imagen" [alt]="xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase">
+            <img [src]="imagenMostrada" [alt]="xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
+                (error)="onImageError()">
             } @else {
             <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
             }
