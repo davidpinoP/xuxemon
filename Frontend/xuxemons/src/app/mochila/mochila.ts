@@ -4,20 +4,20 @@ import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
-import { FormsModule } from '@angular/forms'; // 👈 Añadido para que funcione el HTML de Admin
-import { RouterLink } from '@angular/router'; // 👈 Añadido para solucionar el error de importación
+import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink], // 👈 Añadidos aquí
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
 export class Mochila implements OnInit {
   slots: (Objeto | null)[] = [];
 
-  // Inventario de prueba (esto vendría de un servicio en el futuro)
+  // Inventario de prueba
   inventarioBase: Objeto[] = [
     { nombre: 'Xuxe Caramelo', tipo: 'Xuxe', cantidad: 12, stackable: true, imagen: '/assets/images/caramel.png' },
     { nombre: 'Xuxe CHOCO', tipo: 'Xuxe', cantidad: 3, stackable: true, imagen: '/assets/images/choco.png' },
@@ -26,7 +26,7 @@ export class Mochila implements OnInit {
     { nombre: 'Vacuna B', tipo: 'Vacuna', cantidad: 1, stackable: false, imagen: '/assets/images/piruleta_sola.png' },
   ];
 
-  // 👇 VARIABLES RESTAURADAS TRAS EL MERGE 👇
+  // ── Variables de Admin ──
   isAdmin: boolean = false;
   players: any[] = [];
   selectedPlayerId: number | null = null;
@@ -36,16 +36,21 @@ export class Mochila implements OnInit {
     { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
     { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' },
   ];
-  // 👆 FIN VARIABLES RESTAURADAS 👆
 
   // ── Variables del Modal de Alimentación ──
-  mostrarModal = false;       // ¿Se muestra el modal?
-  pasoModal = 1;              // Paso 1 = selección, Paso 2 = preview
-  misXuxemons: IXuxemon[] = []; // Lista de Xuxemons del usuario
-  xuxemonSeleccionado: IXuxemon | null = null; // Xuxemon elegido
-  xuxeSeleccionada: string = '';  // Nombre de la Xuxe elegida
-  cantidadAlimentar: number = 1;  // Cantidad de Xuxes a dar
-  mensajeError: string = '';      // Para mostrar errores
+  mostrarModal = false;
+  pasoModal = 1;
+  misXuxemons: IXuxemon[] = [];
+  xuxemonSeleccionado: IXuxemon | null = null;
+  xuxeSeleccionada: string = '';
+  cantidadAlimentar: number = 1;
+  mensajeError: string = '';
+
+  // ═══ VARIABLES Y FUNCIONES DEL HOSPITAL (VACUNAS) ═══
+  mostrarModalVacuna = false;
+  xuxemonEnfermoSeleccionado: IXuxemon | null = null;
+  vacunaSeleccionada: string = '';
+  mensajeErrorVacuna: string = '';
 
   constructor(
     private authService: AuthService,
@@ -54,28 +59,81 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
-    // Suscribirse a los slots del servicio
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
 
     this.inventoryService.organizarMochila(this.inventarioBase);
-    this.checkUserRole(); // 👈 Comprobamos si es admin al cargar
+    this.checkUserRole();
   }
 
-// Abre el modal y carga los Xuxemons del usuario
+  // ── Funciones del Hospital ──
+
+  abrirModalVacuna() {
+    this.mostrarModalVacuna = true;
+    this.xuxemonService.getXuxemons().subscribe({
+      next: (data: IXuxemon[]) => this.misXuxemons = data,
+      error: (err) => console.error('Error al cargar pacientes', err)
+    });
+  }
+
+  cerrarModalVacuna() {
+    this.mostrarModalVacuna = false;
+    this.xuxemonEnfermoSeleccionado = null;
+    this.vacunaSeleccionada = '';
+    this.mensajeErrorVacuna = '';
+  }
+
+  getVacunasDisponibles(): Objeto[] {
+    return this.inventarioBase.filter(item => item.tipo === 'Vacuna' && item.cantidad > 0);
+  }
+
+  getXuxemonsEnfermos(): IXuxemon[] {
+    return this.misXuxemons.filter(x => x.enfermedad);
+  }
+
+  confirmarCuracion() {
+    this.mensajeErrorVacuna = '';
+
+    if (!this.xuxemonEnfermoSeleccionado) {
+      this.mensajeErrorVacuna = 'Selecciona un paciente.';
+      return;
+    }
+    if (!this.vacunaSeleccionada) {
+      this.mensajeErrorVacuna = 'Selecciona una vacuna del inventario.';
+      return;
+    }
+
+    // Restar del inventario
+    const vacuna = this.inventarioBase.find(item => item.nombre === this.vacunaSeleccionada);
+    if (vacuna) {
+      vacuna.cantidad -= 1;
+    }
+    this.inventoryService.organizarMochila(this.inventarioBase);
+
+    // Curar
+    const nombreCurado = this.xuxemonEnfermoSeleccionado.nombre;
+    this.xuxemonEnfermoSeleccionado.enfermedad = undefined;
+
+    alert(`¡Bien hecho! ${nombreCurado} ha sido curado exitosamente con ${this.vacunaSeleccionada}. ¡Ya puede volver a comer chuches!`);
+    
+    // (Llamada al backend)
+    // this.xuxemonService.curarXuxemon(this.xuxemonEnfermoSeleccionado.id, this.vacunaSeleccionada).subscribe(...);
+
+    this.cerrarModalVacuna();
+  }
+
+  // ── Funciones de Alimentación ──
+
   abrirModal() {
     this.mostrarModal = true;
     this.pasoModal = 1;
-    
-    // Cargamos los Xuxemons del usuario para que pueda elegir a quién darle la chuche
     this.xuxemonService.getXuxemons().subscribe({
       next: (data: IXuxemon[]) => this.misXuxemons = data,
       error: (err) => console.error('Error al cargar mis xuxemons en el modal', err)
     });
   }
 
-  // Cierra el modal y resetea todo
   cerrarModal() {
     this.mostrarModal = false;
     this.pasoModal = 1;
@@ -85,18 +143,15 @@ export class Mochila implements OnInit {
     this.mensajeError = '';
   }
 
-  // Obtener las Xuxes disponibles del inventario (solo tipo 'Xuxe')
   getXuxesDisponibles(): Objeto[] {
     return this.inventarioBase.filter(item => item.tipo === 'Xuxe' && item.cantidad > 0);
   }
 
-  // Obtener la cantidad máxima de la Xuxe seleccionada
   getMaxCantidad(): number {
     const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
     return xuxe ? xuxe.cantidad : 0;
   }
 
-  // Obtener la imagen de la Xuxe seleccionada
   getImagenXuxe(): string {
     const xuxe = this.tiposXuxe.find((x: any) => x.nombre === this.xuxeSeleccionada);
     return xuxe?.imagen || '';
@@ -110,12 +165,10 @@ export class Mochila implements OnInit {
       return;
     }
 
-    //  NUEVA REGLA: EL HOSPITAL (Kenneth) 
     if (this.xuxemonSeleccionado.enfermedad) {
       this.mensajeError = `¡Oh no! ${this.xuxemonSeleccionado.nombre} tiene ${this.xuxemonSeleccionado.enfermedad}. ¡Cúralo primero con una vacuna!`;
       return;
     }
-    // FIN DE LA NUEVA REGLA 
 
     if (!this.xuxeSeleccionada) {
       this.mensajeError = 'Selecciona una Xuxe';
@@ -130,30 +183,26 @@ export class Mochila implements OnInit {
       return;
     }
 
-    this.pasoModal = 2; // Ir al preview
+    this.pasoModal = 2;
   }
 
-  // Volver al paso 1 desde el preview
   volverASeleccion() {
     this.pasoModal = 1;
   }
 
-  // Confirmar la alimentación: descontar del inventario
   confirmarAlimentacion() {
-    // Buscar la Xuxe en el inventario y restar la cantidad
     const xuxe = this.inventarioBase.find(item => item.nombre === this.xuxeSeleccionada);
     if (xuxe) {
       xuxe.cantidad -= this.cantidadAlimentar;
     }
 
-    // Reorganizar la mochila para reflejar el cambio
     this.inventoryService.organizarMochila(this.inventarioBase);
 
     alert(`¡${this.xuxemonSeleccionado?.nombre} ha sido alimentado con ${this.cantidadAlimentar}x ${this.xuxeSeleccionada}!`);
     this.cerrarModal();
   }
 
-  // ── Métodos existentes (Admin) ──
+  // ── Funciones de Admin ──
 
   checkUserRole() {
     this.authService.me().subscribe({
@@ -166,7 +215,6 @@ export class Mochila implements OnInit {
     });
   }
 
-  // 👇 MÉTODO RESTAURADO TRAS EL MERGE 👇
   loadPlayers() {
     if (typeof (this.authService as any).getUsers === 'function') {
       (this.authService as any).getUsers().subscribe({
@@ -183,12 +231,11 @@ export class Mochila implements OnInit {
     if (!player) return;
 
     let inventory = player.inventory || [];
-
     const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
     const availableSlots = 20 - totalSlotsUsed;
 
     if (availableSlots <= 0) {
-      alert('La mochila del jugador está llena. No se pueden añadir más Xuxes.');
+      alert('La mochila del jugador está llena.');
       return;
     }
 
@@ -217,7 +264,7 @@ export class Mochila implements OnInit {
           alert('Xuxes añadidas correctamente.');
           this.loadPlayers();
         },
-        error: () => alert('Error al actualizar el inventario.')
+        error: () => alert('Error al actualizar.')
       });
     }
   }
