@@ -104,7 +104,7 @@ class DailyRewardService
     public function getRewardHour(): int
     {
         $rewardHour = Config::getInt('reward_hour', 8);
-
+        
         if ($rewardHour < 0) {
             return 0;
         }

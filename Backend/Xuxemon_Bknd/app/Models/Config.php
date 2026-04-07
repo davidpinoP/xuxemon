@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Exception; 
 
 class Config extends Model
 {
@@ -10,8 +11,12 @@ class Config extends Model
 
     public static function getValue(string $key, $default = null)
     {
-        $value = self::where('key', $key)->value('value');
-        return $value !== null ? $value : $default;
+        try {
+            $value = self::where('key', $key)->value('value');
+            return $value !== null ? $value : $default;
+        } catch (Exception $e) {
+            return $default;
+        }
     }
 
     public static function getInt(string $key, int $default): int
