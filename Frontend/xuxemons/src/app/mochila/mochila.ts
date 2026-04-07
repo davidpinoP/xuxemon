@@ -303,12 +303,11 @@ export class Mochila implements OnInit {
     if (!player) return;
 
     let inventory = player.inventory || [];
-
     const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
     const availableSlots = 20 - totalSlotsUsed;
 
     if (availableSlots <= 0) {
-      alert('La mochila del jugador está llena. No se pueden añadir más Xuxes.');
+      alert('La mochila del jugador está llena.');
       return;
     }
 

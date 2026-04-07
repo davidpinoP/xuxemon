@@ -157,6 +157,9 @@ class XuxemonController extends Controller
             $entradaMochila->save();
         }
 
+        // Guardamos si no se ha enfermado
+        $xuxemon->save();
+
         return response()->json([
             'message' => 'Xuxemon alimentado correctamente.',
             'evoluciono' => $tamanoAnterior !== $registro->tamano,
