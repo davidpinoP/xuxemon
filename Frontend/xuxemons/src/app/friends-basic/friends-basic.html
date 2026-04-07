@@ -1,0 +1,51 @@
+<section class="friends-content">
+  <h2 class="page-title">Amigos</h2>
+  <section class="search-panel" aria-labelledby="search-title">
+    <label for="friend-search" class="search-label" id="search-title">Buscar amigos</label>
+    <input
+      id="friend-search"
+      type="text"
+      class="search-input"
+      [formControl]="searchControl"
+      placeholder="Buscar amigos"
+    >
+
+    <div class="search-status" aria-live="polite">
+      <p>{{ mensaje }}</p>
+    </div>
+  </section>
+
+  <section class="cards-section" aria-label="Lista de amigos">
+    <div class="cards-grid">
+      @for (card of tarjetasVisibles; track card.playerId) {
+        <article class="friend-card">
+          <div class="friend-top">
+            <div class="friend-avatar" aria-hidden="true"></div>
+
+            <div class="friend-info">
+              <h2>{{ card.name }}</h2>
+              <p>{{ card.playerId }}</p>
+            </div>
+          </div>
+
+          @if (card.canAdd) {
+            <button type="button" class="btn-add">Anadir Amigo</button>
+          } @else {
+            <div class="friend-actions">
+              <button type="button" class="btn-light">Mensaje</button>
+              <button type="button" class="btn-light">Ver Perfil</button>
+            </div>
+          }
+        </article>
+      }
+    </div>
+
+    <div class="pagination">
+      <button type="button" class="page-btn page-btn-light">&lt;</button>
+      <button type="button" class="page-btn page-btn-active">1</button>
+      <button type="button" class="page-btn">2</button>
+      <button type="button" class="page-btn">3</button>
+      <button type="button" class="page-btn">&gt;</button>
+    </div>
+  </section>
+</section>

@@ -16,6 +16,26 @@ class UserController extends Controller
         return response()->json($user);
     }
 
+    // Buscar usuarios por player_id para futuras amistades
+    public function searchUsers(Request $request)
+    {
+        $query = trim((string) $request->query('q', ''));
+
+        if (strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $users = \App\Models\User::query()
+            ->where('id', '!=', $request->user()->id)
+            ->where('is_active', true)
+            ->where('player_id', 'like', '%' . $query . '%')
+            ->orderBy('player_id')
+            ->limit(10)
+            ->get(['id', 'name', 'surname', 'player_id']);
+
+        return response()->json($users);
+    }
+
     // 2. Actualizar datos del perfil
     public function update(Request $request)
     {
