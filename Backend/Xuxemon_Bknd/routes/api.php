@@ -42,6 +42,10 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
     Route::get('/amigos', [FriendRequestController::class, 'listarAmigos']);
     Route::delete('/amigos/{id}', [FriendRequestController::class, 'eliminarAmigo']);
+    
+    // Aliases en inglés para compatibilidad
+    Route::get('/friends', [FriendRequestController::class, 'listarAmigos']);
+    Route::delete('/friends/{id}', [FriendRequestController::class, 'eliminarAmigo']);
 
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);
