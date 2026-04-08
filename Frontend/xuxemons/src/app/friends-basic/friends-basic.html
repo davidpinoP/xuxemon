@@ -1,5 +1,30 @@
 <section class="friends-content">
   <h2 class="page-title">Amigos</h2>
+
+  <section class="requests-panel" aria-labelledby="requests-title">
+    <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
+
+    @if (solicitudesPendientes.length > 0) {
+      <ul class="request-list">
+        @for (request of solicitudesPendientes; track request.id) {
+          <li class="request-card">
+            <div>
+              <p class="request-name">{{ request.name }}</p>
+              <p class="request-id">{{ request.playerId }}</p>
+            </div>
+
+            <div class="request-actions">
+              <button type="button" class="btn-accept" (click)="aceptarSolicitud(request)">Aceptar</button>
+              <button type="button" class="btn-reject" (click)="rechazarSolicitud(request)">Rechazar</button>
+            </div>
+          </li>
+        }
+      </ul>
+    } @else {
+      <p class="requests-empty">No tienes solicitudes pendientes.</p>
+    }
+  </section>
+
   <section class="search-panel" aria-labelledby="search-title">
     <label for="friend-search" class="search-label" id="search-title">Buscar amigos</label>
     <input
@@ -15,7 +40,7 @@
     </div>
   </section>
 
-  <section class="cards-section" aria-label="Lista de amigos">
+  <section class="cards-section" aria-label="Resultados de busqueda">
     <div class="cards-grid">
       @for (card of tarjetasVisibles; track card.playerId) {
         <article class="friend-card">

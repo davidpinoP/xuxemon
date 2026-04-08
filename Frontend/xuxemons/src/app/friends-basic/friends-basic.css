@@ -8,6 +8,60 @@
     gap: 24px;
 }
 
+.section-title {
+    margin: 0 0 12px;
+    font-size: 1.3rem;
+    color: #222222;
+}
+
+.requests-panel {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.request-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
+    background: #f7f6ff;
+}
+
+.request-name {
+    margin: 0 0 4px;
+    font-weight: 600;
+    color: #222222;
+}
+
+.request-id {
+    margin: 0;
+    color: #777777;
+    font-size: 0.92rem;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.requests-empty {
+    margin: 0;
+    color: #777777;
+}
+
 .page-title {
     margin: 0;
     font-size: 2.4rem;
@@ -105,6 +159,8 @@
 
 .btn-light,
 .btn-add,
+.btn-accept,
+.btn-reject,
 .page-btn {
     border: none;
     border-radius: 999px;
@@ -124,6 +180,21 @@
     padding: 10px 12px;
     background: #9488ef;
     color: #ffffff;
+}
+
+.btn-accept,
+.btn-reject {
+    padding: 10px 14px;
+}
+
+.btn-accept {
+    background: #9488ef;
+    color: #ffffff;
+}
+
+.btn-reject {
+    background: #efefef;
+    color: #333333;
 }
 
 .btn-add:disabled {
@@ -155,6 +226,20 @@
 }
 
 @media (max-width: 768px) {
+    .request-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .request-actions {
+        width: 100%;
+    }
+
+    .btn-accept,
+    .btn-reject {
+        flex: 1;
+    }
+
     .cards-grid {
         grid-template-columns: 1fr;
     }

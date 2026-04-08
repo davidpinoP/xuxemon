@@ -2,7 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
-import { FriendSearchUser, FriendsService } from '../services/friends.service';
+import {
+  FriendSearchUser,
+  FriendsService,
+  PendingFriendRequest
+} from '../services/friends.service';
 
 interface FriendCard {
   id: number;
@@ -10,6 +14,12 @@ interface FriendCard {
   playerId: string;
   canAdd: boolean;
   requestSent: boolean;
+}
+
+interface RequestCard {
+  id: number;
+  name: string;
+  playerId: string;
 }
 
 @Component({
@@ -25,6 +35,7 @@ export class FriendsBasic implements OnInit {
   mensaje = 'Escribe 3 caracteres o mas para buscar por ID.';
   resultados: FriendCard[] = [];
   tarjetasVisibles: FriendCard[] = [];
+  solicitudesPendientes: RequestCard[] = [];
 
   amigosDemo: FriendCard[] = [
     { id: 1, name: 'Laura', playerId: '#Laura1204', canAdd: false, requestSent: false },
@@ -39,6 +50,7 @@ export class FriendsBasic implements OnInit {
 
   ngOnInit(): void {
     this.tarjetasVisibles = this.amigosDemo;
+    this.cargarSolicitudesPendientes();
 
     this.searchControl.valueChanges
       .pipe(debounceTime(300), distinctUntilChanged())
@@ -88,6 +100,21 @@ export class FriendsBasic implements OnInit {
     });
   }
 
+  private cargarSolicitudesPendientes(): void {
+    this.friendsService.getPendingFriendRequests().subscribe({
+      next: (requests: PendingFriendRequest[]) => {
+        this.solicitudesPendientes = requests.map((request) => ({
+          id: request.id,
+          name: `${request.sender.name} ${request.sender.surname}`.trim(),
+          playerId: request.sender.player_id,
+        }));
+      },
+      error: () => {
+        this.solicitudesPendientes = [];
+      }
+    });
+  }
+
   enviarSolicitud(card: FriendCard): void {
     if (!card.canAdd || card.requestSent) {
       return;
@@ -100,6 +127,36 @@ export class FriendsBasic implements OnInit {
       },
       error: (error) => {
         const message = error?.error?.message || 'No se ha podido enviar la solicitud.';
+        alert(message);
+      }
+    });
+  }
+
+  aceptarSolicitud(requestCard: RequestCard): void {
+    this.friendsService.acceptFriendRequest(requestCard.id).subscribe({
+      next: (response) => {
+        this.solicitudesPendientes = this.solicitudesPendientes.filter(
+          (request) => request.id !== requestCard.id
+        );
+        alert(response.message);
+      },
+      error: (error) => {
+        const message = error?.error?.message || 'No se ha podido aceptar la solicitud.';
+        alert(message);
+      }
+    });
+  }
+
+  rechazarSolicitud(requestCard: RequestCard): void {
+    this.friendsService.rejectFriendRequest(requestCard.id).subscribe({
+      next: (response) => {
+        this.solicitudesPendientes = this.solicitudesPendientes.filter(
+          (request) => request.id !== requestCard.id
+        );
+        alert(response.message);
+      },
+      error: (error) => {
+        const message = error?.error?.message || 'No se ha podido rechazar la solicitud.';
         alert(message);
       }
     });

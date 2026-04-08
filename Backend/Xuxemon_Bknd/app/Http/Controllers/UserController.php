@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Friend;
 use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -79,6 +80,78 @@ class UserController extends Controller
         return response()->json([
             'message' => 'Solicitud enviada correctamente.'
         ], 201);
+    }
+
+    public function getPendingFriendRequests(Request $request)
+    {
+        $requests = FriendRequest::query()
+            ->where('receiver_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->with('sender:id,name,surname,player_id')
+            ->latest()
+            ->get();
+
+        return response()->json($requests);
+    }
+
+    public function acceptFriendRequest(Request $request, $id)
+    {
+        $friendRequest = FriendRequest::query()
+            ->where('id', $id)
+            ->where('receiver_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$friendRequest) {
+            return response()->json([
+                'message' => 'Solicitud no encontrada.'
+            ], 404);
+        }
+
+        $alreadyFriends = Friend::query()
+            ->where('user_id', $request->user()->id)
+            ->where('friend_id', $friendRequest->sender_id)
+            ->exists();
+
+        if (!$alreadyFriends) {
+            Friend::create([
+                'user_id' => $request->user()->id,
+                'friend_id' => $friendRequest->sender_id,
+            ]);
+
+            Friend::create([
+                'user_id' => $friendRequest->sender_id,
+                'friend_id' => $request->user()->id,
+            ]);
+        }
+
+        $friendRequest->status = 'accepted';
+        $friendRequest->save();
+
+        return response()->json([
+            'message' => 'Solicitud aceptada correctamente.'
+        ]);
+    }
+
+    public function rejectFriendRequest(Request $request, $id)
+    {
+        $friendRequest = FriendRequest::query()
+            ->where('id', $id)
+            ->where('receiver_id', $request->user()->id)
+            ->where('status', 'pending')
+            ->first();
+
+        if (!$friendRequest) {
+            return response()->json([
+                'message' => 'Solicitud no encontrada.'
+            ], 404);
+        }
+
+        $friendRequest->delete();
+
+        return response()->json([
+            'message' => 'Solicitud rechazada correctamente.'
+        ]);
     }
 
     // 2. Actualizar datos del perfil

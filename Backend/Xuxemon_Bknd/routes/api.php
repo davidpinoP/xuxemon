@@ -21,6 +21,9 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
     Route::get('/friends/search', [UserController::class, 'searchUsers']);
     Route::post('/friend-requests', [UserController::class, 'sendFriendRequest']);
+    Route::get('/friend-requests', [UserController::class, 'getPendingFriendRequests']);
+    Route::put('/friend-requests/{id}/accept', [UserController::class, 'acceptFriendRequest']);
+    Route::delete('/friend-requests/{id}', [UserController::class, 'rejectFriendRequest']);
     
     // recompensas
     Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
