@@ -100,6 +100,19 @@ export class Perfil implements OnInit {
     }
   }
 
+  eliminarAmigo(amigoId: number): void {
+    if (confirm('¿Estás seguro de que quieres eliminar a este amigo?')) {
+      this.authService.eliminarAmigo(amigoId).subscribe({
+        next: () => {
+          this.cargarAmigos(); // Refrescar lista
+        },
+        error: () => {
+          console.error('Error al eliminar amigo');
+        }
+      });
+    }
+  }
+
   volver(): void {
     this.router.navigate(['/home']);
   }

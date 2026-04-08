@@ -126,4 +126,20 @@ class FriendRequestController extends Controller
 
         return response()->json(['message' => 'Solicitud rechazada.'], 200);
     }
+
+    // Eliminar amigo
+    public function eliminarAmigo(Request $request, $id)
+    {
+        $userId = $request->user()->id;
+        $amigoId = $id;
+
+        // Borrado bidireccional
+        DB::table('amigos')->where(function ($query) use ($userId, $amigoId) {
+            $query->where('user_id', $userId)->where('amigo_id', $amigoId);
+        })->orWhere(function ($query) use ($userId, $amigoId) {
+            $query->where('user_id', $amigoId)->where('amigo_id', $userId);
+        })->delete();
+
+        return response()->json(['message' => 'Amistad eliminada correctamente.'], 200);
+    }
 }

@@ -75,4 +75,8 @@ export class AuthService {
     getAmigos(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/amigos`);
     }
+
+    eliminarAmigo(amigoId: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/amigos/${amigoId}`);
+    }
 }
