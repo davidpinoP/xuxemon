@@ -29,7 +29,13 @@
           </div>
 
           @if (card.canAdd) {
-            <button type="button" class="btn-add">Anadir Amigo</button>
+            <button type="button" class="btn-add" [disabled]="card.requestSent" (click)="enviarSolicitud(card)">
+              @if (card.requestSent) {
+                Solicitud enviada
+              } @else {
+                Anadir Amigo
+              }
+            </button>
           } @else {
             <div class="friend-actions">
               <button type="button" class="btn-light">Mensaje</button>

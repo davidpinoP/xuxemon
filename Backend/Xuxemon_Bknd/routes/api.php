@@ -20,6 +20,7 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
     Route::get('/friends/search', [UserController::class, 'searchUsers']);
+    Route::post('/friend-requests', [UserController::class, 'sendFriendRequest']);
     
     // recompensas
     Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);

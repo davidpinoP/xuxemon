@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
@@ -34,6 +35,50 @@ class UserController extends Controller
             ->get(['id', 'name', 'surname', 'player_id']);
 
         return response()->json($users);
+    }
+
+    public function sendFriendRequest(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'receiver_id' => 'required|integer|exists:users,id',
+        ]);
+
+        if ((int) $data['receiver_id'] === (int) $user->id) {
+            return response()->json([
+                'message' => 'No puedes enviarte una solicitud a ti mismo.'
+            ], 422);
+        }
+
+        $existingRequest = FriendRequest::query()
+            ->where('status', 'pending')
+            ->where(function ($query) use ($user, $data) {
+                $query->where(function ($subQuery) use ($user, $data) {
+                    $subQuery->where('sender_id', $user->id)
+                        ->where('receiver_id', $data['receiver_id']);
+                })->orWhere(function ($subQuery) use ($user, $data) {
+                    $subQuery->where('sender_id', $data['receiver_id'])
+                        ->where('receiver_id', $user->id);
+                });
+            })
+            ->first();
+
+        if ($existingRequest) {
+            return response()->json([
+                'message' => 'Ya existe una solicitud pendiente entre estos usuarios.'
+            ], 422);
+        }
+
+        FriendRequest::create([
+            'sender_id' => $user->id,
+            'receiver_id' => $data['receiver_id'],
+            'status' => 'pending',
+        ]);
+
+        return response()->json([
+            'message' => 'Solicitud enviada correctamente.'
+        ], 201);
     }
 
     // 2. Actualizar datos del perfil

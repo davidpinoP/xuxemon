@@ -9,6 +9,10 @@ export interface FriendSearchUser {
   player_id: string;
 }
 
+export interface FriendRequestResponse {
+  message: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -33,5 +37,11 @@ export class FriendsService {
 
   clearSearchResults(): void {
     this.searchResultsSubject.next([]);
+  }
+
+  sendFriendRequest(receiverId: number): Observable<FriendRequestResponse> {
+    return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests`, {
+      receiver_id: receiverId
+    });
   }
 }

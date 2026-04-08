@@ -126,6 +126,11 @@
     color: #ffffff;
 }
 
+.btn-add:disabled {
+    background: #c9c3f7;
+    cursor: default;
+}
+
 .pagination {
     display: flex;
     justify-content: center;
