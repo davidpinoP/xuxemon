@@ -51,7 +51,7 @@
                     <span class="amigo-nombre">{{ amigo.name }} {{ amigo.surname }}</span>
                     <span class="amigo-email">{{ amigo.email }}</span>
                 </div>
-                <button type="button" class="btn-eliminar-amigo" (click)="eliminarAmigo(amigo.id)" title="Eliminar amigo">
+                <button type="button" class="btn-eliminar-amigo" (click)="abrirModalEliminar(amigo)" title="Eliminar amigo">
                     &times;
                 </button>
             </li>
@@ -61,6 +61,19 @@
         <p class="sin-amigos">Aún no tienes amigos agregados.</p>
         }
     </div>
+
+    @if (mostrarModal) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <h2>¿Eliminar amigo?</h2>
+            <p>¿Estás seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de amigos?</p>
+            <div class="modal-acciones">
+                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">ELIMINAR</button>
+            </div>
+        </div>
+    </div>
+    }
     }
 
 </div>

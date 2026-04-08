@@ -23,6 +23,10 @@ export class Perfil implements OnInit {
   mensajeError = '';
   cargando = true;
   amigos: any[] = [];
+  
+  // Estado del modal
+  mostrarModal = false;
+  amigoParaEliminar: any = null;
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -100,14 +104,26 @@ export class Perfil implements OnInit {
     }
   }
 
-  eliminarAmigo(amigoId: number): void {
-    if (confirm('¿Estás seguro de que quieres eliminar a este amigo?')) {
-      this.authService.eliminarAmigo(amigoId).subscribe({
+  abrirModalEliminar(amigo: any): void {
+    this.amigoParaEliminar = amigo;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.amigoParaEliminar = null;
+  }
+
+  confirmarEliminarAmigo(): void {
+    if (this.amigoParaEliminar) {
+      this.authService.eliminarAmigo(this.amigoParaEliminar.id).subscribe({
         next: () => {
-          this.cargarAmigos(); // Refrescar lista
+          this.cargarAmigos();
+          this.cerrarModal();
         },
         error: () => {
           console.error('Error al eliminar amigo');
+          this.cerrarModal();
         }
       });
     }

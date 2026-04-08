@@ -201,3 +201,91 @@ button[type="submit"]:disabled {
     font-style: italic;
     margin-top: 10px;
 }
+
+/* Modal de Confirmación */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 350px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #333;
+    font-size: 20px;
+}
+
+.modal-content p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.5;
+    margin: 20px 0;
+}
+
+.modal-acciones {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-cancelar {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #eee;
+    color: #555;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-cancelar:hover {
+    background: #e0e0e0;
+}
+
+.btn-confirmar {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: #e74c3c;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-confirmar:hover {
+    background: #c0392b;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
