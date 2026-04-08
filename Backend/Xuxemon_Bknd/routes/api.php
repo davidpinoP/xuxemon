@@ -40,12 +40,12 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
     Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
     Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
-    Route::get('/amigos', [FriendRequestController::class, 'listarAmigos']);
-    Route::delete('/amigos/{id}', [FriendRequestController::class, 'eliminarAmigo']);
+    Route::get('/amigos', [FriendController::class, 'index']);
+    Route::delete('/amigos/{id}', [FriendController::class, 'destroy']);
     
     // Aliases en inglés para compatibilidad
-    Route::get('/friends', [FriendRequestController::class, 'listarAmigos']);
-    Route::delete('/friends/{id}', [FriendRequestController::class, 'eliminarAmigo']);
+    Route::get('/friends', [FriendController::class, 'index']);
+    Route::delete('/friends/{id}', [FriendController::class, 'destroy']);
 
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);

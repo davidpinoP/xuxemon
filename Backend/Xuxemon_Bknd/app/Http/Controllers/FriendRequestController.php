@@ -88,6 +88,22 @@ class FriendRequestController extends Controller
 
        
         
+        DB::table('friends')->insertOrIgnore([
+            [
+                'user_id' => $friendRequest->sender_id, 
+                'friend_id' => $friendRequest->receiver_id, 
+                'created_at' => now(), 
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $friendRequest->receiver_id, 
+                'friend_id' => $friendRequest->sender_id, 
+                'created_at' => now(), 
+                'updated_at' => now()
+            ],
+        ]);
+        
+        // Mantener amigos por ahora (opcional, pero mejor centralizar)
         DB::table('amigos')->insertOrIgnore([
             [
                 'user_id' => $friendRequest->sender_id, 
