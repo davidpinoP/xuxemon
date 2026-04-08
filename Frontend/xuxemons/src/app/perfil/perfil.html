@@ -43,7 +43,7 @@
         @if (amigos.length > 0) {
         <ul class="amigos-lista">
             @for (amigo of amigos; track amigo.id) {
-            <li class="amigo-item">
+            <li class="amigo-item" [class.eliminando]="amigoEnEliminacionId === amigo.id">
                 <div class="amigo-avatar">
                     {{ amigo.name.charAt(0) }}{{ amigo.surname.charAt(0) }}
                 </div>

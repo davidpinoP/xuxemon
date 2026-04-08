@@ -24,9 +24,10 @@ export class Perfil implements OnInit {
   cargando = true;
   amigos: any[] = [];
   
-  // Estado del modal
+  // Estado del modal y animaciones
   mostrarModal = false;
   amigoParaEliminar: any = null;
+  amigoEnEliminacionId: number | null = null;
 
   constructor(private authService: AuthService, private router: Router) { }
 
@@ -116,10 +117,17 @@ export class Perfil implements OnInit {
 
   confirmarEliminarAmigo(): void {
     if (this.amigoParaEliminar) {
-      this.authService.eliminarAmigo(this.amigoParaEliminar.id).subscribe({
+      const idAEliminar = this.amigoParaEliminar.id;
+      this.authService.eliminarAmigo(idAEliminar).subscribe({
         next: () => {
-          this.cargarAmigos();
+          this.amigoEnEliminacionId = idAEliminar;
           this.cerrarModal();
+          
+          // Esperar a que la animación termine antes de refrescar la lista
+          setTimeout(() => {
+            this.cargarAmigos();
+            this.amigoEnEliminacionId = null;
+          }, 400); // 400ms coincide con la duración de la animación CSS
         },
         error: () => {
           console.error('Error al eliminar amigo');
