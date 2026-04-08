@@ -37,6 +37,27 @@
         <button type="button" class="btn-volver" (click)="volver()">Volver</button>
         <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
     </div>
+
+    <div class="amigos-section">
+        <h2>Mis Amigos</h2>
+        @if (amigos.length > 0) {
+        <ul class="amigos-lista">
+            @for (amigo of amigos; track amigo.id) {
+            <li class="amigo-item">
+                <div class="amigo-avatar">
+                    {{ amigo.name.charAt(0) }}{{ amigo.surname.charAt(0) }}
+                </div>
+                <div class="amigo-info">
+                    <span class="amigo-nombre">{{ amigo.name }} {{ amigo.surname }}</span>
+                    <span class="amigo-email">{{ amigo.email }}</span>
+                </div>
+            </li>
+            }
+        </ul>
+        } @else {
+        <p class="sin-amigos">Aún no tienes amigos agregados.</p>
+        }
+    </div>
     }
 
 </div>

@@ -22,10 +22,16 @@ export class Perfil implements OnInit {
   mensajeExito = '';
   mensajeError = '';
   cargando = true;
+  amigos: any[] = [];
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    this.cargarPerfil();
+    this.cargarAmigos();
+  }
+
+  cargarPerfil(): void {
     this.authService.getProfile().subscribe({
       next: (data: any) => {
         this.formularioPerfil.patchValue({
@@ -38,6 +44,17 @@ export class Perfil implements OnInit {
       error: () => {
         this.mensajeError = 'No se pudo cargar el perfil.';
         this.cargando = false;
+      }
+    });
+  }
+
+  cargarAmigos(): void {
+    this.authService.getAmigos().subscribe({
+      next: (data: any[]) => {
+        this.amigos = data;
+      },
+      error: () => {
+        console.error('Error al cargar amigos');
       }
     });
   }

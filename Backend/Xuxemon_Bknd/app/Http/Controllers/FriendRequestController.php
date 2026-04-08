@@ -60,6 +60,14 @@ class FriendRequestController extends Controller
         return response()->json($requests, 200);
     }
 
+    // Listar mis amigos
+    public function listarAmigos(Request $request)
+    {
+        $user = $request->user();
+        $amigos = $user->amigos()->select('users.id', 'users.name', 'users.surname', 'users.email')->get();
+        return response()->json($amigos, 200);
+    }
+
     //  Aceptar solicitud y crear amistad bidireccional
     public function accept(Request $request, $id)
     {
@@ -80,16 +88,16 @@ class FriendRequestController extends Controller
 
        
         
-        DB::table('friends')->insertOrIgnore([
+        DB::table('amigos')->insertOrIgnore([
             [
                 'user_id' => $friendRequest->sender_id, 
-                'friend_id' => $friendRequest->receiver_id, 
+                'amigo_id' => $friendRequest->receiver_id, 
                 'created_at' => now(), 
                 'updated_at' => now()
             ],
             [
                 'user_id' => $friendRequest->receiver_id, 
-                'friend_id' => $friendRequest->sender_id, 
+                'amigo_id' => $friendRequest->sender_id, 
                 'created_at' => now(), 
                 'updated_at' => now()
             ],

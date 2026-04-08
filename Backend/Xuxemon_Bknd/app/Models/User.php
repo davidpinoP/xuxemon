@@ -76,4 +76,12 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Mochila::class);
     }
+
+    /**
+     * Get the user's friends.
+     */
+    public function amigos()
+    {
+        return $this->belongsToMany(User::class, 'amigos', 'user_id', 'amigo_id');
+    }
 }
