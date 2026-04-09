@@ -26,7 +26,13 @@ class ConfigController extends Controller
     // guardar varias configs a la vez
     public function store(Request $request)
     {
-        foreach ($request->all() as $key => $value) {
+        $data = $request->validate([
+            'infection_pct' => 'sometimes|numeric|min:0|max:100',
+            'evolve_xuxes' => 'sometimes|integer|min:1',
+            'reward_hour' => 'sometimes|integer|min:0|max:23',
+        ]);
+
+        foreach ($data as $key => $value) {
             Config::updateOrCreate(['key' => $key], ['value' => $value]);
         }
         return response()->json(['ok' => true]);

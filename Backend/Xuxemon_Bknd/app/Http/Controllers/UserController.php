@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use App\Services\DailyRewardService;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
@@ -59,7 +60,9 @@ class UserController extends Controller
         $user->save();
 
         // Si usas tokens (Sanctum), los borramos para cerrar sesión
-        $user->tokens()->delete();
+        if (JWTAuth::getToken()) {
+            JWTAuth::invalidate(JWTAuth::getToken());
+        }
 
         return response()->json(['message' => 'Cuenta desactivada correctamente']);
     }
@@ -77,6 +80,10 @@ class UserController extends Controller
 
         $data = $request->validate([
             'inventory' => 'required|array',
+            'inventory.*.nombre' => 'required|string|max:255',
+            'inventory.*.cantidad' => 'nullable|integer|min:1',
+            'inventory.*.tipo' => 'nullable|string|max:50',
+            'inventory.*.tamano' => 'nullable|string|max:50',
         ]);
 
         // Borrar el inventario actual en la tabla
