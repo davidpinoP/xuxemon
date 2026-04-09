@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -13,11 +12,11 @@ class FriendController extends Controller
      */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $friends = $user->friends()
+        $friends = auth('api')->user()
+            ->friends()
             ->select('users.id', 'users.name', 'users.surname', 'users.email')
             ->get();
-            
+
         return response()->json($friends, 200);
     }
 
@@ -26,7 +25,7 @@ class FriendController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $userId = $request->user()->id;
+        $userId = auth('api')->id();
         $friendId = $id;
 
         DB::table('friends')->where(function ($query) use ($userId, $friendId) {

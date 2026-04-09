@@ -5,7 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
-use App\Http\Controllers\FriendRequestController; // 👈 Importamos tu nuevo controlador
+use App\Http\Controllers\FriendRequestController;
+use App\Http\Controllers\FriendController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
