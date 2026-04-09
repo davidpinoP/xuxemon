@@ -1,6 +1,7 @@
-<div style="padding: 20px; font-family: sans-serif;">
-  <h1>panel de control admin</h1>
+<div class="admin-wrapper">
+  <h1>Panel de control admin</h1>
 
+<<<<<<< Updated upstream
   <!-- parametros -->
   <div style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px;">
     <h3>ajustes globales</h3>
@@ -9,9 +10,28 @@
       <p>xuxes para evolucion: <input type="number" formControlName="evolve_xuxes"></p>
       <p>hora recompensa: <input type="number" formControlName="reward_hour"></p>
       <button type="submit">guardar ajustes</button>
+=======
+  <fieldset class="admin-box">
+    <legend>Ajustes globales</legend>
+    <form [formGroup]="fConfig" (ngSubmit)="saveConf()" class="admin-form">
+      <label>
+        % infeccion
+        <input type="number" formControlName="infection_pct">
+      </label>
+      <label>
+        xuxes para evolucion
+        <input type="number" formControlName="evolve_xuxes">
+      </label>
+      <label>
+        hora recompensa
+        <input type="number" formControlName="reward_hour">
+      </label>
+      <button type="submit">Guardar ajustes</button>
+>>>>>>> Stashed changes
     </form>
   </div>
 
+<<<<<<< Updated upstream
   <!-- jugadores -->
   <div style="border: 1px solid #ccc; padding: 10px;">
     <h3>lista de jugadores</h3>
@@ -20,6 +40,46 @@
         <th>id</th>
         <th>nombre</th>
         <th>accion</th>
+=======
+  <fieldset class="admin-box">
+    <legend>Añadir items a jugadores</legend>
+    <div class="admin-form">
+      <label>
+        Jugador
+        <select [(ngModel)]="selectedPlayerId" name="selectedPlayerId">
+          <option [ngValue]="null">Selecciona un jugador</option>
+          @for (u of users; track u.id) {
+            <option [ngValue]="u.id">{{ u.name }} ({{ u.player_id }})</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Item
+        <select [(ngModel)]="xuxeToAdd.nombre" name="itemName">
+          @for (tipo of tiposXuxe; track tipo.nombre) {
+            <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
+          }
+        </select>
+      </label>
+
+      <label>
+        Cantidad
+        <input type="number" [(ngModel)]="xuxeToAdd.cantidad" name="itemCantidad" min="1">
+      </label>
+
+      <button type="button" (click)="addXuxesToPlayer()">Añadir item</button>
+    </div>
+  </fieldset>
+
+  <fieldset class="admin-box">
+    <legend>Lista de jugadores</legend>
+    <table class="users-table">
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Accion</th>
+>>>>>>> Stashed changes
       </tr>
       @for (u of users; track u.id) {
       <tr>
@@ -27,7 +87,11 @@
         <td>{{ u.name }}</td>
         <td>
           <input #vacName type="text" placeholder="nombre vacuna">
+<<<<<<< Updated upstream
           <button (click)="vacuna(u.id, vacName.value)">dar vacuna</button>
+=======
+          <button type="button" (click)="vacuna(u.id, vacName.value)">Dar vacuna</button>
+>>>>>>> Stashed changes
         </td>
       </tr>
       }

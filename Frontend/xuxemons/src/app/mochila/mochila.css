@@ -118,7 +118,7 @@
 /* ===== Mochila Grid ===== */
 .mochila-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 20px;
     padding: 30px;
     background: white;
@@ -128,8 +128,8 @@
 }
 
 .slot {
-    width: 90px;
-    height: 90px;
+    width: 100%;
+    aspect-ratio: 1 / 1;
     background: #f8f7ff;
     border: 2px dashed #e0ddf5;
     border-radius: 18px;
@@ -563,13 +563,12 @@
     }
 
     .slot {
-        width: 70px;
-        height: 70px;
+        width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     .mochila-grid {
-        grid-template-columns: repeat(3, 1fr);
+        grid-template-columns: repeat(4, 1fr);
     }
 }
