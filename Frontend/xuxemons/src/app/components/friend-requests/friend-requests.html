@@ -1,1 +1,46 @@
-<p>friend-requests works!</p>
+<div class="requests-container">
+  <header class="requests-header">
+    <h2>
+      Solicitudes Recibidas
+      <span class="badge" 
+            [attr.aria-label]="pendingRequests.length + ' solicitudes pendientes'">
+        {{ pendingRequests.length }}
+      </span>
+    </h2>
+  </header>
+
+  @if (mensajeAccion) {
+    <div class="action-feedback" aria-live="polite">
+      {{ mensajeAccion }}
+    </div>
+  }
+
+  <div class="requests-list">
+    @if (pendingRequests.length === 0) {
+      <div class="empty-state">
+        <p>No tienes solicitudes de amistad pendientes. 🏖️</p>
+      </div>
+    } @else {
+      @for (req of pendingRequests; track req.id) {
+        <div class="request-card" [class.fade-out]="animatingIds.has(req.id)">
+          
+          <div class="user-info">
+            <div class="avatar">
+              <img [src]="'https://ui-avatars.com/api/?name=' + req.sender.name + '&background=random'" alt="Avatar de {{ req.sender.name }}">
+            </div>
+            <div class="details">
+              <strong>{{ req.sender.name }}</strong>
+              <span>quiere ser tu amigo/a</span>
+            </div>
+          </div>
+          
+          <div class="actions">
+            <button class="btn-accept" (click)="aceptar(req.id)" aria-label="Aceptar solicitud">Aceptar</button>
+            <button class="btn-reject" (click)="rechazar(req.id)" aria-label="Rechazar solicitud">Rechazar</button>
+          </div>
+          
+        </div>
+      }
+    }
+  </div>
+</div>

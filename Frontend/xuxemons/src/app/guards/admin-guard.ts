@@ -10,7 +10,7 @@ export const adminGuard: CanActivateFn = (route, state) => {
     return true; 
   } else {
     alert(' ¡Acceso denegado! Esta zona es solo para Administradores.');
-    router.navigate(['/inicio']);
+    router.navigate(['/home']);
     return false;
   }
 };

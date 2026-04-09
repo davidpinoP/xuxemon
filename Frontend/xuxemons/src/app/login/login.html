@@ -6,7 +6,7 @@
     <img src="/imagenes/avatar.png" alt="Logo de Xuxemons">
   </div>
 
-    <form [formGroup]="formulariLogin" aria-label="Formulario de inicio de sesión">
+    <form [formGroup]="formulariLogin" (ngSubmit)="Submit()" aria-label="Formulario de inicio de sesión">
         <label for="player_id">Player ID</label>
         <div class="input-group">
             <input id="player_id" type="text" formControlName="player_id" placeholder="Player ID">
@@ -25,7 +25,7 @@
             }
         </div>
 
-        <button type="submit" (click)="Submit()" [disabled]="formulariLogin.invalid">ENTRAR</button>
+        <button type="submit" [disabled]="formulariLogin.invalid">ENTRAR</button>
 
         @if (error_msg) {
         <div class="error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
