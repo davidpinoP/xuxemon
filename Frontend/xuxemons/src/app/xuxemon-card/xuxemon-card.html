@@ -1,4 +1,6 @@
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" *ngIf="xuxemon">
+@if (xuxemon) {
+<!-- Usamos [ngClass] para que cambie de aspecto (CSS) dependiendo del elemento y tamaño -->
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
@@ -95,3 +97,4 @@
     }
 
 </article>
+}

@@ -48,6 +48,7 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
+    // Me suscribo al BehaviorSubject para tener siempre la mochila actualizada
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
@@ -303,9 +304,12 @@ export class Mochila implements OnInit {
     if (!player) return;
 
     let inventory = player.inventory || [];
+    // 1. Calculamos cuántos slots reales ocupan las xuxes que ya tiene
     const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
+    // 2. Calculamos los slots libres (máximo 20)
     const availableSlots = 20 - totalSlotsUsed;
 
+    // 3. Si la mochila está llena, cerramos el grifo y descartamos
     if (availableSlots <= 0) {
       alert('La mochila del jugador está llena.');
       return;
@@ -321,15 +325,19 @@ export class Mochila implements OnInit {
       imagen: selectedXuxe?.imagen || ''
     };
 
+    // 4. Calculamos cuántos slots nuevos vamos a gastar dividiendo entre 5
     const slotsNeeded = Math.ceil(newItem.cantidad / 5);
+    
+    // 5. Si gastamos más huecos de los que tenemos libres, le quitamos el exceso
     if (slotsNeeded > availableSlots) {
       const allowedAmount = availableSlots * 5;
       alert(`Solo caben ${allowedAmount} Xuxes. El resto se descartará.`);
-      newItem.cantidad = allowedAmount;
+      newItem.cantidad = allowedAmount; // Reemplazamos la cantidad por lo máximo que cabe
     }
 
     inventory.push(newItem);
 
+    // Guardamos en el backend de Laravel
     this.authService.updateUserInventory(player.id, inventory).subscribe({
       next: () => {
         alert('Xuxes añadidas correctamente.');
