@@ -61,9 +61,22 @@ class XuxemonController extends Controller
         return response()->json(['message' => 'Xuxemon eliminado correctamente.']);
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $xuxemons = Xuxemon::all();
+        $filters = $request->validate([
+            'tipo' => 'nullable|string|max:100',
+            'tamano' => 'nullable|string|max:50',
+        ]);
+
+        $xuxemons = Xuxemon::query()
+            ->when(!empty($filters['tipo']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(tipo) = ?', [mb_strtolower($filters['tipo'])]);
+            })
+            ->when(!empty($filters['tamano']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(tamano) = ?', [mb_strtolower($filters['tamano'])]);
+            })
+            ->get();
+
         return response()->json($xuxemons);
     }
 
