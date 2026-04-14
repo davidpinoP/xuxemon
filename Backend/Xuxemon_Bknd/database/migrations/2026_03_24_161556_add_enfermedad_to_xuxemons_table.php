@@ -10,9 +10,8 @@ return new class extends Migration
     {
         Schema::table('xuxemons', function (Blueprint $table) {
             if (!Schema::hasColumn('xuxemons', 'tamano')) {
-                $table->string('tamano')->nullable()->after('imagen');
+                $table->string('tamano')->default('Pequeño')->after('imagen');
             }
-
             if (!Schema::hasColumn('xuxemons', 'enfermedad')) {
                 $table->string('enfermedad')->nullable()->after('tamano');
             }
@@ -25,7 +24,6 @@ return new class extends Migration
             if (Schema::hasColumn('xuxemons', 'enfermedad')) {
                 $table->dropColumn('enfermedad');
             }
-
             if (Schema::hasColumn('xuxemons', 'tamano')) {
                 $table->dropColumn('tamano');
             }

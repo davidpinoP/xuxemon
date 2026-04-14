@@ -9,16 +9,19 @@ class FriendRequest extends Model
 {
     use HasFactory;
 
-    // Permitir rellenar estas columnas
-    protected $fillable = ['sender_id', 'receiver_id', 'status'];
+    protected $fillable = [
+        'sender_id',
+        'receiver_id',
+        'status',
+    ];
 
-    // Relación: Una solicitud pertenece a un usuario que la envía (sender)
+    // Relación: El usuario que envía la solicitud
     public function sender()
     {
         return $this->belongsTo(User::class, 'sender_id');
     }
 
-    // Relación: Una solicitud pertenece a un usuario que la recibe (receiver)
+    // Relación: El usuario que recibe la solicitud
     public function receiver()
     {
         return $this->belongsTo(User::class, 'receiver_id');

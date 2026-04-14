@@ -37,6 +37,15 @@ class AutenticatorController extends Controller
         }
 
         $user = auth('api')->user();
+
+        // Comprobar si la cuenta está activa
+        if (!$user->is_active) {
+            auth('api')->logout(); // Invalidamos el intento
+            return response()->json([
+                'error' => 'Tu cuenta está desactivada. Por favor, contacta con soporte.'
+            ], 403);
+        }
+
         $this->checkDailyRewards($user);
 
         return response()->json([
