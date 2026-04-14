@@ -3,12 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\DailyRewardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AutenticatorController extends Controller
 {
+    private DailyRewardService $dailyRewardService;
+
+    public function __construct(DailyRewardService $dailyRewardService)
+    {
+        $this->dailyRewardService = $dailyRewardService;
+    }
 
 
     // ---- Rutas API (JWT) ----
@@ -29,10 +36,22 @@ class AutenticatorController extends Controller
             return response()->json(['error' => 'No autorizado'], 401);
         }
 
+        $user = auth('api')->user();
+
+        // Comprobar si la cuenta está activa
+        if (!$user->is_active) {
+            auth('api')->logout(); // Invalidamos el intento
+            return response()->json([
+                'error' => 'Tu cuenta está desactivada. Por favor, contacta con soporte.'
+            ], 403);
+        }
+
+        $this->checkDailyRewards($user);
+
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'user' => auth('api')->user()
+            'user' => $user
         ]);
     }
 
@@ -58,6 +77,8 @@ class AutenticatorController extends Controller
             'is_active' => true,
         ]);
 
+        $this->checkDailyRewards($user);
+
         $token = auth('api')->login($user);
 
         return response()->json([
@@ -74,6 +95,14 @@ class AutenticatorController extends Controller
 
     // ---- Helpers ----
 
+    /**
+     * Comprueba si el usuario tiene derecho a la recompensa diaria (después de la hora configurada).
+     */
+    private function checkDailyRewards(User $user)
+    {
+        $this->dailyRewardService->grantIfEligible($user);
+    }
+
     private function generatePlayerId(string $name): string
     {
         $baseName = preg_replace('/\s+/', '', trim($name));
@@ -87,4 +116,3 @@ class AutenticatorController extends Controller
         return $playerId;
     }
 }
-

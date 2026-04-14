@@ -6,6 +6,7 @@ import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
+import { GameConfigService } from '../services/game-config.service';
 
 @Component({
   selector: 'app-mochila',
@@ -27,6 +28,12 @@ export class Mochila implements OnInit {
   cantidadAlimentar = 1;
   mensajeError = '';
 
+  // ── Variables del Modal de Vacunación (Hospital) ──
+  mostrarModalVacuna = false;
+  xuxemonEnfermoSeleccionado: IXuxemon | null = null;
+  vacunaSeleccionada = '';
+  mensajeErrorVacuna = '';
+
   // ── Variables Admin ──
   isAdmin = false;
   players: any[] = [];
@@ -42,7 +49,8 @@ export class Mochila implements OnInit {
   constructor(
     private authService: AuthService,
     private inventoryService: InventoryService,
-    private xuxemonService: XuxemonService
+    private xuxemonService: XuxemonService,
+    private gameConfigService: GameConfigService
   ) { }
 
   ngOnInit() {
@@ -151,12 +159,13 @@ export class Mochila implements OnInit {
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
     const nuevasComidas = comidasActuales + this.cantidadAlimentar;
     const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
+    const thresholds = this.getEvolveThresholds();
 
-    if (tamanoActual === 'pequeño' && nuevasComidas >= 3) {
+    if (tamanoActual === 'pequeño' && nuevasComidas >= thresholds.toMediano) {
       return true;
     }
 
-    if (tamanoActual === 'mediano' && nuevasComidas >= 5) {
+    if (tamanoActual === 'mediano' && nuevasComidas >= thresholds.toGrande) {
       return true;
     }
 
@@ -170,12 +179,13 @@ export class Mochila implements OnInit {
 
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
     const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+    const thresholds = this.getEvolveThresholds();
 
-    if (nuevasComidas >= 5) {
+    if (nuevasComidas >= thresholds.toGrande) {
       return 'Grande';
     }
 
-    if (nuevasComidas >= 3) {
+    if (nuevasComidas >= thresholds.toMediano) {
       return 'Mediano';
     }
 
@@ -197,16 +207,79 @@ export class Mochila implements OnInit {
         const mensaje = respuesta?.evoluciono
           ? `${nombre} ha evolucionado a ${respuesta?.xuxemon?.tamano}.`
           : `${nombre} ha sido alimentado correctamente.`;
+        const detalles: string[] = [];
+
+        if (respuesta?.se_infecto) {
+          detalles.push('Se ha puesto malito (enfermo).');
+        }
 
         this.cargarInventario();
         this.cargarMisXuxemons();
         this.cerrarModal();
-        alert(mensaje);
+        alert(detalles.length ? `${mensaje} ${detalles.join(' ')}` : mensaje);
       },
       error: (error: any) => {
         this.mensajeError = error?.error?.message || 'No se ha podido alimentar al Xuxemon.';
       }
     });
+  }
+
+  // ── Métodos del Hospital (Vacunación) ──
+  abrirModalVacuna() {
+    this.mostrarModalVacuna = true;
+    this.mensajeErrorVacuna = '';
+    this.xuxemonEnfermoSeleccionado = null;
+    this.vacunaSeleccionada = '';
+  }
+
+  cerrarModalVacuna() {
+    this.mostrarModalVacuna = false;
+  }
+
+  getXuxemonsEnfermos(): IXuxemon[] {
+    return this.misXuxemons.filter(x => x.enfermedad);
+  }
+
+  getVacunasDisponibles(): Objeto[] {
+    return this.inventarioBase.filter(item => item.tipo === 'Vacuna' && item.cantidad > 0);
+  }
+
+  confirmarCuracion() {
+    if (!this.xuxemonEnfermoSeleccionado) {
+      this.mensajeErrorVacuna = 'Selecciona un Xuxemon enfermo';
+      return;
+    }
+    if (!this.vacunaSeleccionada) {
+      this.mensajeErrorVacuna = 'Selecciona una vacuna';
+      return;
+    }
+
+    // Reutilizamos alimentarXuxemon ya que el backend ahora distingue vacunas por nombre
+    this.xuxemonService.alimentarXuxemon(
+      this.xuxemonEnfermoSeleccionado.id,
+      this.vacunaSeleccionada,
+      1
+    ).subscribe({
+      next: (resp: any) => {
+        alert(resp.message || 'Xuxemon curado correctamente.');
+        this.cargarInventario();
+        this.cargarMisXuxemons();
+        this.cerrarModalVacuna();
+      },
+      error: (err: any) => {
+        this.mensajeErrorVacuna = err?.error?.message || 'Error al curar al Xuxemon.';
+      }
+    });
+  }
+
+  private getEvolveThresholds(): { toMediano: number; toGrande: number } {
+    const base = this.gameConfigService.snapshot.evolve_xuxes;
+    const safeBase = base > 0 ? base : 3;
+
+    return {
+      toMediano: safeBase,
+      toGrande: safeBase + 2
+    };
   }
 
   @HostListener('document:keydown.escape')
@@ -276,12 +349,11 @@ export class Mochila implements OnInit {
     if (!player) return;
 
     let inventory = player.inventory || [];
-
     const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
     const availableSlots = 20 - totalSlotsUsed;
 
     if (availableSlots <= 0) {
-      alert('La mochila del jugador está llena. No se pueden añadir más Xuxes.');
+      alert('La mochila del jugador está llena.');
       return;
     }
 

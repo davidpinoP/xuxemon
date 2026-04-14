@@ -1,35 +1,28 @@
-import { Component } from '@angular/core';
-import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from './services/xuxemon';
-import { filter } from 'rxjs/operators';
+import { GameConfigService } from './services/game-config.service';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, RouterLink],
+  imports: [RouterOutlet, CommonModule],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnInit {
   title = 'xuxemons';
   showReward = false;
-  currentRoute = '';
 
   constructor(
     private xuxemonService: Xuxemon,
-    private router: Router
-  ) {}
+    private gameConfigService: GameConfigService
+  ) { }
 
   ngOnInit() {
-    this.currentRoute = this.router.url;
-
-    this.router.events
-      .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe((event) => {
-        this.currentRoute = (event as NavigationEnd).urlAfterRedirects;
-      });
+    this.gameConfigService.load().subscribe();
 
     // comprobar si hay recompensa al entrar
     this.xuxemonService.checkRewards().subscribe((res: any) => {
@@ -40,14 +33,14 @@ export class App {
   }
 
   claim() {
-    this.xuxemonService.claimReward().subscribe(() => {
-      this.showReward = false;
-      alert('recompensa recibida: 5 xuxes!');
+    this.xuxemonService.claimReward().subscribe({
+      next: () => {
+        this.showReward = false;
+        alert('recompensa recibida: 10 xuxes + 1 xuxemon pequeño.');
+      },
+      error: (err) => {
+        alert(err?.error?.message || 'No puedes reclamar la recompensa en este momento.');
+      }
     });
   }
-
-  get isFriendsRoute(): boolean {
-    return this.currentRoute === '/friends';
-  }
 }
-

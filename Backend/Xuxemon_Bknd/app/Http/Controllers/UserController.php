@@ -7,9 +7,17 @@ use App\Models\FriendRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Services\DailyRewardService;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
+    private DailyRewardService $dailyRewardService;
+
+    public function __construct(DailyRewardService $dailyRewardService)
+    {
+        $this->dailyRewardService = $dailyRewardService;
+    }
     // 1. Ver perfil del usuario autenticado
     public function show(Request $request)
     {
@@ -190,7 +198,9 @@ class UserController extends Controller
         $user->save();
 
         // Si usas tokens (Sanctum), los borramos para cerrar sesión
-        $user->tokens()->delete();
+        if (JWTAuth::getToken()) {
+            JWTAuth::invalidate(JWTAuth::getToken());
+        }
 
         return response()->json(['message' => 'Cuenta desactivada correctamente']);
     }
@@ -207,7 +217,11 @@ class UserController extends Controller
         $user = \App\Models\User::findOrFail($id);
 
         $data = $request->validate([
-            'inventory' => 'required|array',
+            'inventory' => 'required|array|max:20',
+            'inventory.*.nombre' => 'required|string|max:50',
+            'inventory.*.cantidad' => 'nullable|integer|min:1|max:100',
+            'inventory.*.tipo' => 'nullable|string|in:item,xuxemon',
+            'inventory.*.tamano' => 'nullable|string|max:20',
         ]);
 
         // Borrar el inventario actual en la tabla
@@ -276,20 +290,29 @@ class UserController extends Controller
     public function checkRewards(Request $request)
     {
         $u = $request->user();
-        $h = \App\Models\Config::where('key', 'reward_hour')->first()->value ?? 0;
-        
-        $now = now();
-        $canShow = ($now->hour >= $h) && (!$u->last_reward_at || !$u->last_reward_at->isToday());
+        $canShow = $this->dailyRewardService->canClaim($u);
 
-        return response()->json(['can_claim' => $canShow]);
+        return response()->json([
+            'can_claim' => $canShow
+        ]);
     }
 
     // reclamar recompensa (minimo)
     public function claimReward(Request $request)
     {
         $u = $request->user();
-        $u->mochila()->create(['nombre' => 'Xuxe', 'cantidad' => 5, 'tipo' => 'item']);
-        $u->update(['last_reward_at' => now()]);
-        return response()->json(['ok' => true]);
+        $result = $this->dailyRewardService->grant($u);
+
+        if (!$result['ok']) {
+            return response()->json([
+                'ok' => false,
+                'message' => $result['message']
+            ], 409);
+        }
+
+        return response()->json([
+            'ok' => true,
+            'reward' => $result
+        ]);
     }
 }

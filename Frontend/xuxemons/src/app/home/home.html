@@ -32,27 +32,12 @@
       <h2 id="team-heading">Mi Equipo Principal</h2>
 
       <div class="team-grid">
-
+        @for (xuxemon of equipo; track xuxemon.id) {
         <article class="xuxemon-card" tabindex="0">
-          <img src="/imagenes/assets/1.png" alt="Xuxemon Loro" class="xuxemon-img">
-          <h3>Loro</h3>
+          <img [src]="xuxemon.imagen" [alt]="'Xuxemon ' + xuxemon.nombre" class="xuxemon-img">
+          <h3>{{ xuxemon.nombre }}</h3>
         </article>
-
-        <article class="xuxemon-card" tabindex="0">
-          <img src="/imagenes/assets/2.png" alt="Xuxemon Tortuga" class="xuxemon-img">
-          <h3>Tortuga</h3>
-        </article>
-
-        <article class="xuxemon-card" tabindex="0">
-          <img src="/imagenes/assets/3.png" alt="Xuxemon Ballena" class="xuxemon-img">
-          <h3>Ballena</h3>
-        </article>
-
-        <article class="xuxemon-card" tabindex="0">
-          <img src="/imagenes/assets/4.png" alt="Xuxemon Caracol" class="xuxemon-img">
-          <h3>Caracol</h3>
-        </article>
-
+        }
       </div>
     </section>
 

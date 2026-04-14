@@ -5,6 +5,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\FriendRequestController;
+use App\Http\Controllers\FriendController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
@@ -29,12 +31,27 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
     Route::post('/user/claim-reward', [UserController::class, 'claimReward']);
 
+    // configs globales para el juego
+    Route::get('/configs', [ConfigController::class, 'publicIndex']);
+
 
     // --- Endpoints de Xuxemons ---
     // Lectura (accesible para cualquier usuario autenticado y activo)
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
     Route::get('/user/xuxemons', [XuxemonController::class, 'misXuxemons']);
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
+
+    // 🤝 --- Endpoints de Solicitudes de Amistad (Kenneth) --- 🤝
+    Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
+    Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
+    Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
+    Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
+    Route::get('/amigos', [FriendController::class, 'index']);
+    Route::delete('/amigos/{id}', [FriendController::class, 'destroy']);
+    
+    // Aliases en inglés para compatibilidad
+    Route::get('/friends', [FriendController::class, 'index']);
+    Route::delete('/friends/{id}', [FriendController::class, 'destroy']);
 
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);
@@ -54,7 +71,7 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
         // admin: chuches, xuxemons y vacunas
         Route::post('/admin/dar-chuches', [AdminController::class, 'darChuches']);
         Route::post('/admin/dar-xuxemon-aleatorio', [AdminController::class, 'darXuxemonAleatorio']);
-        Route::post('/admin/users/{id}/vaccine', [AdminController::class, 'darVacuna']);
+        Route::post('/admin/dar-vacuna', [AdminController::class, 'darVacuna']);
 
         // admin: configuracion global
         Route::get('/admin/configs', [ConfigController::class, 'index']);
