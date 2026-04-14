@@ -60,6 +60,14 @@ class FriendRequestController extends Controller
         return response()->json($requests, 200);
     }
 
+    // Listar mis amigos
+    public function listarAmigos(Request $request)
+    {
+        $user = $request->user();
+        $amigos = $user->amigos()->select('users.id', 'users.name', 'users.surname', 'users.email')->get();
+        return response()->json($amigos, 200);
+    }
+
     //  Aceptar solicitud y crear amistad bidireccional
     public function accept(Request $request, $id)
     {
@@ -94,6 +102,22 @@ class FriendRequestController extends Controller
                 'updated_at' => now()
             ],
         ]);
+        
+        // Mantener amigos por ahora (opcional, pero mejor centralizar)
+        DB::table('amigos')->insertOrIgnore([
+            [
+                'user_id' => $friendRequest->sender_id, 
+                'amigo_id' => $friendRequest->receiver_id, 
+                'created_at' => now(), 
+                'updated_at' => now()
+            ],
+            [
+                'user_id' => $friendRequest->receiver_id, 
+                'amigo_id' => $friendRequest->sender_id, 
+                'created_at' => now(), 
+                'updated_at' => now()
+            ],
+        ]);
 
         return response()->json(['message' => 'Solicitud aceptada. ¡Ahora sois amigos!'], 200);
     }
@@ -117,5 +141,21 @@ class FriendRequestController extends Controller
         $friendRequest->save();
 
         return response()->json(['message' => 'Solicitud rechazada.'], 200);
+    }
+
+    // Eliminar amigo
+    public function eliminarAmigo(Request $request, $id)
+    {
+        $userId = $request->user()->id;
+        $amigoId = $id;
+
+        // Borrado bidireccional
+        DB::table('amigos')->where(function ($query) use ($userId, $amigoId) {
+            $query->where('user_id', $userId)->where('amigo_id', $amigoId);
+        })->orWhere(function ($query) use ($userId, $amigoId) {
+            $query->where('user_id', $amigoId)->where('amigo_id', $userId);
+        })->delete();
+
+        return response()->json(['message' => 'Amistad eliminada correctamente.'], 200);
     }
 }

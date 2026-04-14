@@ -106,11 +106,11 @@ export class Xuxedex implements OnInit {
     ];
   }
 
-  // Aplica todos los filtros activos sobre la lista completa
+  // Aplica todos los filtros activos sobre la lista completa usando .filter()
   aplicarFiltros(): void {
     let resultado = [...this.todosXuxemons];
 
-    // Filtrar por texto de busqueda
+    // Filtrar por texto de busqueda (coincidencia de texto)
     if (this.textoBusqueda.trim()) {
       const texto = this.textoBusqueda.toLowerCase().trim();
       resultado = resultado.filter(x =>
@@ -119,14 +119,14 @@ export class Xuxedex implements OnInit {
       );
     }
 
-    // Filtrar por tipo
+    // Filtrar por tipo (Agua, Tierra, Aire)
     if (this.filtroTipo !== 'todos') {
       resultado = resultado.filter(x =>
         x.tipo.toLowerCase() === this.filtroTipo
       );
     }
 
-    // Filtrar por tamaño
+    // Filtrar por tamaño (Pequeño, Mediano, Grande)
     if (this.filtroTamano !== 'todos') {
       resultado = resultado.filter(x =>
         x.tamano?.toLowerCase() === this.filtroTamano

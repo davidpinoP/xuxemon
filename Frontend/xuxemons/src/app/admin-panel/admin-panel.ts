@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from '../services/xuxemon';
 import { AuthService } from '../services/auth.service';
@@ -8,7 +8,7 @@ import { InventoryService, Objeto } from '../services/inventory.service';
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './admin-panel.html',
   styleUrls: ['./admin-panel.css']
 })
@@ -53,9 +53,8 @@ export class AdminPanelComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarXuxemons();
-    // cargar todo al inicio
+    this.cargarUsuarios();
     this.xuxemonService.getConfigs().subscribe((d: any) => this.fConfig.patchValue(d));
-    this.xuxemonService.getUsers().subscribe((d: any) => this.users = d);
   }
 
   cargarUsuarios(): void {
@@ -132,5 +131,52 @@ export class AdminPanelComponent implements OnInit {
   // dar vacuna
   vacuna(id: number, n: string) {
     this.xuxemonService.darVacuna(id, n).subscribe(() => alert('vacuna enviada'));
+  }
+
+  addXuxesToPlayer(): void {
+    if (!this.selectedPlayerId) {
+      alert('Selecciona un jugador.');
+      return;
+    }
+
+    if (this.xuxeToAdd.cantidad < 1) {
+      alert('La cantidad debe ser mayor que 0.');
+      return;
+    }
+
+    const player = this.users.find((user) => user.id === this.selectedPlayerId);
+
+    if (!player) {
+      alert('Jugador no encontrado.');
+      return;
+    }
+
+    const inventory = Array.isArray(player.inventory) ? [...player.inventory] : [];
+    const existingItem = inventory.find((item: any) => item.nombre === this.xuxeToAdd.nombre);
+
+    if (existingItem) {
+      existingItem.cantidad += this.xuxeToAdd.cantidad;
+    } else {
+      const nuevoItem: Objeto = {
+        nombre: this.xuxeToAdd.nombre,
+        tipo: 'Xuxe',
+        cantidad: this.xuxeToAdd.cantidad,
+        stackable: true,
+        imagen: ''
+      };
+
+      inventory.push(nuevoItem);
+    }
+
+    this.authService.updateUserInventory(player.id, inventory).subscribe({
+      next: () => {
+        player.inventory = inventory;
+        this.xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
+        alert('Item añadido correctamente.');
+      },
+      error: () => {
+        alert('No se ha podido añadir el item.');
+      }
+    });
   }
 }

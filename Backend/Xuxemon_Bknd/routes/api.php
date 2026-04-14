@@ -6,6 +6,7 @@ use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\FriendRequestController;
+use App\Http\Controllers\FriendController;
 use Illuminate\Support\Facades\Route;
 
 // Pública
@@ -20,6 +21,11 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/profile', [UserController::class, 'show']);
     Route::put('/user/update', [UserController::class, 'update']);
     Route::post('/user/deactivate', [UserController::class, 'deactivate']);
+    Route::get('/friends/search', [UserController::class, 'searchUsers']);
+    Route::post('/friend-requests', [UserController::class, 'sendFriendRequest']);
+    Route::get('/friend-requests', [UserController::class, 'getPendingFriendRequests']);
+    Route::put('/friend-requests/{id}/accept', [UserController::class, 'acceptFriendRequest']);
+    Route::delete('/friend-requests/{id}', [UserController::class, 'rejectFriendRequest']);
     
     // recompensas
     Route::get('/user/check-rewards', [UserController::class, 'checkRewards']);
@@ -35,11 +41,17 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::get('/user/xuxemons', [XuxemonController::class, 'misXuxemons']);
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
 
-    //  --- Endpoints de Solicitudes de Amistad ---
+    // 🤝 --- Endpoints de Solicitudes de Amistad (Kenneth) --- 🤝
     Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
     Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
     Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
     Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
+    Route::get('/amigos', [FriendController::class, 'index']);
+    Route::delete('/amigos/{id}', [FriendController::class, 'destroy']);
+    
+    // Aliases en inglés para compatibilidad
+    Route::get('/friends', [FriendController::class, 'index']);
+    Route::delete('/friends/{id}', [FriendController::class, 'destroy']);
 
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class.':admin'])->group(function () {
         Route::post('/xuxemons', [\App\Http\Controllers\XuxemonController::class, 'create']);

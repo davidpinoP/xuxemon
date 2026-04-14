@@ -9,10 +9,11 @@ import { IXuxemon } from '../models/xuxemon.interface';
 export class XuxemonService {
     private apiUrl = 'http://localhost:8000/api';
 
-    // El Subject guarda el estado actual de los Xuxemons
+    // BehaviorSubject guarda el valor más recient de los Xuxemons que recogemos de la API
+    // Así es como mantenemos sincronizados todos los componentes.
     private xuxemonsSubject = new BehaviorSubject<IXuxemon[]>([]);
     
-    // Este es el Observable al que se suscribirán tus componentes
+    // Este es el Observable al que se suscribirán tus componentes (@for)
     public xuxemons$: Observable<IXuxemon[]> = this.xuxemonsSubject.asObservable();
 
     constructor(private http: HttpClient) { }

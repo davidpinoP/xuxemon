@@ -31,10 +31,10 @@ export class Home implements OnInit {
 
   cargarEquipoEjemplo() {
     this.equipo = [
-      { id: 1, nombre: 'Loro', tipo: 'aire', imagen: 'https://img.pokemondb.net/sprites/home/normal/chatot.png' },
-      { id: 2, nombre: 'Tortuga', tipo: 'planta', imagen: 'https://img.pokemondb.net/sprites/home/normal/turtwig.png' },
-      { id: 3, nombre: 'Ballena', tipo: 'agua', imagen: 'https://img.pokemondb.net/sprites/home/normal/wailmer.png' },
-      { id: 4, nombre: 'Caracol', tipo: 'agua', imagen: 'https://img.pokemondb.net/sprites/home/normal/magcargo.png' },
+      { id: 1, nombre: 'Loro', tipo: 'aire', imagen: '/imagenes/assets/1.png' },
+      { id: 2, nombre: 'Tortuga', tipo: 'planta', imagen: '/imagenes/assets/2.png' },
+      { id: 3, nombre: 'Ballena', tipo: 'agua', imagen: '/imagenes/assets/3.png' },
+      { id: 4, nombre: 'Caracol', tipo: 'agua', imagen: '/imagenes/assets/4.png' },
     ];
   }
 

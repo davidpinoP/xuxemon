@@ -55,12 +55,14 @@ class AdminController extends Controller
         }
 
         // Se lo guarda al usuario en tamaño pequeño en la mochila
-        $nuevoXuxemon = $usuario->mochila()->create([
+        $entradaMochila = $usuario->mochila()->firstOrNew([
             'nombre' => $xuxemonAlea->nombre,
-            'cantidad' => 1,
             'tipo' => 'xuxemon',
-            'tamano' => 'Pequeño'
         ]);
+
+        $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
+        $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
+        $entradaMochila->save();
 
         UserXuxemon::firstOrCreate(
             [
@@ -80,12 +82,19 @@ class AdminController extends Controller
     // dar una vacuna a un jugador
     public function darVacuna(Request $request, $id)
     {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+        ]);
+
         $u = User::findOrFail($id);
-        $u->mochila()->create([
+        $entrada = $u->mochila()->firstOrNew([
             'nombre' => $request->nombre,
-            'cantidad' => 1,
             'tipo' => 'item'
         ]);
+
+        $entrada->cantidad = ($entrada->cantidad ?? 0) + 1;
+        $entrada->save();
+
         return response()->json(['ok' => true]);
     }
 }

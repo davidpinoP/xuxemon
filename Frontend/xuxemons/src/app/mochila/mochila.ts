@@ -48,6 +48,7 @@ export class Mochila implements OnInit {
   ) { }
 
   ngOnInit() {
+    // Me suscribo al BehaviorSubject para tener siempre la mochila actualizada
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
     });
@@ -79,11 +80,14 @@ export class Mochila implements OnInit {
     this.mensajeError = '';
   }
 
+  // 1️⃣ Esta función llama a Laravel (backend) para descargarse toda la mochila del jugador
   cargarInventario() {
     this.authService.getProfile().subscribe({
       next: (user: any) => {
         const mochila = Array.isArray(user?.mochila) ? user.mochila : [];
+        // Transforma los datos crudos del backend en una lista limpia y lista para mostrar
         this.inventarioBase = this.convertirMochilaAObjetos(mochila);
+        // Le dice al InventoryService que apile los caramelos de 5 en 5 y ponga el límite a 20 huecos
         this.inventoryService.organizarMochila(this.inventarioBase);
       },
       error: () => {
@@ -145,20 +149,23 @@ export class Mochila implements OnInit {
     this.pasoModal = 1;
   }
 
+  // 2️⃣ Comprueba si con los caramelos que le vas a dar ahora mismo, a tu Xuxemon le toca crecer (Evolucionar)
   vaAEvolucionar(): boolean {
     if (!this.xuxemonSeleccionado) {
       return false;
     }
 
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+    const nuevasComidas = comidasActuales + this.cantidadAlimentar; // Suma de caramelos totales
     const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
     const thresholds = this.getEvolveThresholds();
 
+    // Si es pequeño y supera el límite, devolverá TRUE (sí evoluciona)
     if (tamanoActual === 'pequeño' && nuevasComidas >= thresholds.toMediano) {
       return true;
     }
 
+    // Si es mediano y supera el límite de los grandes, devuelve TRUE.
     if (tamanoActual === 'mediano' && nuevasComidas >= thresholds.toGrande) {
       return true;
     }
@@ -274,12 +281,14 @@ export class Mochila implements OnInit {
     }
   }
 
+  // 3️⃣ 'El portero de disco': Comprueba a través del servidor (AuthService) qué 'role' tiene la persona conectada.
+  // Si el usuario tiene un rol "admin", pone esa variable a 'true' para repintar el HTML y mostrar los secretitos.
   checkUserRole() {
     this.authService.me().subscribe({
       next: (user: any) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
-          this.loadPlayers();
+          this.loadPlayers(); // Solo si es admin, se descarga la lista completa de jugadores.
         }
       }
     });
@@ -303,9 +312,12 @@ export class Mochila implements OnInit {
     if (!player) return;
 
     let inventory = player.inventory || [];
+    // 1. Calculamos cuántos slots reales ocupan las xuxes que ya tiene
     const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
+    // 2. Calculamos los slots libres (máximo 20)
     const availableSlots = 20 - totalSlotsUsed;
 
+    // 3. Si la mochila está llena, cerramos el grifo y descartamos
     if (availableSlots <= 0) {
       alert('La mochila del jugador está llena.');
       return;
@@ -321,15 +333,19 @@ export class Mochila implements OnInit {
       imagen: selectedXuxe?.imagen || ''
     };
 
+    // 4. Calculamos cuántos slots nuevos vamos a gastar dividiendo entre 5
     const slotsNeeded = Math.ceil(newItem.cantidad / 5);
+    
+    // 5. Si gastamos más huecos de los que tenemos libres, le quitamos el exceso
     if (slotsNeeded > availableSlots) {
       const allowedAmount = availableSlots * 5;
       alert(`Solo caben ${allowedAmount} Xuxes. El resto se descartará.`);
-      newItem.cantidad = allowedAmount;
+      newItem.cantidad = allowedAmount; // Reemplazamos la cantidad por lo máximo que cabe
     }
 
     inventory.push(newItem);
 
+    // Guardamos en el backend de Laravel
     this.authService.updateUserInventory(player.id, inventory).subscribe({
       next: () => {
         alert('Xuxes añadidas correctamente.');
@@ -339,23 +355,28 @@ export class Mochila implements OnInit {
     });
   }
 
+  // 4️⃣ Esta es una maravilla técnica para engañar astutamente al frontend:
+  // Coge el mogollón de datos que viene de la BBDD de Laravel y le añade propiedades clave visuales para nosotros.
   private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
     const objetos: Objeto[] = [];
 
     for (const item of mochila) {
       if (item?.tipo === 'xuxemon') {
-        continue;
+        continue; // Ignoramos a los bichos vivos, esto es el inventario de la mochila
       }
 
       const nombre = item?.nombre || 'Item';
+      // MIRA AQUÍ: Aquí es donde detecta si lleva la palabra "vacuna" en la BBDD
       const esVacuna = nombre.toLowerCase().includes('vacuna');
 
       objetos.push({
         nombre,
         tipo: esVacuna ? 'Vacuna' : 'Xuxe',
         cantidad: Number(item?.cantidad || 1),
+        // MIRA AQUÍ 2: Como stackable (apilable) significa que NO es vacuna, 
+        // le pone 'false' y luego el InventoryService jamás las amontonará.
         stackable: !esVacuna,
-        imagen: this.obtenerImagenItem(nombre),
+        imagen: this.obtenerImagenItem(nombre), // Llama a la función de abajo y le inserta su dibujito
       });
     }
 

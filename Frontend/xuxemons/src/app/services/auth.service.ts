@@ -71,4 +71,12 @@ export class AuthService {
     updateUserInventory(userId: number, inventory: any[]): Observable<any> {
         return this.http.post(`${this.apiUrl}/users/${userId}/inventory`, { inventory });
     }
+
+    getAmigos(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/amigos`);
+    }
+
+    eliminarAmigo(amigoId: number): Observable<any> {
+        return this.http.delete(`${this.apiUrl}/amigos/${amigoId}`);
+    }
 }

@@ -9,9 +9,74 @@ use Illuminate\Http\Request;
 
 class XuxemonController extends Controller
 {
-    public function index()
+    public function create(Request $request)
     {
-        $xuxemons = Xuxemon::all();
+        $data = $request->validate([
+            'nombre' => 'required|string|max:255|unique:xuxemons,nombre',
+            'tipo' => 'required|string|max:100',
+            'descripcion' => 'nullable|string',
+            'vida' => 'nullable|integer|min:1',
+            'ataque' => 'nullable|integer|min:0',
+            'defensa' => 'nullable|integer|min:0',
+            'imagen' => 'required|string|max:255',
+        ]);
+
+        $xuxemon = Xuxemon::create([
+            'nombre' => $data['nombre'],
+            'tipo' => $data['tipo'],
+            'descripcion' => $data['descripcion'] ?? null,
+            'vida' => $data['vida'] ?? 100,
+            'ataque' => $data['ataque'] ?? 10,
+            'defensa' => $data['defensa'] ?? 10,
+            'imagen' => $data['imagen'],
+        ]);
+
+        return response()->json($xuxemon, 201);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $xuxemon = Xuxemon::findOrFail($id);
+
+        $data = $request->validate([
+            'nombre' => 'sometimes|string|max:255|unique:xuxemons,nombre,'.$xuxemon->id,
+            'tipo' => 'sometimes|string|max:100',
+            'descripcion' => 'nullable|string',
+            'vida' => 'sometimes|integer|min:1',
+            'ataque' => 'sometimes|integer|min:0',
+            'defensa' => 'sometimes|integer|min:0',
+            'imagen' => 'sometimes|string|max:255',
+        ]);
+
+        $xuxemon->update($data);
+
+        return response()->json($xuxemon);
+    }
+
+    public function delete($id)
+    {
+        $xuxemon = Xuxemon::findOrFail($id);
+        $xuxemon->delete();
+
+        return response()->json(['message' => 'Xuxemon eliminado correctamente.']);
+    }
+
+    public function index(Request $request)
+    {
+        $filters = $request->validate([
+            'tipo' => 'nullable|string|max:100',
+            'tamano' => 'nullable|string|max:50',
+        ]);
+
+        $xuxemons = Xuxemon::query()
+            ->when(!empty($filters['tipo']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(tipo) = ?', [mb_strtolower($filters['tipo'])]);
+            })
+            ->when(!empty($filters['tamano']), function ($query) use ($filters) {
+                $query->whereRaw('LOWER(tamano) = ?', [mb_strtolower($filters['tamano'])]);
+            })
+            ->get();
+
         return response()->json($xuxemons);
     }
 
@@ -156,9 +221,6 @@ class XuxemonController extends Controller
             $entradaMochila->tamano = $registro->tamano;
             $entradaMochila->save();
         }
-
-        // Guardamos si no se ha enfermado
-        $xuxemon->save();
 
         return response()->json([
             'message' => 'Xuxemon alimentado correctamente.',

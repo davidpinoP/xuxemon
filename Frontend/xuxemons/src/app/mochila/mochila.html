@@ -5,10 +5,11 @@
                 <img src="/imagenes/avatar-figma.png" alt="Logo de Xuxemons" class="avatar-img">
             </div>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" aria-label="Menú principal">
             <a class="nav-item" routerLink="/home">INICIO</a>
             <a class="nav-item" routerLink="/xuxedex">XUXEDEX</a>
             <a class="nav-item active">MOCHILA</a>
+            <a class="nav-item" routerLink="/friends">AMIGOS</a>
             <a class="nav-item" routerLink="/perfil">
                 <span class="icon-user"></span> PERFIL
             </a>
@@ -16,145 +17,210 @@
     </aside>
 
     <main class="main-content">
-        <h1 class="page-title">Mochila</h1>
+        <section aria-labelledby="titulo-mochila" class="inventory-section">
+        <h1 class="page-title" id="titulo-mochila">Mochila</h1>
 
-        <div class="mochila-grid">
+        <ul class="mochila-grid" aria-label="Inventario del jugador">
             @for (slot of slots; track $index) {
-            <div class="slot" [class.occupied]="slot">
+            <li class="slot" [class.occupied]="slot">
                 @if (slot) {
                 <div class="item-container">
-                    <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
+                    <img [src]="slot.imagen" [alt]="'Objeto ' + slot.nombre + ', cantidad ' + slot.cantidad" class="item-image">
                     @if (slot.cantidad > 1 || slot.stackable) {
-                    <span class="quantity">{{ slot.cantidad }}</span>
+                    <span class="quantity" [attr.aria-label]="'Cantidad ' + slot.cantidad">{{ slot.cantidad }}</span>
                     }
                 </div>
+                <span class="slot-text">
+                    Slot {{ $index + 1 }} - {{ slot.cantidad }} {{ slot.nombre }}
+                    @if (slot.stackable) {
+                    (Apilable)
+                    } @else {
+                    (No apilable)
+                    }
+                </span>
+                } @else {
+                <span class="slot-text">Slot {{ $index + 1 }} vacío</span>
                 }
-            </div>
+            </li>
             }
-        </div>
+        </ul>
+        </section>
 
         <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn-alimentar" (click)="abrirModal()" type="button">Alimentar Xuxemon</button>
-        </div>
+            <button class="btn-alimentar" (click)="abrirModal()" type="button">🍬 Alimentar Xuxemon</button>
 
-        @if (mostrarModal) {
-        <div class="modal-overlay" (click)="cerrarModal()">
-            <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
-                 role="dialog" aria-modal="true" aria-labelledby="modal-titulo-alimentar" tabindex="-1">
+            <!-- ═══ MODAL DE ALIMENTACIÓN ═══ -->
+            @if (mostrarModal) {
+            <div class="modal-overlay" (click)="cerrarModal()">
+                <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
+                    role="dialog" aria-modal="true" aria-labelledby="modal-titulo" tabindex="-1">
 
-                <button class="modal-cerrar" (click)="cerrarModal()" type="button" aria-label="Cerrar modal">X</button>
+                    @if (mostrarModalVacuna) {
+                    <div class="modal-overlay" (click)="cerrarModalVacuna()">
+                        <div class="modal-contenido" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+                            <button class="modal-cerrar" (click)="cerrarModalVacuna()" type="button">✕</button>
 
-                @if (pasoModal === 1) {
-                <h2 id="modal-titulo-alimentar">Alimentar Xuxemon</h2>
+                            <h2 id="modal-titulo">🏥 Hospital Xuxemon</h2>
+                            <p style="margin-bottom: 15px; color: #666;">Selecciona a un paciente y la vacuna a
+                                utilizar.</p>
 
-                <div class="campo">
-                    <label for="select-xuxemon">Xuxemon:</label>
-                    <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
-                        <option [ngValue]="null">-- Elige un Xuxemon --</option>
-                        @for (xuxe of misXuxemons; track xuxe.id) {
-                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }})</option>
-                        }
-                    </select>
-                </div>
+                            <div class="campo">
+                                <label for="select-enfermo">Paciente:</label>
+                                <select id="select-enfermo" [(ngModel)]="xuxemonEnfermoSeleccionado">
+                                    <option [ngValue]="null">-- Elige un Xuxemon enfermo --</option>
+                                    @for (xuxe of getXuxemonsEnfermos(); track xuxe.id) {
+                                    <option [ngValue]="xuxe">🤒 {{ xuxe.nombre }} (Enfermedad: {{ xuxe.enfermedad }})
+                                    </option>
+                                    }
+                                </select>
+                                @if (getXuxemonsEnfermos().length === 0) {
+                                <small style="color: green;">¡No tienes ningún Xuxemon enfermo! 🎉</small>
+                                }
+                            </div>
 
-                <div class="campo">
-                    <label for="select-xuxe">Xuxe (caramelo):</label>
-                    <select id="select-xuxe" [(ngModel)]="xuxeSeleccionada">
-                        <option value="">-- Elige una Xuxe --</option>
-                        @for (item of getXuxesDisponibles(); track item.nombre) {
-                        <option [value]="item.nombre">{{ item.nombre }} (x{{ item.cantidad }})</option>
-                        }
-                    </select>
-                </div>
+                            <div class="campo">
+                                <label for="select-vacuna">Vacuna:</label>
+                                <select id="select-vacuna" [(ngModel)]="vacunaSeleccionada">
+                                    <option value="">-- Elige una Vacuna --</option>
+                                    @for (item of getVacunasDisponibles(); track item.nombre) {
+                                    <option [value]="item.nombre">💉 {{ item.nombre }} (x{{ item.cantidad }})</option>
+                                    }
+                                </select>
+                            </div>
 
-                <div class="campo">
-                    <label for="cantidad-alimentar">Cantidad:</label>
-                    <input id="cantidad-alimentar" type="number" [(ngModel)]="cantidadAlimentar" min="1" [max]="getMaxCantidad()">
-                </div>
-
-                @if (mensajeError) {
-                <p class="error" role="alert" aria-live="assertive">{{ mensajeError }}</p>
-                }
-
-                <button class="btn-siguiente" (click)="irAPreview()" type="button">Ver Preview</button>
-                }
-
-                @if (pasoModal === 2) {
-                <h2 id="modal-titulo">Vista Previa</h2>
-
-                <div class="preview-card">
-                    <div class="preview-fila">
-                        <span class="preview-label">Xuxemon:</span>
-                        <span class="preview-valor">{{ xuxemonSeleccionado?.nombre }}</span>
-                    </div>
-                    <div class="preview-fila">
-                        <span class="preview-label">Tipo:</span>
-                        <span class="preview-valor">{{ xuxemonSeleccionado?.tipo }}</span>
-                    </div>
-                    <div class="preview-fila">
-                        <span class="preview-label">Xuxe:</span>
-                        <div class="preview-valor preview-xuxe">
-                            @if (getImagenXuxe()) {
-                            <img [src]="getImagenXuxe()" alt="xuxe" class="preview-img">
+                            @if (mensajeErrorVacuna) {
+                            <p class="error" role="alert" style="color: red;">{{ mensajeErrorVacuna }}</p>
                             }
-                            {{ xuxeSeleccionada }}
+
+                            <button class="btn-confirmar" (click)="confirmarCuracion()" type="button"
+                                style="margin-top: 15px; width: 100%; background-color: #28a745; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">🩹
+                                Aplicar Vacuna</button>
                         </div>
                     </div>
-                    <div class="preview-fila">
-                        <span class="preview-label">Cantidad:</span>
-                        <span class="preview-valor cantidad-highlight">x{{ cantidadAlimentar }}</span>
+                    }
+
+                    @if (mostrarModal) {
+                    <div class="modal-overlay" (click)="cerrarModal()">
+                        <div class="modal-contenido" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+                            aria-labelledby="modal-titulo-alimentar">
+
+                            <button class="modal-cerrar" (click)="cerrarModal()" type="button"
+                                aria-label="Cerrar modal">✕</button>
+
+                            @if (pasoModal === 1) {
+                            <h2 id="modal-titulo-alimentar">🍬 Alimentar Xuxemon</h2>
+
+                            <div class="campo">
+                                <label for="select-xuxemon">Xuxemon:</label>
+                                <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
+                                    <option [ngValue]="null">-- Elige un Xuxemon --</option>
+                                    @for (xuxe of misXuxemons; track xuxe.id) {
+                                    <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }})</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="campo">
+                                <label for="select-xuxe">Xuxe (caramelo):</label>
+                                <select id="select-xuxe" [(ngModel)]="xuxeSeleccionada">
+                                    <option value="">-- Elige una Xuxe --</option>
+                                    @for (item of getXuxesDisponibles(); track item.nombre) {
+                                    <option [value]="item.nombre">{{ item.nombre }} (x{{ item.cantidad }})</option>
+                                    }
+                                </select>
+                            </div>
+
+                            <div class="campo">
+                                <label for="cantidad-alimentar">Cantidad:</label>
+                                <input id="cantidad-alimentar" type="number" [(ngModel)]="cantidadAlimentar" min="1"
+                                    [max]="getMaxCantidad()">
+                            </div>
+
+                            @if (mensajeError) {
+                            <p class="error" role="alert" aria-live="assertive">{{ mensajeError }}</p>
+                            }
+
+                            <button class="btn-siguiente" (click)="irAPreview()" type="button">Ver Preview ➡️</button>
+                            }
+
+                            @if (pasoModal === 2) {
+                            <h2 id="modal-titulo">📋 Vista Previa</h2>
+
+                            <div class="preview-card">
+                                <div class="preview-fila">
+                                    <span class="preview-label">Xuxemon:</span>
+                                    <span class="preview-valor">{{ xuxemonSeleccionado?.nombre }}</span>
+                                </div>
+                                <div class="preview-fila">
+                                    <span class="preview-label">Tipo:</span>
+                                    <span class="preview-valor">{{ xuxemonSeleccionado?.tipo }}</span>
+                                </div>
+                                <div class="preview-fila">
+                                    <span class="preview-label">Xuxe:</span>
+                                    <div class="preview-valor preview-xuxe">
+                                        @if (getImagenXuxe()) {
+                                        <img [src]="getImagenXuxe()" alt="xuxe" class="preview-img">
+                                        }
+                                        {{ xuxeSeleccionada }}
+                                    </div>
+                                </div>
+                                <div class="preview-fila">
+                                    <span class="preview-label">Cantidad:</span>
+                                    <span class="preview-valor cantidad-highlight">x{{ cantidadAlimentar }}</span>
+                                </div>
+                            </div>
+
+                            <div class="preview-botones">
+                                <button class="btn-volver" (click)="volverASeleccion()" type="button">⬅️ Volver</button>
+                                <button class="btn-confirmar" (click)="confirmarAlimentacion()" type="button">✅
+                                    Confirmar</button>
+                            </div>
+
+                            @if (vaAEvolucionar()) {
+                            <div class="preview-evolucion-alert">
+                                ✨ Evolucionará a <strong>{{ getNuevoTamano() }}</strong>
+                            </div>
+                            }
+                        </div>
+
                     </div>
-                </div>
-
-                <div class="preview-botones">
-                    <button class="btn-volver" (click)="volverASeleccion()" type="button">Volver</button>
-                    <button class="btn-confirmar" (click)="confirmarAlimentacion()" type="button">Confirmar</button>
-                </div>
-
-                @if (vaAEvolucionar()) {
-                <div class="preview-evolucion-alert">
-                    Evolucionara a <strong>{{ getNuevoTamano() }}</strong>
                 </div>
                 }
-                }
-            </div>
-        </div>
-        }
 
-        @if (isAdmin) {
-        <div class="admin-panel">
-            <h2>Gestion de Jugadores (Admin)</h2>
-            <fieldset class="admin-fieldset">
-                <legend class="admin-legend">Entrega de Xuxes</legend>
-                <div class="admin-controls">
-                    <div class="control-group">
-                        <label for="admin-jugador">Jugador:</label>
-                        <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
-                            <option [ngValue]="null">Selecciona un jugador</option>
-                            @for (player of players; track player.id) {
-                            <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
-                            }
-                        </select>
-                    </div>
+                @if (isAdmin) {
+                <div class="admin-panel">
+                    <h2>Gestión de Jugadores (Admin)</h2>
+                    <fieldset class="admin-fieldset">
+                        <legend class="admin-legend">Entrega de Xuxes</legend>
+                        <div class="admin-controls">
+                            <div class="control-group">
+                                <label for="admin-jugador">Jugador:</label>
+                                <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
+                                    <option [ngValue]="null">Selecciona un jugador</option>
+                                    @for (player of players; track player.id) {
+                                    <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
+                                    }
+                                </select>
+                            </div>
 
-                    <div class="control-group">
-                        <label for="admin-xuxe">Xuxe:</label>
-                        <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
-                            @for (tipo of tiposXuxe; track tipo.nombre) {
-                            <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
-                            }
-                        </select>
-                    </div>
+                            <div class="control-group">
+                                <label for="admin-xuxe">Xuxe:</label>
+                                <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
+                                    @for (tipo of tiposXuxe; track tipo.nombre) {
+                                    <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
+                                    }
+                                </select>
+                            </div>
 
-                    <div class="control-group">
-                        <label for="admin-cantidad">Cantidad:</label>
-                        <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
-                    </div>
+                            <div class="control-group">
+                                <label for="admin-cantidad">Cantidad:</label>
+                                <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
+                            </div>
 
-                    <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Anadir Xuxes</button>
+                            <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
+                        </div>
+                    </fieldset>
                 </div>
-            </fieldset>
-        </div>
-        }
+                }
     </main>
 </div>

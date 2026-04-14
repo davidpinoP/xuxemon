@@ -22,10 +22,21 @@ export class Perfil implements OnInit {
   mensajeExito = '';
   mensajeError = '';
   cargando = true;
+  amigos: any[] = [];
+  
+  // Estado del modal y animaciones
+  mostrarModal = false;
+  amigoParaEliminar: any = null;
+  amigoEnEliminacionId: number | null = null;
 
   constructor(private authService: AuthService, private router: Router) { }
 
   ngOnInit(): void {
+    this.cargarPerfil();
+    this.cargarAmigos();
+  }
+
+  cargarPerfil(): void {
     this.authService.getProfile().subscribe({
       next: (data: any) => {
         this.formularioPerfil.patchValue({
@@ -38,6 +49,17 @@ export class Perfil implements OnInit {
       error: () => {
         this.mensajeError = 'No se pudo cargar el perfil.';
         this.cargando = false;
+      }
+    });
+  }
+
+  cargarAmigos(): void {
+    this.authService.getAmigos().subscribe({
+      next: (data: any[]) => {
+        this.amigos = data;
+      },
+      error: () => {
+        console.error('Error al cargar amigos');
       }
     });
   }
@@ -78,6 +100,38 @@ export class Perfil implements OnInit {
         },
         error: () => {
           this.mensajeError = 'Error al desactivar la cuenta.';
+        }
+      });
+    }
+  }
+
+  abrirModalEliminar(amigo: any): void {
+    this.amigoParaEliminar = amigo;
+    this.mostrarModal = true;
+  }
+
+  cerrarModal(): void {
+    this.mostrarModal = false;
+    this.amigoParaEliminar = null;
+  }
+
+  confirmarEliminarAmigo(): void {
+    if (this.amigoParaEliminar) {
+      const idAEliminar = this.amigoParaEliminar.id;
+      this.authService.eliminarAmigo(idAEliminar).subscribe({
+        next: () => {
+          this.amigoEnEliminacionId = idAEliminar;
+          this.cerrarModal();
+          
+          // Esperar a que la animación termine antes de refrescar la lista
+          setTimeout(() => {
+            this.cargarAmigos();
+            this.amigoEnEliminacionId = null;
+          }, 400); // 400ms coincide con la duración de la animación CSS
+        },
+        error: () => {
+          console.error('Error al eliminar amigo');
+          this.cerrarModal();
         }
       });
     }

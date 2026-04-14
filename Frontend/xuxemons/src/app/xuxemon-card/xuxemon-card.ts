@@ -41,6 +41,22 @@ export class XuxemonCardComponent {
     return 'tipo-' + this.xuxemon.tipo.toLowerCase();
   }
 
+  get imagenAlt(): string {
+    const nombre = this.xuxemon?.nombre || 'Xuxemon';
+    const tipo = this.tipoNombre;
+    const tamano = this.xuxemon?.tamano || 'Pequeño';
+
+    return `Imagen de ${nombre}, tipo ${tipo}, tamaño ${tamano}`;
+  }
+
+  get estadoTexto(): string {
+    if (this.xuxemon?.enfermedad) {
+      return `Estado: Enfermo - ${this.xuxemon.enfermedad}`;
+    }
+
+    return 'Estado: Sano';
+  }
+
   get tamanoClase(): string {
     const tamano = (this.xuxemon?.tamano || 'Pequeño').toLowerCase();
 

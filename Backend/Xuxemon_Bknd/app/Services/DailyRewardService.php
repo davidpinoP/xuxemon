@@ -69,12 +69,14 @@ class DailyRewardService
             $xuxemonNombre = $xuxemonAlea->nombre;
             $xuxemonId = $xuxemonAlea->id;
 
-            $user->mochila()->create([
+            $entradaMochila = $user->mochila()->firstOrNew([
                 'nombre' => $xuxemonAlea->nombre,
                 'tipo' => 'xuxemon',
-                'tamano' => 'Pequeño',
-                'cantidad' => 1
             ]);
+
+            $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
+            $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
+            $entradaMochila->save();
 
             UserXuxemon::firstOrCreate(
                 [
@@ -85,6 +87,7 @@ class DailyRewardService
                     'tamano' => 'Pequeño',
                     'comidas' => 0,
                     'imagen' => $xuxemonAlea->imagen,
+                    'enfermedad' => null,
                 ]
             );
         }

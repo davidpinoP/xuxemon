@@ -37,6 +37,43 @@
         <button type="button" class="btn-volver" (click)="volver()">Volver</button>
         <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
     </div>
+
+    <div class="amigos-section">
+        <h2>Mis Amigos</h2>
+        @if (amigos.length > 0) {
+        <ul class="amigos-lista">
+            @for (amigo of amigos; track amigo.id) {
+            <li class="amigo-item" [class.eliminando]="amigoEnEliminacionId === amigo.id">
+                <div class="amigo-avatar">
+                    {{ amigo.name.charAt(0) }}{{ amigo.surname.charAt(0) }}
+                </div>
+                <div class="amigo-info">
+                    <span class="amigo-nombre">{{ amigo.name }} {{ amigo.surname }}</span>
+                    <span class="amigo-email">{{ amigo.email }}</span>
+                </div>
+                <button type="button" class="btn-eliminar-amigo" (click)="abrirModalEliminar(amigo)" title="Eliminar amigo">
+                    &times;
+                </button>
+            </li>
+            }
+        </ul>
+        } @else {
+        <p class="sin-amigos">Aún no tienes amigos agregados.</p>
+        }
+    </div>
+
+    @if (mostrarModal) {
+    <div class="modal-overlay" (click)="cerrarModal()">
+        <div class="modal-content" (click)="$event.stopPropagation()">
+            <h2>¿Eliminar amigo?</h2>
+            <p>¿Estás seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de amigos?</p>
+            <div class="modal-acciones">
+                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">ELIMINAR</button>
+            </div>
+        </div>
+    </div>
+    }
     }
 
 </div>
