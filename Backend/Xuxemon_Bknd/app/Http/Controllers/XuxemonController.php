@@ -117,8 +117,8 @@ class XuxemonController extends Controller
     public function alimentar(Request $request, $id)
     {
         $datos = $request->validate([
-            'xuxe' => 'required|string',
-            'cantidad' => 'required|integer|min:1',
+            'xuxe' => 'required|string|max:100',
+            'cantidad' => 'required|integer|min:1|max:100'
         ]);
 
         $user = $request->user();

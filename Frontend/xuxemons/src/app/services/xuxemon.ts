@@ -34,7 +34,12 @@ export class Xuxemon {
   getConfigs() { return this.http.get('http://127.0.0.1:8000/api/admin/configs'); }
   saveConfigs(c: any) { return this.http.post('http://127.0.0.1:8000/api/admin/configs', c); }
   getUsers() { return this.http.get('http://127.0.0.1:8000/api/users'); }
-  darVacuna(id: number, n: string) { return this.http.post(`http://127.0.0.1:8000/api/admin/users/${id}/vaccine`, { nombre: n }); }
+  darVacuna(userId: number, nombre: string) {
+    return this.http.post('http://127.0.0.1:8000/api/admin/dar-vacuna', {
+      user_id: userId,
+      nombre: nombre
+    });
+  }
 
   // recompensas
   checkRewards() { return this.http.get('http://127.0.0.1:8000/api/user/check-rewards'); }

@@ -79,11 +79,11 @@ class UserController extends Controller
         $user = \App\Models\User::findOrFail($id);
 
         $data = $request->validate([
-            'inventory' => 'required|array',
-            'inventory.*.nombre' => 'required|string|max:255',
-            'inventory.*.cantidad' => 'nullable|integer|min:1',
-            'inventory.*.tipo' => 'nullable|string|max:50',
-            'inventory.*.tamano' => 'nullable|string|max:50',
+            'inventory' => 'required|array|max:20',
+            'inventory.*.nombre' => 'required|string|max:50',
+            'inventory.*.cantidad' => 'nullable|integer|min:1|max:100',
+            'inventory.*.tipo' => 'nullable|string|in:item,xuxemon',
+            'inventory.*.tamano' => 'nullable|string|max:20',
         ]);
 
         // Borrar el inventario actual en la tabla

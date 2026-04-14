@@ -9,14 +9,24 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('xuxemons', function (Blueprint $table) {
-            $table->string('enfermedad')->nullable()->after('tamano');
+            if (!Schema::hasColumn('xuxemons', 'tamano')) {
+                $table->string('tamano')->default('Pequeño')->after('imagen');
+            }
+            if (!Schema::hasColumn('xuxemons', 'enfermedad')) {
+                $table->string('enfermedad')->nullable()->after('tamano');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('xuxemons', function (Blueprint $table) {
-            $table->dropColumn('enfermedad');
+            if (Schema::hasColumn('xuxemons', 'enfermedad')) {
+                $table->dropColumn('enfermedad');
+            }
+            if (Schema::hasColumn('xuxemons', 'tamano')) {
+                $table->dropColumn('tamano');
+            }
         });
     }
 };

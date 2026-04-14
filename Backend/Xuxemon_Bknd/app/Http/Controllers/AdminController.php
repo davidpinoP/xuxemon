@@ -15,12 +15,12 @@ class AdminController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'cantidad' => 'required|integer|min:1'
+            'cantidad' => 'required|integer|min:1|max:999'
         ]);
 
         $usuario = User::findOrFail($request->user_id);
 
-        // Buscamos el item 1 para saber su nombre
+        // Buscamos el item 1 para saber su nombre (asumimos que 1 es la xuxe básica)
         $itemXuxe = \App\Models\Item::find(1);
         $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
 
@@ -73,20 +73,27 @@ class AdminController extends Controller
                 'tamano' => 'Pequeño',
                 'comidas' => 0,
                 'imagen' => $xuxemonAlea->imagen,
+                'enfermedad' => null,
             ]
         );
 
-        return response()->json(['ok' => true], 201);
+        return response()->json([
+            'mensaje' => 'Xuxemon aleatorio regalado',
+            'xuxemon' => $xuxemonAlea->nombre
+        ], 201);
     }
 
     // dar una vacuna a un jugador
-    public function darVacuna(Request $request, $id)
+    public function darVacuna(Request $request)
     {
         $request->validate([
-            'nombre' => 'required|string|max:255',
+            'user_id' => 'required|exists:users,id',
+            'nombre' => ['required', 'string', 'max:50', 'regex:/^Vacuna/i'],
+        ], [
+            'nombre.regex' => 'El nombre del objeto debe empezar por "Vacuna" para que el sistema lo reconozca.'
         ]);
 
-        $u = User::findOrFail($id);
+        $u = User::findOrFail($request->user_id);
         $entrada = $u->mochila()->firstOrNew([
             'nombre' => $request->nombre,
             'tipo' => 'item'
@@ -95,6 +102,9 @@ class AdminController extends Controller
         $entrada->cantidad = ($entrada->cantidad ?? 0) + 1;
         $entrada->save();
 
-        return response()->json(['ok' => true]);
+        return response()->json([
+            'ok' => true,
+            'mensaje' => 'Vacuna entregada al jugador'
+        ]);
     }
 }
