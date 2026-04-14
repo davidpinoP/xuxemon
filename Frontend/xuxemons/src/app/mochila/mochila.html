@@ -5,10 +5,11 @@
                 <img src="/imagenes/avatar-figma.png" alt="Logo de Xuxemons" class="avatar-img">
             </div>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" aria-label="Menú principal">
             <a class="nav-item" routerLink="/home">INICIO</a>
             <a class="nav-item" routerLink="/xuxedex">XUXEDEX</a>
             <a class="nav-item active">MOCHILA</a>
+            <a class="nav-item" routerLink="/friends">AMIGOS</a>
             <a class="nav-item" routerLink="/perfil">
                 <span class="icon-user"></span> PERFIL
             </a>
@@ -16,22 +17,34 @@
     </aside>
 
     <main class="main-content">
-        <h1 class="page-title">Mochila</h1>
+        <section aria-labelledby="titulo-mochila" class="inventory-section">
+        <h1 class="page-title" id="titulo-mochila">Mochila</h1>
 
-        <div class="mochila-grid">
+        <ul class="mochila-grid" aria-label="Inventario del jugador">
             @for (slot of slots; track $index) {
-            <div class="slot" [class.occupied]="slot">
+            <li class="slot" [class.occupied]="slot">
                 @if (slot) {
                 <div class="item-container">
-                    <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
+                    <img [src]="slot.imagen" [alt]="'Objeto ' + slot.nombre + ', cantidad ' + slot.cantidad" class="item-image">
                     @if (slot.cantidad > 1 || slot.stackable) {
-                    <span class="quantity">{{ slot.cantidad }}</span>
+                    <span class="quantity" [attr.aria-label]="'Cantidad ' + slot.cantidad">{{ slot.cantidad }}</span>
                     }
                 </div>
+                <span class="slot-text">
+                    Slot {{ $index + 1 }} - {{ slot.cantidad }} {{ slot.nombre }}
+                    @if (slot.stackable) {
+                    (Apilable)
+                    } @else {
+                    (No apilable)
+                    }
+                </span>
+                } @else {
+                <span class="slot-text">Slot {{ $index + 1 }} vacío</span>
                 }
-            </div>
+            </li>
             }
-        </div>
+        </ul>
+        </section>
 
         <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-alimentar" (click)="abrirModal()" type="button">🍬 Alimentar Xuxemon</button>

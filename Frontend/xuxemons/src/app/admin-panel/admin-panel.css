@@ -1,0 +1,59 @@
+.admin-wrapper {
+  padding: 20px;
+  font-family: sans-serif;
+}
+
+.admin-wrapper h1 {
+  margin-bottom: 20px;
+}
+
+.admin-box {
+  border: 1px solid #ccc;
+  padding: 16px;
+  margin-bottom: 20px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.admin-box legend {
+  font-weight: bold;
+  padding: 0 10px;
+}
+
+.admin-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: end;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form button,
+.users-table input,
+.users-table button {
+  padding: 8px 10px;
+}
+
+.users-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.users-table th,
+.users-table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
+}
+
+.users-table th {
+  background: #f2f2f2;
+}
