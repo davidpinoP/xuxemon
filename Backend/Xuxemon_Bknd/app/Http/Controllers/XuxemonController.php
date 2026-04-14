@@ -135,33 +135,66 @@ class XuxemonController extends Controller
             ], 404);
         }
 
-        $item = $user->mochila()
+        $itemXuxe = $user->mochila()
             ->where('nombre', $datos['xuxe'])
             ->where('tipo', '!=', 'xuxemon')
             ->first();
 
-        if (!$item || $item->cantidad < $datos['cantidad']) {
+        if (!$itemXuxe || $itemXuxe->cantidad < $datos['cantidad']) {
             return response()->json([
-                'message' => 'No tienes suficientes xuxes.'
+                'message' => 'No tienes suficientes unidades de este objeto.'
             ], 400);
         }
 
-        $item->cantidad -= $datos['cantidad'];
+        $esVacuna = str_contains(strtolower($datos['xuxe']), 'vacuna');
 
-        if ($item->cantidad <= 0) {
-            $item->delete();
+        // LÓGICA DE ENFERMEDAD / VACUNA
+        if ($registro->enfermedad) {
+            if (!$esVacuna) {
+                return response()->json([
+                    'message' => 'El Xuxemon está enfermo y no puede comer. ¡Cúralo primero!'
+                ], 400);
+            }
+
+            // Es una vacuna -> lo curamos
+            $itemXuxe->cantidad -= 1;
+            if ($itemXuxe->cantidad <= 0) {
+                $itemXuxe->delete();
+            } else {
+                $itemXuxe->save();
+            }
+
+            $registro->enfermedad = null;
+            $registro->save();
+
+            return response()->json([
+                'message' => '¡Xuxemon curado con éxito!',
+                'curado' => true,
+                'xuxemon' => $registro
+            ]);
+        }
+
+        // Si NO está enfermo pero intenta usar una vacuna
+        if ($esVacuna) {
+            return response()->json([
+                'message' => 'El Xuxemon ya está sano, no necesita vacunas.'
+            ], 400);
+        }
+
+        // LÓGICA DE ALIMENTACIÓN NORMAL (no está enfermo y no es vacuna)
+        $itemXuxe->cantidad -= $datos['cantidad'];
+        if ($itemXuxe->cantidad <= 0) {
+            $itemXuxe->delete();
         } else {
-            $item->save();
+            $itemXuxe->save();
         }
 
         $tamanoAnterior = $registro->tamano ?: 'Pequeño';
         $seInfecto = false;
-        $curado = false;
 
+        // Roll para nueva infección al comer
         $infectionPct = Config::getFloat('infection_pct', 0);
-        $infectionPct = max(0, min(100, $infectionPct));
-
-        if (!$registro->enfermedad && $infectionPct > 0) {
+        if ($infectionPct > 0) {
             $roll = random_int(1, 100);
             if ($roll <= $infectionPct) {
                 $registro->enfermedad = 'Resfriado';
@@ -169,49 +202,27 @@ class XuxemonController extends Controller
             }
         }
 
-        if ($registro->enfermedad) {
-            $vacuna = $user->mochila()
-                ->where('tipo', '!=', 'xuxemon')
-                ->whereRaw('LOWER(nombre) LIKE ?', ['%vacuna%'])
-                ->first();
+        // Solo aumenta comidas si no se infectó en este momento
+        $registro->comidas = ($registro->comidas ?? 0) + $datos['cantidad'];
 
-            if ($vacuna) {
-                $vacuna->cantidad -= 1;
-                if ($vacuna->cantidad <= 0) {
-                    $vacuna->delete();
-                } else {
-                    $vacuna->save();
-                }
-                $registro->enfermedad = null;
-                $curado = true;
-            }
-        }
-
+        // Evolución
         $evolveBase = Config::getInt('evolve_xuxes', 3);
-        if ($evolveBase < 1) {
-            $evolveBase = 3;
-        }
+        if ($evolveBase < 1) $evolveBase = 3;
 
         $toMediano = $evolveBase;
         $toGrande = $evolveBase + 2;
 
-        if (!$registro->enfermedad) {
-            $registro->comidas = ($registro->comidas ?? 0) + $datos['cantidad'];
+        if ($registro->comidas >= $toGrande) {
+            $registro->tamano = 'Grande';
+        } elseif ($registro->comidas >= $toMediano) {
+            $registro->tamano = 'Mediano';
+        } else {
+            $registro->tamano = 'Pequeño';
         }
 
-        if (!$registro->enfermedad) {
-            if ($registro->comidas >= $toGrande) {
-                $registro->tamano = 'Grande';
-            } elseif ($registro->comidas >= $toMediano) {
-                $registro->tamano = 'Mediano';
-            } else {
-                $registro->tamano = 'Pequeño';
-            }
-        }
-
-        $registro->imagen = $registro->xuxemon->imagen;
         $registro->save();
 
+        // Sincronizar tamaño con la mochila
         $entradaMochila = $user->mochila()
             ->where('tipo', 'xuxemon')
             ->where('nombre', $registro->xuxemon->nombre)
@@ -226,19 +237,7 @@ class XuxemonController extends Controller
             'message' => 'Xuxemon alimentado correctamente.',
             'evoluciono' => $tamanoAnterior !== $registro->tamano,
             'se_infecto' => $seInfecto,
-            'curado' => $curado,
-            'xuxemon' => [
-                'id' => $registro->xuxemon->id,
-                'nombre' => $registro->xuxemon->nombre,
-                'tipo' => $registro->xuxemon->tipo,
-                'descripcion' => $registro->xuxemon->descripcion,
-                'imagen' => $registro->imagen ?: $registro->xuxemon->imagen,
-                'tamano' => $registro->tamano,
-                'comidas' => $registro->comidas,
-                'enfermedad' => $registro->enfermedad,
-                'created_at' => $registro->xuxemon->created_at,
-                'updated_at' => $registro->xuxemon->updated_at,
-            ],
+            'xuxemon' => $registro
         ]);
     }
 
