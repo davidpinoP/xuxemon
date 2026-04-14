@@ -30,14 +30,16 @@ export class Xuxemon {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  // metodos para 0admin: config y vacunas
+  // metodos para admin: config y vacunas
   getConfigs() { return this.http.get('http://127.0.0.1:8000/api/admin/configs'); }
   saveConfigs(c: any) { return this.http.post('http://127.0.0.1:8000/api/admin/configs', c); }
   getUsers() { return this.http.get('http://127.0.0.1:8000/api/users'); }
   darVacuna(id: number, n: string) { return this.http.post(`http://127.0.0.1:8000/api/admin/users/${id}/vaccine`, { nombre: n }); }
+  darXuxemonAleatorio(idJugador: string | number) {
+    return this.http.post(`http://127.0.0.1:8000/api/admin/dar-xuxemon-aleatorio`, { user_id: idJugador });
+  }
 
   // recompensas
   checkRewards() { return this.http.get('http://127.0.0.1:8000/api/user/check-rewards'); }
   claimReward() { return this.http.post('http://127.0.0.1:8000/api/user/claim-reward', {}); }
 }
-

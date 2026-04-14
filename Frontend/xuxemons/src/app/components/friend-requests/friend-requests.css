@@ -1,0 +1,124 @@
+.requests-container {
+  background-color: #f8f9fa;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 500px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.requests-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* 🏷️ Diseño del Badge */
+.badge {
+  background-color: #dc3545;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.action-feedback {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.empty-state {
+  text-align: center;
+  color: #6c757d;
+  padding: 20px 0;
+  font-style: italic;
+}
+
+/* 🃏 Diseño de la Tarjeta */
+.request-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  
+  /* 🪄 Transición suave por defecto */
+  transition: all 0.3s ease;
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* 🪄 Animación al Aceptar/Rechazar */
+.request-card.fade-out {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none; /* Evita doble clic */
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.avatar img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+}
+
+.details strong {
+  font-size: 1rem;
+  color: #333;
+}
+
+.details span {
+  font-size: 0.8rem;
+  color: #666;
+}
+
+/* 🖲️ Botones */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+button:hover {
+  opacity: 0.8;
+}
+
+.btn-accept {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-reject {
+  background-color: transparent;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+}

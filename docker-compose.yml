@@ -11,6 +11,11 @@ services:
       - "3307:3306"
     volumes:
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   backend:
     build: ./Backend/Xuxemon_Bknd
@@ -18,17 +23,25 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - bd
+      bd:
+        condition: service_healthy
     env_file:
       - ./Backend/Xuxemon_Bknd/.env.docker
+    volumes:
+      - ./Backend/Xuxemon_Bknd:/var/www/html
 
   frontend:
-    build: ./Frontend/xuxemons
+    build:
+      context: ./Frontend/xuxemons
+      dockerfile: Dockerfile.dev
     container_name: xuxemon-frontend
     ports:
-      - "4200:80"
+      - "4200:4200"
     depends_on:
       - backend
+    volumes:
+      - ./Frontend/xuxemons:/app
+      - /app/node_modules
 
 volumes:
   mysql-data:

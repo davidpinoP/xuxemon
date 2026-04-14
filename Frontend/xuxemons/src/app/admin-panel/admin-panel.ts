@@ -179,4 +179,24 @@ export class AdminPanelComponent implements OnInit {
       }
     });
   }
+
+  
+  // Dar Xuxemon Aleatorio
+  darXuxemonAleatorio(idJugador: string | number): void {
+    if (!idJugador) {
+      alert('Por favor, introduce un ID de jugador válido.');
+      return;
+    }
+
+    // Llamamos al servicio para que hable con tu backend
+    this.xuxemonService.darXuxemonAleatorio(idJugador).subscribe({
+      next: (response: any) => {
+        alert('🎲 ¡Xuxemon aleatorio añadido con éxito al jugador ' + idJugador + '!');
+      },
+      error: (err: any) => {
+        console.error('Error al dar Xuxemon:', err);
+        alert('Hubo un error al añadir el Xuxemon. Comprueba que el jugador existe y el servicio esté configurado.');
+      }
+    });
+  }
 }
