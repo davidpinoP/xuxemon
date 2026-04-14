@@ -28,8 +28,12 @@ class ConfigController extends Controller
     {
         $data = $request->validate([
             'infection_pct' => 'sometimes|numeric|min:0|max:100',
-            'evolve_xuxes' => 'sometimes|integer|min:1',
+            'evolve_xuxes' => 'sometimes|integer|min:1|max:999',
             'reward_hour' => 'sometimes|integer|min:0|max:23',
+        ], [
+            'infection_pct.max' => 'La probabilidad de infección no puede superar el 100%.',
+            'evolve_xuxes.min' => 'Se requiere al menos 1 caramelo para evolucionar.',
+            'reward_hour.between' => 'La hora de recompensa debe estar entre 0 y 23.',
         ]);
 
         foreach ($data as $key => $value) {

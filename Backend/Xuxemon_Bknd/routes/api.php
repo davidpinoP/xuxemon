@@ -71,7 +71,7 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
         // admin: chuches, xuxemons y vacunas
         Route::post('/admin/dar-chuches', [AdminController::class, 'darChuches']);
         Route::post('/admin/dar-xuxemon-aleatorio', [AdminController::class, 'darXuxemonAleatorio']);
-        Route::post('/admin/users/{id}/vaccine', [AdminController::class, 'darVacuna']);
+        Route::post('/admin/dar-vacuna', [AdminController::class, 'darVacuna']);
 
         // admin: configuracion global
         Route::get('/admin/configs', [ConfigController::class, 'index']);
