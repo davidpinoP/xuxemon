@@ -1,4 +1,4 @@
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" *ngIf="xuxemon">
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" *ngIf="xuxemon" tabindex="0">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
@@ -9,15 +9,19 @@
     <div class="imagen-container">
         <div class="circle-bg">
             @if (xuxemon.imagen) {
-            <img [src]="imagenMostrada" [alt]="xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
+            <img [src]="imagenMostrada" [alt]="imagenAlt" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
                 (error)="onImageError()">
             } @else {
-            <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
+            <img src="https://via.placeholder.com/100" [alt]="imagenAlt" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
             }
         </div>
     </div>
 
-    <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
+    <h2 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h2>
+
+    <p class="estado-texto" [class.estado-enfermo]="xuxemon.enfermedad" [class.estado-sano]="!xuxemon.enfermedad">
+        {{ estadoTexto }}
+    </p>
 
     @if (xuxemon.enfermedad) {
     <div class="badge-enfermedad" aria-live="assertive">
@@ -64,13 +68,16 @@
     <div class="evolucion-container">
         <span class="tamano-badge">📏 {{ xuxemon.tamano | titlecase }}</span>
 
+        <p class="tamano-texto">Tamaño actual: {{ xuxemon.tamano | titlecase }}</p>
         @if (xuxesNecesarias > 0) {
         <p class="evolucion-info">
             Necesitas <strong>{{ xuxesNecesarias }} xuxes</strong> para evolucionar a {{ siguienteTamano }}
         </p>
         <button class="btn-evolucionar"
             [disabled]="!puedeEvolucionar || evolucionando"
-            (click)="evolucionar()">
+            (click)="evolucionar()"
+            type="button"
+            [attr.aria-label]="'Evolucionar ' + xuxemon.nombre">
             @if (evolucionando) {
                 ✨ Evolucionando...
             } @else {

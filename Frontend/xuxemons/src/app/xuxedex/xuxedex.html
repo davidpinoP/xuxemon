@@ -5,7 +5,7 @@
                 <img src="/imagenes/avatar-figma.png" alt="Logo de Xuxemons" class="avatar-img">
             </div>
         </div>
-        <nav class="sidebar-nav">
+        <nav class="sidebar-nav" aria-label="Menú principal">
             <a class="nav-item" routerLink="/home">INICIO</a>
             <a class="nav-item active" routerLink="/xuxedex">XUXEDEX</a>
             <a class="nav-item" routerLink="/mochila">MOCHILA</a>
@@ -20,6 +20,8 @@
     <main class="main-content">
         <h1 class="page-title">Xuxedex</h1>
 
+        <section aria-labelledby="titulo-buscador">
+        <h2 id="titulo-buscador" class="sr-only">Buscador y filtros de Xuxedex</h2>
         <div class="search-container">
             <span class="search-icon" aria-hidden="true">🔍</span>
             <label for="buscar-xuxemon" class="sr-only">Buscar Xuxemon por nombre</label>
@@ -55,6 +57,7 @@
                 </div>
             </div>
         </div>
+        </section>
 
         @if (cargando) {
         <div class="loading" role="status" aria-live="polite">
@@ -71,13 +74,17 @@
         }
 
         @if (!cargando && xuxemons.length > 0) {
+        <section aria-labelledby="titulo-coleccion">
+        <h2 id="titulo-coleccion" class="sr-only">Colección de Xuxemons</h2>
         <div class="grid-xuxemons" role="list" aria-label="Lista de Xuxemons">
             @for (xuxemon of xuxemons; track xuxemon.id) {
-
+            <div role="listitem">
             <app-xuxemon-card [xuxemon]="xuxemon"></app-xuxemon-card>
+            </div>
 
             }
         </div>
+        </section>
         }
     </main>
 </div>

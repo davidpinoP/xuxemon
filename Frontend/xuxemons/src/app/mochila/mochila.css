@@ -106,6 +106,10 @@
     align-items: center;
 }
 
+.inventory-section {
+    width: 100%;
+}
+
 .page-title {
     font-size: 2.5rem;
     color: #1a1a2e;
@@ -125,6 +129,7 @@
     border-radius: 25px;
     box-shadow: 0 4px 20px rgba(90, 58, 203, 0.08);
     margin-bottom: 40px;
+    list-style: none;
 }
 
 .slot {
@@ -138,6 +143,7 @@
     align-items: center;
     position: relative;
     transition: all 0.3s ease;
+    list-style: none;
 }
 
 .slot:hover {
@@ -152,6 +158,11 @@
     box-shadow: 0 4px 12px rgba(124, 108, 240, 0.15);
 }
 
+.slot:focus-within {
+    outline: 3px solid #2357d1;
+    outline-offset: 3px;
+}
+
 .item-container {
     width: 80%;
     height: 80%;
@@ -164,6 +175,18 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+}
+
+.slot-text {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .quantity {
@@ -203,6 +226,19 @@
 .btn-alimentar:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(124, 108, 231, 0.4);
+}
+
+.btn-alimentar:focus,
+.btn-siguiente:focus,
+.btn-volver:focus,
+.btn-confirmar:focus,
+.btn-admin:focus,
+.modal-cerrar:focus,
+.nav-item:focus,
+.control-group select:focus,
+.control-group input:focus {
+    outline: 3px solid #2357d1;
+    outline-offset: 3px;
 }
 
 /* ═══ MODAL OVERLAY ═══ */
