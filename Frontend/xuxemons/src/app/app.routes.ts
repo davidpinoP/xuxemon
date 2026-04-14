@@ -16,7 +16,7 @@ export const routes: Routes = [
     { path: 'register', component: Registro },
     { path: 'home', component: Home, canActivate: [authGuard] },
     { path: 'xuxedex', component: Xuxedex, canActivate: [authGuard] },
-    { path: 'mochila', component: Mochila, canActivate: [authGuard] },
+    { path: 'inventory', component: Mochila, canActivate: [authGuard] },
     { path: 'friends', component: FriendsBasic, canActivate: [authGuard] },
     { path: 'perfil', component: Perfil, canActivate: [authGuard] },
     { 
@@ -27,4 +27,3 @@ export const routes: Routes = [
 
     { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];
-    
