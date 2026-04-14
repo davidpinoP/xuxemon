@@ -80,11 +80,14 @@ export class Mochila implements OnInit {
     this.mensajeError = '';
   }
 
+  // 1️⃣ Esta función llama a Laravel (backend) para descargarse toda la mochila del jugador
   cargarInventario() {
     this.authService.getProfile().subscribe({
       next: (user: any) => {
         const mochila = Array.isArray(user?.mochila) ? user.mochila : [];
+        // Transforma los datos crudos del backend en una lista limpia y lista para mostrar
         this.inventarioBase = this.convertirMochilaAObjetos(mochila);
+        // Le dice al InventoryService que apile los caramelos de 5 en 5 y ponga el límite a 20 huecos
         this.inventoryService.organizarMochila(this.inventarioBase);
       },
       error: () => {
@@ -146,20 +149,23 @@ export class Mochila implements OnInit {
     this.pasoModal = 1;
   }
 
+  // 2️⃣ Comprueba si con los caramelos que le vas a dar ahora mismo, a tu Xuxemon le toca crecer (Evolucionar)
   vaAEvolucionar(): boolean {
     if (!this.xuxemonSeleccionado) {
       return false;
     }
 
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+    const nuevasComidas = comidasActuales + this.cantidadAlimentar; // Suma de caramelos totales
     const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
     const thresholds = this.getEvolveThresholds();
 
+    // Si es pequeño y supera el límite, devolverá TRUE (sí evoluciona)
     if (tamanoActual === 'pequeño' && nuevasComidas >= thresholds.toMediano) {
       return true;
     }
 
+    // Si es mediano y supera el límite de los grandes, devuelve TRUE.
     if (tamanoActual === 'mediano' && nuevasComidas >= thresholds.toGrande) {
       return true;
     }
@@ -275,12 +281,14 @@ export class Mochila implements OnInit {
     }
   }
 
+  // 3️⃣ 'El portero de disco': Comprueba a través del servidor (AuthService) qué 'role' tiene la persona conectada.
+  // Si el usuario tiene un rol "admin", pone esa variable a 'true' para repintar el HTML y mostrar los secretitos.
   checkUserRole() {
     this.authService.me().subscribe({
       next: (user: any) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
-          this.loadPlayers();
+          this.loadPlayers(); // Solo si es admin, se descarga la lista completa de jugadores.
         }
       }
     });
@@ -347,23 +355,28 @@ export class Mochila implements OnInit {
     });
   }
 
+  // 4️⃣ Esta es una maravilla técnica para engañar astutamente al frontend:
+  // Coge el mogollón de datos que viene de la BBDD de Laravel y le añade propiedades clave visuales para nosotros.
   private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
     const objetos: Objeto[] = [];
 
     for (const item of mochila) {
       if (item?.tipo === 'xuxemon') {
-        continue;
+        continue; // Ignoramos a los bichos vivos, esto es el inventario de la mochila
       }
 
       const nombre = item?.nombre || 'Item';
+      // MIRA AQUÍ: Aquí es donde detecta si lleva la palabra "vacuna" en la BBDD
       const esVacuna = nombre.toLowerCase().includes('vacuna');
 
       objetos.push({
         nombre,
         tipo: esVacuna ? 'Vacuna' : 'Xuxe',
         cantidad: Number(item?.cantidad || 1),
+        // MIRA AQUÍ 2: Como stackable (apilable) significa que NO es vacuna, 
+        // le pone 'false' y luego el InventoryService jamás las amontonará.
         stackable: !esVacuna,
-        imagen: this.obtenerImagenItem(nombre),
+        imagen: this.obtenerImagenItem(nombre), // Llama a la función de abajo y le inserta su dibujito
       });
     }
 

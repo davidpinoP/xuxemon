@@ -11,7 +11,7 @@
     <div class="imagen-container">
         <div class="circle-bg">
             @if (xuxemon.imagen) {
-            <img [src]="imagenMostrada" [alt]="xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
+            <img [src]="imagenMostrada" [alt]="'Fotografía del Xuxemon ' + xuxemon.nombre" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
                 (error)="onImageError()">
             } @else {
             <img src="https://via.placeholder.com/100" alt="Desconocido" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
+    <h2 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h2>
 
     @if (xuxemon.enfermedad) {
     <div class="badge-enfermedad" aria-live="assertive">
@@ -76,7 +76,7 @@
             @if (evolucionando) {
                 ✨ Evolucionando...
             } @else {
-                ⬆️ Evolucionar
+                ⬆️ Evolucionar a {{ siguienteTamano }}
             }
         </button>
         } @else {
