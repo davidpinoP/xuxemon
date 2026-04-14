@@ -28,6 +28,12 @@ export class Mochila implements OnInit {
   cantidadAlimentar = 1;
   mensajeError = '';
 
+  // ── Variables del Modal de Vacunación (Hospital) ──
+  mostrarModalVacuna = false;
+  xuxemonEnfermoSeleccionado: IXuxemon | null = null;
+  vacunaSeleccionada = '';
+  mensajeErrorVacuna = '';
+
   // ── Variables Admin ──
   isAdmin = false;
   players: any[] = [];
@@ -211,15 +217,7 @@ export class Mochila implements OnInit {
         const detalles: string[] = [];
 
         if (respuesta?.se_infecto) {
-          detalles.push('Se ha puesto malito.');
-        }
-
-        if (respuesta?.curado) {
-          detalles.push('Se ha curado con una vacuna.');
-        }
-
-        if (respuesta?.xuxemon?.enfermedad && !respuesta?.curado) {
-          detalles.push('Necesita una vacuna para recuperarse.');
+          detalles.push('Se ha puesto malito (enfermo).');
         }
 
         this.cargarInventario();
@@ -229,6 +227,54 @@ export class Mochila implements OnInit {
       },
       error: (error: any) => {
         this.mensajeError = error?.error?.message || 'No se ha podido alimentar al Xuxemon.';
+      }
+    });
+  }
+
+  // ── Métodos del Hospital (Vacunación) ──
+  abrirModalVacuna() {
+    this.mostrarModalVacuna = true;
+    this.mensajeErrorVacuna = '';
+    this.xuxemonEnfermoSeleccionado = null;
+    this.vacunaSeleccionada = '';
+  }
+
+  cerrarModalVacuna() {
+    this.mostrarModalVacuna = false;
+  }
+
+  getXuxemonsEnfermos(): IXuxemon[] {
+    return this.misXuxemons.filter(x => x.enfermedad);
+  }
+
+  getVacunasDisponibles(): Objeto[] {
+    return this.inventarioBase.filter(item => item.tipo === 'Vacuna' && item.cantidad > 0);
+  }
+
+  confirmarCuracion() {
+    if (!this.xuxemonEnfermoSeleccionado) {
+      this.mensajeErrorVacuna = 'Selecciona un Xuxemon enfermo';
+      return;
+    }
+    if (!this.vacunaSeleccionada) {
+      this.mensajeErrorVacuna = 'Selecciona una vacuna';
+      return;
+    }
+
+    // Reutilizamos alimentarXuxemon ya que el backend ahora distingue vacunas por nombre
+    this.xuxemonService.alimentarXuxemon(
+      this.xuxemonEnfermoSeleccionado.id,
+      this.vacunaSeleccionada,
+      1
+    ).subscribe({
+      next: (resp: any) => {
+        alert(resp.message || 'Xuxemon curado correctamente.');
+        this.cargarInventario();
+        this.cargarMisXuxemons();
+        this.cerrarModalVacuna();
+      },
+      error: (err: any) => {
+        this.mensajeErrorVacuna = err?.error?.message || 'Error al curar al Xuxemon.';
       }
     });
   }
