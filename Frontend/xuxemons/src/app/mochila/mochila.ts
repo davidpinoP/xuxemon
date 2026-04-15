@@ -12,7 +12,7 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
 @Component({
   selector: 'app-mochila',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, FormsModule, SidebarComponent],
   templateUrl: './mochila.html',
   styleUrl: './mochila.css',
 })
