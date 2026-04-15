@@ -7,7 +7,7 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink, SidebarComponent],
+  imports: [CommonModule, SidebarComponent],
   templateUrl: './home.html',
   styleUrl: './home.css'
 })
