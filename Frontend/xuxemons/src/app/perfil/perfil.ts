@@ -1,4 +1,8 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService } from '../services/auth.service';
+import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
 
 @Component({
