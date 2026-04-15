@@ -11,21 +11,23 @@
 .mochila-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    padding: 30px;
+    gap: 14px;
+    padding: 22px;
     background: white;
     border-radius: 25px;
     box-shadow: 0 4px 20px rgba(90, 58, 203, 0.08);
     margin-bottom: 40px;
     list-style: none;
+    max-width: 860px;
 }
 
 .slot {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 0.9 / 0.9;
+    max-width: 150px;
     background: #f8f7ff;
     border: 2px dashed #e0ddf5;
-    border-radius: 18px;
+    border-radius: 16px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -52,8 +54,8 @@
 }
 
 .item-container {
-    width: 80%;
-    height: 80%;
+    width: 72%;
+    height: 72%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -79,14 +81,14 @@
 
 .quantity {
     position: absolute;
-    bottom: -8px;
-    right: -8px;
+    bottom: -6px;
+    right: -6px;
     background: linear-gradient(135deg, #7c6cf0, #5a3acb);
     color: white;
     border-radius: 50%;
-    width: 26px;
-    height: 26px;
-    font-size: 13px;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
     font-weight: 700;
     display: flex;
     justify-content: center;
@@ -497,10 +499,12 @@
         grid-template-columns: repeat(4, 1fr);
         padding: 15px;
         gap: 10px;
+        max-width: 100%;
     }
 
     .slot {
         width: 100%;
+        max-width: none;
     }
 }
 
