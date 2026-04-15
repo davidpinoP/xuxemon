@@ -5,7 +5,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ConfigController;
-use App\Http\Controllers\FriendRequestController;
 use App\Http\Controllers\FriendController;
 use Illuminate\Support\Facades\Route;
 
@@ -42,10 +41,6 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
 
     // 🤝 --- Endpoints de Solicitudes de Amistad (Kenneth) --- 🤝
-    Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
-    Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
-    Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
-    Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
     Route::get('/amigos', [FriendController::class, 'index']);
     Route::delete('/amigos/{id}', [FriendController::class, 'destroy']);
     
