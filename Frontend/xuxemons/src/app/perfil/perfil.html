@@ -1,22 +1,24 @@
-<div class="perfil-container">
+<div class="app-layout">
+    <app-sidebar></app-sidebar>
 
-    <h1>Mi Perfil</h1>
+    <main class="main-content">
+        <h1 class="page-title">Mi Perfil</h1>
 
-    @if (cargando) {
-    <p>Cargando perfil...</p>
-    }
+        @if (cargando) {
+        <p>Cargando perfil...</p>
+        }
 
-    @if (mensajeExito) {
-    <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
-    }
-    @if (mensajeError) {
-    <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
-    }
+        @if (mensajeExito) {
+        <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
+        }
+        @if (mensajeError) {
+        <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
+        }
 
-    @if (!cargando) {
-    <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
-        <label for="nombre">Nombre:</label>
-        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
+        @if (!cargando) {
+        <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
+            <label for="nombre">Nombre:</label>
+            <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
 
             <label for="apellidos">Apellidos:</label>
             <input id="apellidos" type="text" formControlName="apellidos" placeholder="Tus apellidos">
@@ -28,52 +30,55 @@
             <input id="password" type="password" formControlName="password" placeholder="Nueva contraseña">
 
             <label for="password_confirmation">Confirmar nueva contraseña:</label>
-            <input id="password_confirmation" type="password" formControlName="password_confirmation" placeholder="Repite la nueva contraseña">
+            <input id="password_confirmation" type="password" formControlName="password_confirmation"
+                placeholder="Repite la nueva contraseña">
 
             <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
         </form>
 
-    <div class="acciones">
-        <button type="button" class="btn-volver" (click)="volver()">Volver</button>
-        <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
-    </div>
+        <div class="acciones">
+            <button type="button" class="btn-volver" (click)="volver()">Volver</button>
+            <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
+        </div>
 
-    <div class="amigos-section">
-        <h2>Mis Amigos</h2>
-        @if (amigos.length > 0) {
-        <ul class="amigos-lista">
-            @for (amigo of amigos; track amigo.id) {
-            <li class="amigo-item" [class.eliminando]="amigoEnEliminacionId === amigo.id">
-                <div class="amigo-avatar">
-                    {{ amigo.name.charAt(0) }}{{ amigo.surname.charAt(0) }}
-                </div>
-                <div class="amigo-info">
-                    <span class="amigo-nombre">{{ amigo.name }} {{ amigo.surname }}</span>
-                    <span class="amigo-email">{{ amigo.email }}</span>
-                </div>
-                <button type="button" class="btn-eliminar-amigo" (click)="abrirModalEliminar(amigo)" title="Eliminar amigo">
-                    &times;
-                </button>
-            </li>
+        <div class="amigos-section">
+            <h2>Mis Amigos</h2>
+            @if (amigos.length > 0) {
+            <ul class="amigos-lista">
+                @for (amigo of amigos; track amigo.id) {
+                <li class="amigo-item" [class.eliminando]="amigoEnEliminacionId === amigo.id">
+                    <div class="amigo-avatar">
+                        {{ amigo.name.charAt(0) }}{{ amigo.surname.charAt(0) }}
+                    </div>
+                    <div class="amigo-info">
+                        <span class="amigo-nombre">{{ amigo.name }} {{ amigo.surname }}</span>
+                        <span class="amigo-email">{{ amigo.email }}</span>
+                    </div>
+                    <button type="button" class="btn-eliminar-amigo" (click)="abrirModalEliminar(amigo)"
+                        title="Eliminar amigo">
+                        &times;
+                    </button>
+                </li>
+                }
+            </ul>
+            } @else {
+            <p class="sin-amigos">Aún no tienes amigos agregados.</p>
             }
-        </ul>
-        } @else {
-        <p class="sin-amigos">Aún no tienes amigos agregados.</p>
-        }
-    </div>
+        </div>
 
-    @if (mostrarModal) {
-    <div class="modal-overlay" (click)="cerrarModal()">
-        <div class="modal-content" (click)="$event.stopPropagation()">
-            <h2>¿Eliminar amigo?</h2>
-            <p>¿Estás seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de amigos?</p>
-            <div class="modal-acciones">
-                <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-                <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">ELIMINAR</button>
+        @if (mostrarModal) {
+        <div class="modal-overlay" (click)="cerrarModal()">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+                <h2>¿Eliminar amigo?</h2>
+                <p>¿Estás seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de
+                    amigos?</p>
+                <div class="modal-acciones">
+                    <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
+                    <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">ELIMINAR</button>
+                </div>
             </div>
         </div>
-    </div>
-    }
-    }
-
+        }
+        }
+    </main>
 </div>

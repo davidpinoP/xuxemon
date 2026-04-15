@@ -27,6 +27,7 @@ class XuxemonFactory extends Factory
             'ataque' => $this->faker->numberBetween(10, 100),
             'defensa' => $this->faker->numberBetween(10, 100),
             'imagen' => '/imagenes/assets/' . $this->faker->numberBetween(1, 46) . '.png',
+            'tamano' => 'Pequeño',
         ];
     }
 }

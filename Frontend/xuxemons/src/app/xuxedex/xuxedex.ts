@@ -7,11 +7,12 @@ import { IXuxemon } from '../models/xuxemon.interface';
 
 // Importamos el nuevo componente de la tarjeta (asegúrate de que la ruta sea correcta)
 import { XuxemonCardComponent } from '../xuxemon-card/xuxemon-card';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-xuxedex',
   standalone: true, // Necesario para cargar imports aquí
-  imports: [CommonModule, FormsModule, XuxemonCardComponent, RouterModule], // Añadimos la tarjeta aquí
+  imports: [CommonModule, FormsModule, XuxemonCardComponent, RouterModule, SidebarComponent], // Añadimos la tarjeta aquí
   templateUrl: './xuxedex.html',
   styleUrl: './xuxedex.css',
 })
