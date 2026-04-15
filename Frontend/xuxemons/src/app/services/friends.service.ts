@@ -24,12 +24,25 @@ export interface PendingFriendRequest {
 })
 export class FriendsService {
   private apiUrl = 'http://localhost:8000/api';
-  private searchResultsSubject = new BehaviorSubject<FriendSearchUser[]>([]);
   private pendingRequestsSubject = new BehaviorSubject<PendingFriendRequest[]>([]);
+  private friendsSubject = new BehaviorSubject<FriendSearchUser[]>([]);
   public searchResults$ = this.searchResultsSubject.asObservable();
   public pendingRequests$ = this.pendingRequestsSubject.asObservable();
+  public friends$ = this.friendsSubject.asObservable();
 
   constructor(private http: HttpClient) {}
+
+  getFriends(): Observable<FriendSearchUser[]> {
+    return this.http.get<FriendSearchUser[]>(`${this.apiUrl}/friends`).pipe(
+      tap((friends) => {
+        this.friendsSubject.next(friends);
+      })
+    );
+  }
+
+  deleteFriend(friendId: number): Observable<FriendRequestResponse> {
+    return this.http.delete<FriendRequestResponse>(`${this.apiUrl}/friends/${friendId}`);
+  }
 
   searchUsers(query: string): Observable<FriendSearchUser[]> {
     return this.http
