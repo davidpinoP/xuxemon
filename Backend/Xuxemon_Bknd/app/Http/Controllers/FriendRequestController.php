@@ -2,160 +2,145 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Friend;
 use App\Models\FriendRequest;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class FriendRequestController extends Controller
 {
-    //  Enviar una solicitud de amistad
     public function send(Request $request)
     {
-        // Validamos que nos manden el ID del usuario al que queremos agregar
         $request->validate([
-            'receiver_id' => 'required|exists:users,id'
+            'receiver_id' => 'required|exists:users,id',
         ]);
 
-        $senderId = $request->user()->id;
-        $receiverId = $request->receiver_id;
+        $senderId = (int) $request->user()->id;
+        $receiverId = (int) $request->receiver_id;
 
-        //  No puedes agregarte a ti mismo
-        if ($senderId == $receiverId) {
-            return response()->json(['message' => 'No puedes enviarte una solicitud a ti mismo.'], 400);
+        if ($senderId === $receiverId) {
+            return response()->json([
+                'message' => 'No puedes enviarte una solicitud a ti mismo.',
+            ], 422);
         }
 
-        //  Comprobar si ya hay una solicitud pendiente 
-        $existingRequest = FriendRequest::where(function ($query) use ($senderId, $receiverId) {
-            $query->where('sender_id', $senderId)->where('receiver_id', $receiverId);
-        })->orWhere(function ($query) use ($senderId, $receiverId) {
-            $query->where('sender_id', $receiverId)->where('receiver_id', $senderId);
-        })->first();
+        $alreadyFriends = Friend::query()
+            ->where(function ($query) use ($senderId, $receiverId) {
+                $query->where('user_id', $senderId)
+                    ->where('friend_id', $receiverId);
+            })
+            ->orWhere(function ($query) use ($senderId, $receiverId) {
+                $query->where('user_id', $receiverId)
+                    ->where('friend_id', $senderId);
+            })
+            ->exists();
 
-        if ($existingRequest) {
-            return response()->json(['message' => 'Ya existe una solicitud entre estos usuarios.'], 400);
+        if ($alreadyFriends) {
+            return response()->json([
+                'message' => 'Ya sois amigos.',
+            ], 409);
         }
 
-        // Creamos la solicitud
+        $pendingRequestExists = FriendRequest::query()
+            ->where('status', 'pending')
+            ->where(function ($query) use ($senderId, $receiverId) {
+                $query->where(function ($subQuery) use ($senderId, $receiverId) {
+                    $subQuery->where('sender_id', $senderId)
+                        ->where('receiver_id', $receiverId);
+                })->orWhere(function ($subQuery) use ($senderId, $receiverId) {
+                    $subQuery->where('sender_id', $receiverId)
+                        ->where('receiver_id', $senderId);
+                });
+            })
+            ->exists();
+
+        if ($pendingRequestExists) {
+            return response()->json([
+                'message' => 'Ya existe una solicitud pendiente entre estos usuarios.',
+            ], 409);
+        }
+
         $friendRequest = FriendRequest::create([
             'sender_id' => $senderId,
             'receiver_id' => $receiverId,
-            'status' => 'pending'
+            'status' => 'pending',
         ]);
 
-        return response()->json(['message' => 'Solicitud enviada con éxito.', 'data' => $friendRequest], 201);
+        return response()->json([
+            'message' => 'Solicitud enviada con exito.',
+            'data' => $friendRequest,
+        ], 201);
     }
 
-    //  Listar mis solicitudes pendientes 
     public function pending(Request $request)
     {
-        $userId = $request->user()->id;
+        $userId = (int) $request->user()->id;
 
-        // Buscamos las que nos tienen como receptor, y traemos los datos del "sender"
-        $requests = FriendRequest::with('sender:id,name,email') 
+        $requests = FriendRequest::query()
+            ->with('sender:id,name,surname,player_id,email')
             ->where('receiver_id', $userId)
             ->where('status', 'pending')
+            ->latest()
             ->get();
 
         return response()->json($requests, 200);
     }
 
-    // Listar mis amigos
-    public function listarAmigos(Request $request)
-    {
-        $user = $request->user();
-        $amigos = $user->amigos()->select('users.id', 'users.name', 'users.surname', 'users.email')->get();
-        return response()->json($amigos, 200);
-    }
-
-    //  Aceptar solicitud y crear amistad bidireccional
     public function accept(Request $request, $id)
     {
-        $userId = $request->user()->id;
-        
-        $friendRequest = FriendRequest::where('id', $id)
+        $userId = (int) $request->user()->id;
+
+        $friendRequest = FriendRequest::query()
+            ->where('id', $id)
             ->where('receiver_id', $userId)
             ->where('status', 'pending')
             ->first();
 
         if (!$friendRequest) {
-            return response()->json(['message' => 'Solicitud no encontrada o ya procesada.'], 404);
+            return response()->json([
+                'message' => 'Solicitud no encontrada o ya procesada.',
+            ], 404);
         }
 
-        // Cambiamos el estado a aceptado
-        $friendRequest->status = 'accepted';
-        $friendRequest->save();
+        DB::transaction(function () use ($friendRequest) {
+            $friendRequest->update(['status' => 'accepted']);
 
-       
-        
-        DB::table('friends')->insertOrIgnore([
-            [
-                'user_id' => $friendRequest->sender_id, 
-                'friend_id' => $friendRequest->receiver_id, 
-                'created_at' => now(), 
-                'updated_at' => now()
-            ],
-            [
-                'user_id' => $friendRequest->receiver_id, 
-                'friend_id' => $friendRequest->sender_id, 
-                'created_at' => now(), 
-                'updated_at' => now()
-            ],
-        ]);
-        
-        // Mantener amigos por ahora (opcional, pero mejor centralizar)
-        DB::table('amigos')->insertOrIgnore([
-            [
-                'user_id' => $friendRequest->sender_id, 
-                'amigo_id' => $friendRequest->receiver_id, 
-                'created_at' => now(), 
-                'updated_at' => now()
-            ],
-            [
-                'user_id' => $friendRequest->receiver_id, 
-                'amigo_id' => $friendRequest->sender_id, 
-                'created_at' => now(), 
-                'updated_at' => now()
-            ],
-        ]);
+            Friend::firstOrCreate([
+                'user_id' => $friendRequest->sender_id,
+                'friend_id' => $friendRequest->receiver_id,
+            ]);
 
-        return response()->json(['message' => 'Solicitud aceptada. ¡Ahora sois amigos!'], 200);
+            Friend::firstOrCreate([
+                'user_id' => $friendRequest->receiver_id,
+                'friend_id' => $friendRequest->sender_id,
+            ]);
+        });
+
+        return response()->json([
+            'message' => 'Solicitud aceptada. Ahora sois amigos.',
+        ], 200);
     }
 
-    //  Rechazar solicitud
-    public function reject(Request $request, $id)
+    public function destroy(Request $request, $id)
     {
-        $userId = $request->user()->id;
-        
-        $friendRequest = FriendRequest::where('id', $id)
+        $userId = (int) $request->user()->id;
+
+        $friendRequest = FriendRequest::query()
+            ->where('id', $id)
             ->where('receiver_id', $userId)
             ->where('status', 'pending')
             ->first();
 
         if (!$friendRequest) {
-            return response()->json(['message' => 'Solicitud no encontrada o ya procesada.'], 404);
+            return response()->json([
+                'message' => 'Solicitud no encontrada o ya procesada.',
+            ], 404);
         }
 
-        // Cambiamos el estado a rechazado
-        $friendRequest->status = 'rejected';
-        $friendRequest->save();
+        $friendRequest->update(['status' => 'rejected']);
 
-        return response()->json(['message' => 'Solicitud rechazada.'], 200);
-    }
-
-    // Eliminar amigo
-    public function eliminarAmigo(Request $request, $id)
-    {
-        $userId = $request->user()->id;
-        $amigoId = $id;
-
-        // Borrado bidireccional
-        DB::table('amigos')->where(function ($query) use ($userId, $amigoId) {
-            $query->where('user_id', $userId)->where('amigo_id', $amigoId);
-        })->orWhere(function ($query) use ($userId, $amigoId) {
-            $query->where('user_id', $amigoId)->where('amigo_id', $userId);
-        })->delete();
-
-        return response()->json(['message' => 'Amistad eliminada correctamente.'], 200);
+        return response()->json([
+            'message' => 'Solicitud rechazada.',
+        ], 200);
     }
 }

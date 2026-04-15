@@ -38,11 +38,17 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
 
 
-    //  --- Endpoints de Solicitudes de Amistad (TU PARTE DEL SPRINT 4) --- 
+    // --- Endpoints de Solicitudes de Amistad ---
+    Route::post('/friend-requests', [FriendRequestController::class, 'send']);
+    Route::get('/friend-requests', [FriendRequestController::class, 'pending']);
+    Route::put('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
+    Route::delete('/friend-requests/{id}', [FriendRequestController::class, 'destroy']);
+
+    // Compatibilidad temporal con rutas antiguas
     Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
     Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
     Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
-    Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'reject']);
+    Route::post('/friend-requests/{id}/reject', [FriendRequestController::class, 'destroy']);
     
     // --- Endpoints de Amigos (PARTE DE DAVID) ---
     Route::get('/amigos', [FriendController::class, 'index']);
