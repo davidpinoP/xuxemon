@@ -4,11 +4,15 @@
       <img src="/imagenes/avatar-figma.png" alt="Logo de Xuxemons" class="avatar-img">
     </div>
   </div>
-  <nav class="sidebar-nav" aria-label="Menú principal">
+
+  <nav class="sidebar-nav" aria-label="Menu principal">
     <a class="nav-item" routerLink="/home" routerLinkActive="active">INICIO</a>
     <a class="nav-item" routerLink="/xuxedex" routerLinkActive="active">XUXEDEX</a>
     <a class="nav-item" routerLink="/inventory" routerLinkActive="active">MOCHILA</a>
     <a class="nav-item" routerLink="/friends" routerLinkActive="active">AMIGOS</a>
+    @if (isAdmin) {
+    <a class="nav-item" routerLink="/admin" routerLinkActive="active">ADMIN</a>
+    }
     <a class="nav-item" routerLink="/perfil" routerLinkActive="active">
       <span class="icon-user"></span> PERFIL
     </a>

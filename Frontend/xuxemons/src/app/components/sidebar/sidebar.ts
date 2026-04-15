@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -9,4 +9,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './sidebar.html',
   styleUrl: './sidebar.css'
 })
-export class SidebarComponent {}
+export class SidebarComponent implements OnInit {
+  isAdmin = false;
+
+  ngOnInit(): void {
+    this.isAdmin = localStorage.getItem('userRole') === 'admin';
+  }
+}
