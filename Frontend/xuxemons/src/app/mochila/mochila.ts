@@ -1,7 +1,6 @@
 import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
 import { XuxemonService } from '../services/xuxemon.service';
