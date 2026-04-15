@@ -41,6 +41,12 @@ export class Xuxemon {
     });
   }
 
+  darXuxemonAleatorio(userId: string | number) {
+    return this.http.post('http://127.0.0.1:8000/api/admin/dar-xuxemon-aleatorio', {
+      user_id: userId
+    });
+  }
+
   // recompensas
   checkRewards() { return this.http.get('http://127.0.0.1:8000/api/user/check-rewards'); }
   claimReward() { return this.http.post('http://127.0.0.1:8000/api/user/claim-reward', {}); }
