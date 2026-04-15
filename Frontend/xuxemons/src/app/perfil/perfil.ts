@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-perfil',
-  imports: [ReactiveFormsModule],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
   templateUrl: './perfil.html',
   styleUrl: './perfil.css'
 })

@@ -1,7 +1,10 @@
-<section class="friends-content">
-  <h2 class="page-title">Amigos</h2>
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
 
-  <section class="requests-panel" aria-labelledby="requests-title">
+  <main class="main-content">
+    <h1 class="page-title">Amigos</h1>
+
+    <section class="requests-panel" aria-labelledby="requests-title">
     <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
 
     @if (solicitudesPendientes.length > 0) {
@@ -79,4 +82,5 @@
       <button type="button" class="page-btn">&gt;</button>
     </div>
   </section>
-</section>
+  </main>
+</div>
