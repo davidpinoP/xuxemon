@@ -1,8 +1,11 @@
-<div style="padding: 20px; font-family: sans-serif;">
-  <h1>panel de control admin</h1>
+<div class="app-layout">
+  <app-sidebar></app-sidebar>
 
-  <!-- parametros -->
-  <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px;">
+  <main class="main-content">
+    <h1 class="page-title">Panel de Control Admin</h1>
+
+    <!-- parametros -->
+    <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px;">
     <legend style="font-weight: bold; padding: 0 10px; font-variant: small-caps;">ajustes globales</legend>
     <form [formGroup]="fConfig" (ngSubmit)="saveConf()">
       <p>% infeccion: <input type="number" formControlName="infection_pct"></p>
@@ -32,5 +35,6 @@
       </tr>
       }
     </table>
-  </fieldset>
+    </fieldset>
+  </main>
 </div>
