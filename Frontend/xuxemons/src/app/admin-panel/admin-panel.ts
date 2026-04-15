@@ -4,11 +4,12 @@ import { CommonModule } from '@angular/common';
 import { Xuxemon } from '../services/xuxemon';
 import { AuthService } from '../services/auth.service';
 import { InventoryService, Objeto } from '../services/inventory.service';
+import { SidebarComponent } from '../components/sidebar/sidebar';
 
 @Component({
   selector: 'app-admin-panel',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule, SidebarComponent],
   templateUrl: './admin-panel.html',
   styleUrls: ['./admin-panel.css']
 })

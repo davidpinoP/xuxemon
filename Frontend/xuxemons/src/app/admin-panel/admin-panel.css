@@ -1,10 +1,10 @@
-.admin-wrapper {
-  padding: 20px;
-  font-family: sans-serif;
-}
-
-.admin-wrapper h1 {
-  margin-bottom: 20px;
+.page-title {
+  font-size: clamp(2.7rem, 4vw, 4rem);
+  color: #171628;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  line-height: 0.95;
+  margin-bottom: 24px;
 }
 
 .admin-box {
