@@ -26,6 +26,7 @@ export class FriendsService {
   private apiUrl = 'http://localhost:8000/api';
   private pendingRequestsSubject = new BehaviorSubject<PendingFriendRequest[]>([]);
   private friendsSubject = new BehaviorSubject<FriendSearchUser[]>([]);
+  private searchResultsSubject = new BehaviorSubject<FriendSearchUser[]>([]);
   public searchResults$ = this.searchResultsSubject.asObservable();
   public pendingRequests$ = this.pendingRequestsSubject.asObservable();
   public friends$ = this.friendsSubject.asObservable();
