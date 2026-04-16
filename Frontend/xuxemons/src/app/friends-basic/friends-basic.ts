@@ -151,10 +151,8 @@ export class FriendsBasic implements OnInit {
   aceptarSolicitud(requestCard: RequestCard): void {
     this.friendsService.acceptFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        this.solicitudesPendientes = this.solicitudesPendientes.filter(
-          (request) => request.id !== requestCard.id
-        );
-        // Refrescamos la lista de amigos para que aparezca el nuevo amigo
+        // Recargamos ambas listas para asegurar que los cambios se reflejen
+        this.cargarSolicitudesPendientes();
         this.cargarAmigos();
         alert(response.message);
       },
@@ -168,9 +166,9 @@ export class FriendsBasic implements OnInit {
   rechazarSolicitud(requestCard: RequestCard): void {
     this.friendsService.rejectFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        this.solicitudesPendientes = this.solicitudesPendientes.filter(
-          (request) => request.id !== requestCard.id
-        );
+        // Recargamos ambas listas para asegurar que los cambios se reflejen
+        this.cargarSolicitudesPendientes();
+        this.cargarAmigos();
         alert(response.message);
       },
       error: (error) => {
