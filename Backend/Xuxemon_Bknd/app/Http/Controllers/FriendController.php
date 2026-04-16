@@ -34,6 +34,6 @@ class FriendController extends Controller
             $query->where('user_id', $friendId)->where('friend_id', $userId);
         })->delete();
 
-        return response()->json(['message' => 'Friendship removed successfully.'], 200);
+        return response()->json(['message' => 'Amistad eliminada con éxito.'], 200);
     }
 }
