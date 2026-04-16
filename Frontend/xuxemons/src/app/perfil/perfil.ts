@@ -1,11 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-<<<<<<< HEAD
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
-=======
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
->>>>>>> kenneth_trabajo
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
 import { AuthService } from '../services/auth.service';

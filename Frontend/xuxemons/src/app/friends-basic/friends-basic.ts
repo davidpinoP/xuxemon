@@ -38,20 +38,12 @@ export class FriendsBasic implements OnInit {
   resultados: FriendCard[] = [];
   tarjetasVisibles: FriendCard[] = [];
   solicitudesPendientes: RequestCard[] = [];
-
-  amigosDemo: FriendCard[] = [
-    { id: 1, name: 'Laura', playerId: '#Laura1204', canAdd: false, requestSent: false },
-    { id: 2, name: 'Rivers', playerId: '#Rivers8821', canAdd: false, requestSent: false },
-    { id: 3, name: 'Maria', playerId: '#Maria4500', canAdd: false, requestSent: false },
-    { id: 4, name: 'Paulita', playerId: '#Paulita1122', canAdd: true, requestSent: false },
-    { id: 5, name: 'Isabela', playerId: '#Isabela7780', canAdd: false, requestSent: false },
-    { id: 6, name: 'Lucia', playerId: '#Lucia3001', canAdd: true, requestSent: false }
-  ];
+  amigosReales: FriendCard[] = [];
 
   constructor(private friendsService: FriendsService) {}
 
   ngOnInit(): void {
-    this.tarjetasVisibles = this.amigosDemo;
+    this.cargarAmigos();
     this.cargarSolicitudesPendientes();
 
     this.searchControl.valueChanges
@@ -61,7 +53,7 @@ export class FriendsBasic implements OnInit {
 
         if (texto.length < 3) {
           this.resultados = [];
-          this.tarjetasVisibles = this.amigosDemo;
+          this.tarjetasVisibles = this.amigosReales;
           this.buscando = false;
           this.mensaje = 'Escribe 3 caracteres o mas para buscar por ID.';
           this.friendsService.clearSearchResults();
@@ -70,6 +62,28 @@ export class FriendsBasic implements OnInit {
 
         this.buscarUsuarios(texto);
       });
+  }
+
+  private cargarAmigos(): void {
+    this.friendsService.getFriends().subscribe({
+      next: (friends: FriendSearchUser[]) => {
+        this.amigosReales = friends.map((f) => ({
+          id: f.id,
+          name: `${f.name} ${f.surname}`.trim(),
+          playerId: f.player_id,
+          canAdd: false,
+          requestSent: false
+        }));
+        // Solo actualizamos tarjetasVisibles si no estamos en una búsqueda activa
+        if (this.searchControl.value.trim().length < 3) {
+          this.tarjetasVisibles = this.amigosReales;
+        }
+      },
+      error: () => {
+        this.amigosReales = [];
+        this.tarjetasVisibles = [];
+      }
+    });
   }
 
   private buscarUsuarios(query: string): void {
@@ -137,9 +151,9 @@ export class FriendsBasic implements OnInit {
   aceptarSolicitud(requestCard: RequestCard): void {
     this.friendsService.acceptFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        this.solicitudesPendientes = this.solicitudesPendientes.filter(
-          (request) => request.id !== requestCard.id
-        );
+        // Recargamos ambas listas para asegurar que los cambios se reflejen
+        this.cargarSolicitudesPendientes();
+        this.cargarAmigos();
         alert(response.message);
       },
       error: (error) => {
@@ -152,9 +166,9 @@ export class FriendsBasic implements OnInit {
   rechazarSolicitud(requestCard: RequestCard): void {
     this.friendsService.rejectFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        this.solicitudesPendientes = this.solicitudesPendientes.filter(
-          (request) => request.id !== requestCard.id
-        );
+        // Recargamos ambas listas para asegurar que los cambios se reflejen
+        this.cargarSolicitudesPendientes();
+        this.cargarAmigos();
         alert(response.message);
       },
       error: (error) => {
@@ -162,5 +176,20 @@ export class FriendsBasic implements OnInit {
         alert(message);
       }
     });
+  }
+
+  eliminarAmigo(id: number): void {
+    if (confirm('¿Estás seguro de que quieres eliminar a este amigo?')) {
+      this.friendsService.deleteFriend(id).subscribe({
+        next: (response) => {
+          this.cargarAmigos();
+          alert(response.message);
+        },
+        error: (error) => {
+          const message = error?.error?.message || 'No se ha podido eliminar al amigo.';
+          alert(message);
+        }
+      });
+    }
   }
 }
