@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs';
 import {
   FriendSearchUser,
   FriendsService,
@@ -39,6 +39,8 @@ export class FriendsBasic implements OnInit {
   tarjetasVisibles: FriendCard[] = [];
   solicitudesPendientes: RequestCard[] = [];
   amigosReales: FriendCard[] = [];
+  procesandoSolicitudIds = new Set<number>();
+  eliminandoAmigoIds = new Set<number>();
 
   constructor(private friendsService: FriendsService) {}
 
@@ -47,19 +49,24 @@ export class FriendsBasic implements OnInit {
     this.cargarSolicitudesPendientes();
 
     this.searchControl.valueChanges
-      .pipe(debounceTime(300), distinctUntilChanged())
-      .subscribe((value) => {
-        const texto = value.trim();
+      .pipe(
+        debounceTime(300),
+        distinctUntilChanged(),
+        map((value) => value.trim()),
+        tap((texto) => {
+          if (texto.length >= 3) {
+            return;
+          }
 
-        if (texto.length < 3) {
           this.resultados = [];
           this.tarjetasVisibles = this.amigosReales;
           this.buscando = false;
           this.mensaje = 'Escribe 3 caracteres o mas para buscar por ID.';
           this.friendsService.clearSearchResults();
-          return;
-        }
-
+        }),
+        filter((texto) => texto.length >= 3)
+      )
+      .subscribe((texto) => {
         this.buscarUsuarios(texto);
       });
   }
@@ -151,12 +158,16 @@ export class FriendsBasic implements OnInit {
   aceptarSolicitud(requestCard: RequestCard): void {
     this.friendsService.acceptFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        // Recargamos ambas listas para asegurar que los cambios se reflejen
-        this.cargarSolicitudesPendientes();
-        this.cargarAmigos();
-        alert(response.message);
+        this.procesandoSolicitudIds.add(requestCard.id);
+        setTimeout(() => {
+          this.cargarSolicitudesPendientes();
+          this.cargarAmigos();
+          this.procesandoSolicitudIds.delete(requestCard.id);
+          alert(response.message);
+        }, 300);
       },
       error: (error) => {
+        this.procesandoSolicitudIds.delete(requestCard.id);
         const message = error?.error?.message || 'No se ha podido aceptar la solicitud.';
         alert(message);
       }
@@ -166,12 +177,16 @@ export class FriendsBasic implements OnInit {
   rechazarSolicitud(requestCard: RequestCard): void {
     this.friendsService.rejectFriendRequest(requestCard.id).subscribe({
       next: (response) => {
-        // Recargamos ambas listas para asegurar que los cambios se reflejen
-        this.cargarSolicitudesPendientes();
-        this.cargarAmigos();
-        alert(response.message);
+        this.procesandoSolicitudIds.add(requestCard.id);
+        setTimeout(() => {
+          this.cargarSolicitudesPendientes();
+          this.cargarAmigos();
+          this.procesandoSolicitudIds.delete(requestCard.id);
+          alert(response.message);
+        }, 300);
       },
       error: (error) => {
+        this.procesandoSolicitudIds.delete(requestCard.id);
         const message = error?.error?.message || 'No se ha podido rechazar la solicitud.';
         alert(message);
       }
@@ -180,12 +195,17 @@ export class FriendsBasic implements OnInit {
 
   eliminarAmigo(id: number): void {
     if (confirm('¿Estás seguro de que quieres eliminar a este amigo?')) {
+      this.eliminandoAmigoIds.add(id);
       this.friendsService.deleteFriend(id).subscribe({
         next: (response) => {
-          this.cargarAmigos();
-          alert(response.message);
+          setTimeout(() => {
+            this.cargarAmigos();
+            this.eliminandoAmigoIds.delete(id);
+            alert(response.message);
+          }, 300);
         },
         error: (error) => {
+          this.eliminandoAmigoIds.delete(id);
           const message = error?.error?.message || 'No se ha podido eliminar al amigo.';
           alert(message);
         }
