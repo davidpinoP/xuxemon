@@ -4,6 +4,8 @@ import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
 import { AuthService } from '../services/auth.service';
+import { XuxemonService } from '../services/xuxemon.service';
+import { IXuxemon } from '../models/xuxemon.interface';
 
 @Component({
   selector: 'app-perfil',
@@ -13,6 +15,13 @@ import { AuthService } from '../services/auth.service';
   styleUrl: './perfil.css'
 })
 export class Perfil implements OnInit {
+  perfilUsuario = {
+    name: '',
+    surname: '',
+    email: '',
+    playerId: '',
+    role: 'Entrenador'
+  };
 
   formularioPerfil = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
@@ -26,22 +35,39 @@ export class Perfil implements OnInit {
   mensajeError = '';
   cargando = true;
   amigos: any[] = [];
-  
-  // Estado del modal y animaciones
+  misXuxemons: IXuxemon[] = [];
+  duoFavorito: IXuxemon[] = [];
+  xuxemonFavorito: IXuxemon | null = null;
+  batallasGanadas = 200;
+  medallas = ['★', '★'];
+
   mostrarModal = false;
   amigoParaEliminar: any = null;
   amigoEnEliminacionId: number | null = null;
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private xuxemonService: XuxemonService,
+    private router: Router
+  ) { }
 
   ngOnInit(): void {
     this.cargarPerfil();
     this.cargarAmigos();
+    this.cargarXuxemons();
   }
 
   cargarPerfil(): void {
     this.authService.getProfile().subscribe({
       next: (data: any) => {
+        this.perfilUsuario = {
+          name: data.name || '',
+          surname: data.surname || '',
+          email: data.email || '',
+          playerId: data.player_id || localStorage.getItem('player_id') || '#Jugador0000',
+          role: 'Entrenador'
+        };
+
         this.formularioPerfil.patchValue({
           nombre: data.name,
           apellidos: data.surname,
@@ -52,6 +78,25 @@ export class Perfil implements OnInit {
       error: () => {
         this.mensajeError = 'No se pudo cargar el perfil.';
         this.cargando = false;
+      }
+    });
+  }
+
+  cargarXuxemons(): void {
+    this.xuxemonService.getMisXuxemons().subscribe({
+      next: (data: IXuxemon[]) => {
+        this.misXuxemons = data;
+
+        if (data.length > 0) {
+          this.duoFavorito = data.slice(0, 2);
+          this.xuxemonFavorito = data[0];
+          return;
+        }
+
+        this.aplicarFavoritosDemo();
+      },
+      error: () => {
+        this.aplicarFavoritosDemo();
       }
     });
   }
@@ -83,6 +128,9 @@ export class Perfil implements OnInit {
       
       this.authService.updateProfile(datos).subscribe({
         next: () => {
+          this.perfilUsuario.name = datos.name;
+          this.perfilUsuario.surname = datos.surname;
+          this.perfilUsuario.email = datos.email;
           this.mensajeExito = 'Perfil actualizado correctamente.';
           this.mensajeError = '';
         },
@@ -142,5 +190,41 @@ export class Perfil implements OnInit {
 
   volver(): void {
     this.router.navigate(['/home']);
+  }
+
+  get nombreCompleto(): string {
+    return `${this.perfilUsuario.name} ${this.perfilUsuario.surname}`.trim();
+  }
+
+  get descripcionPerfil(): string {
+    const nombre = this.perfilUsuario.name || 'entrenador';
+    return `Hola me llamo ${nombre.toLowerCase()}.`;
+  }
+
+  get playerIdVisible(): string {
+    const playerId = this.perfilUsuario.playerId || localStorage.getItem('player_id') || 'Jugador0000';
+    return playerId.startsWith('#') ? playerId : `#${playerId}`;
+  }
+
+  getXuxemonImage(xuxemon: IXuxemon): string {
+    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
+  }
+
+  private crearXuxemonDemo(id: number, nombre: string): IXuxemon {
+    return {
+      id,
+      nombre,
+      tipo: 'agua',
+      tamano: 'pequeno',
+      imagen: `/imagenes/assets/${id}.png`
+    };
+  }
+
+  private aplicarFavoritosDemo(): void {
+    this.duoFavorito = [
+      this.crearXuxemonDemo(4, 'Aquarion'),
+      this.crearXuxemonDemo(2, 'Terrock')
+    ];
+    this.xuxemonFavorito = this.crearXuxemonDemo(3, 'Ventus');
   }
 }
