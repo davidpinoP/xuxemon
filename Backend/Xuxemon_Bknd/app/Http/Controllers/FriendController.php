@@ -14,7 +14,7 @@ class FriendController extends Controller
     {
         $friends = auth('api')->user()
             ->friends()
-            ->select('users.id', 'users.name', 'users.surname', 'users.email')
+            ->select('users.id', 'users.name', 'users.surname', 'users.email', 'users.player_id')
             ->get();
 
         return response()->json($friends, 200);

@@ -5,12 +5,17 @@
     <h1 class="page-title">Amigos</h1>
 
     <section class="requests-panel" aria-labelledby="requests-title">
-    <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
+    <div class="section-title-row">
+      <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
+      <span class="requests-badge" [attr.aria-label]="solicitudesPendientes.length + ' solicitudes pendientes'">
+        {{ solicitudesPendientes.length }}
+      </span>
+    </div>
 
     @if (solicitudesPendientes.length > 0) {
       <ul class="request-list">
         @for (request of solicitudesPendientes; track request.id) {
-          <li class="request-card">
+          <li class="request-card" [class.is-removing]="procesandoSolicitudIds.has(request.id)">
             <div>
               <p class="request-name">{{ request.name }}</p>
               <p class="request-id">{{ request.playerId }}</p>
@@ -46,7 +51,8 @@
   <section class="cards-section" aria-label="Resultados de busqueda">
     <div class="cards-grid">
       @for (card of tarjetasVisibles; track card.playerId) {
-        <article class="friend-card">
+        <article class="friend-card" [class.request-sent]="card.requestSent && card.canAdd"
+          [class.is-removing]="eliminandoAmigoIds.has(card.id)">
           <div class="friend-top">
             <div class="friend-avatar" aria-hidden="true"></div>
 
