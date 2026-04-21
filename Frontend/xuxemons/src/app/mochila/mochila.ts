@@ -381,7 +381,7 @@ export class Mochila implements OnInit {
 
     // 4. Calculamos cuántos slots nuevos vamos a gastar dividiendo entre 5
     const slotsNeeded = Math.ceil(newItem.cantidad / 5);
-    
+
     // 5. Si gastamos más huecos de los que tenemos libres, le quitamos el exceso
     if (slotsNeeded > availableSlots) {
       const allowedAmount = availableSlots * 5;
@@ -401,7 +401,7 @@ export class Mochila implements OnInit {
     });
   }
 
-  // 4️⃣ Esta es una maravilla técnica para engañar astutamente al frontend:
+
   // Coge el mogollón de datos que viene de la BBDD de Laravel y le añade propiedades clave visuales para nosotros.
   private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
     const objetos: Objeto[] = [];
