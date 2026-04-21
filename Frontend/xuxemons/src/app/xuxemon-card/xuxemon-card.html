@@ -17,7 +17,7 @@
         </div>
     </div>
 
-    <h2 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h2>
+    <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
 
     <p class="estado-texto" [class.estado-enfermo]="xuxemon.enfermedad" [class.estado-sano]="!xuxemon.enfermedad">
         {{ estadoTexto }}
