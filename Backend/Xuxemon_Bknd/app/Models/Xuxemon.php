@@ -27,4 +27,9 @@ class Xuxemon extends Model
     {
         return $this->morphMany(Mochila::class, 'itemable');
     }
+
+    public function userXuxemons()
+    {
+        return $this->hasMany(UserXuxemon::class);
+    }
 }

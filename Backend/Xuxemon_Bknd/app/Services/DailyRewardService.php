@@ -61,7 +61,7 @@ class DailyRewardService
             ]);
         }
 
-        $xuxemonAlea = Xuxemon::inRandomOrder()->first();
+        $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($user);
         $xuxemonNombre = null;
         $xuxemonId = null;
 
@@ -117,5 +117,20 @@ class DailyRewardService
         }
 
         return $rewardHour;
+    }
+
+    private function obtenerXuxemonAleatorioParaUsuario(User $user): ?Xuxemon
+    {
+        $desbloqueados = UserXuxemon::where('user_id', $user->id)
+            ->pluck('xuxemon_id');
+
+        $pendiente = Xuxemon::query()
+            ->when($desbloqueados->isNotEmpty(), function ($query) use ($desbloqueados) {
+                $query->whereNotIn('id', $desbloqueados);
+            })
+            ->inRandomOrder()
+            ->first();
+
+        return $pendiente ?: Xuxemon::inRandomOrder()->first();
     }
 }

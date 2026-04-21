@@ -47,12 +47,15 @@ class AdminController extends Controller
 
         $usuario = User::findOrFail($request->user_id);
 
-        // Pilla uno aleatorio de la bd
-        $xuxemonAlea = Xuxemon::inRandomOrder()->first();
+        $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($usuario);
 
         if (!$xuxemonAlea) {
             return response()->json(['error' => 'No hay xuxemons creados aun'], 404);
         }
+
+        $yaLoTenia = UserXuxemon::where('user_id', $usuario->id)
+            ->where('xuxemon_id', $xuxemonAlea->id)
+            ->exists();
 
         // Se lo guarda al usuario en tamaño pequeño en la mochila
         $entradaMochila = $usuario->mochila()->firstOrNew([
@@ -79,7 +82,9 @@ class AdminController extends Controller
 
         return response()->json([
             'mensaje' => 'Xuxemon aleatorio regalado',
-            'xuxemon' => $xuxemonAlea->nombre
+            'xuxemon' => $xuxemonAlea->nombre,
+            'xuxemon_id' => $xuxemonAlea->id,
+            'nuevo_desbloqueo' => !$yaLoTenia
         ], 201);
     }
 
@@ -106,5 +111,20 @@ class AdminController extends Controller
             'ok' => true,
             'mensaje' => 'Vacuna entregada al jugador'
         ]);
+    }
+
+    private function obtenerXuxemonAleatorioParaUsuario(User $usuario): ?Xuxemon
+    {
+        $desbloqueados = UserXuxemon::where('user_id', $usuario->id)
+            ->pluck('xuxemon_id');
+
+        $pendiente = Xuxemon::query()
+            ->when($desbloqueados->isNotEmpty(), function ($query) use ($desbloqueados) {
+                $query->whereNotIn('id', $desbloqueados);
+            })
+            ->inRandomOrder()
+            ->first();
+
+        return $pendiente ?: Xuxemon::inRandomOrder()->first();
     }
 }

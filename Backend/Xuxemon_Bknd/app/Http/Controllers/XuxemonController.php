@@ -68,7 +68,13 @@ class XuxemonController extends Controller
             'tamano' => 'nullable|string|max:50',
         ]);
 
-        $xuxemons = Xuxemon::query()
+        $user = $request->user();
+
+        if ($user) {
+            $this->sincronizarXuxemonsUsuario($user);
+        }
+
+        $catalogo = Xuxemon::query()
             ->when(!empty($filters['tipo']), function ($query) use ($filters) {
                 $query->whereRaw('LOWER(tipo) = ?', [mb_strtolower($filters['tipo'])]);
             })
@@ -77,7 +83,34 @@ class XuxemonController extends Controller
             })
             ->get();
 
-        return response()->json($xuxemons);
+        if (!$user) {
+            return response()->json($catalogo);
+        }
+
+        $propios = UserXuxemon::where('user_id', $user->id)
+            ->get()
+            ->keyBy('xuxemon_id');
+
+        $resultado = $catalogo->map(function (Xuxemon $xuxemon) use ($propios) {
+            $registro = $propios->get($xuxemon->id);
+
+            return [
+                'id' => $xuxemon->id,
+                'nombre' => $xuxemon->nombre,
+                'tipo' => $xuxemon->tipo,
+                'descripcion' => $xuxemon->descripcion,
+                'imagen' => $registro?->imagen ?: $xuxemon->imagen,
+                'tamano' => $registro?->tamano ?: 'Pequeño',
+                'comidas' => $registro?->comidas ?? 0,
+                'enfermedad' => $registro?->enfermedad,
+                'desbloqueado' => (bool) $registro,
+                'bloqueado' => !$registro,
+                'created_at' => $xuxemon->created_at,
+                'updated_at' => $xuxemon->updated_at,
+            ];
+        });
+
+        return response()->json($resultado);
     }
 
     public function misXuxemons(Request $request)

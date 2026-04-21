@@ -42,6 +42,16 @@
   padding: 8px 10px;
 }
 
+.gift-message {
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eef8f0;
+  border: 1px solid #bfe3c7;
+  color: #21633a;
+  font-weight: 600;
+}
+
 .users-table {
   width: 100%;
   border-collapse: collapse;
@@ -56,4 +66,16 @@
 
 .users-table th {
   background: #f2f2f2;
+}
+
+.action-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.gift-btn {
+  min-width: 170px;
 }

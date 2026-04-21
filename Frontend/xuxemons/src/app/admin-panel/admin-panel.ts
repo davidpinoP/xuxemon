@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from '../services/xuxemon';
 import { AuthService } from '../services/auth.service';
-import { InventoryService, Objeto } from '../services/inventory.service';
+import { Objeto } from '../services/inventory.service';
 import { SidebarComponent } from '../components/sidebar/sidebar';
 
 @Component({
@@ -14,13 +14,11 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
   styleUrls: ['./admin-panel.css']
 })
 export class AdminPanelComponent implements OnInit {
-
   xuxemons: any[] = [];
   users: any[] = [];
   xuxemonForm: FormGroup;
-  isEditing: boolean = false;
+  isEditing = false;
   currentId: number | null = null;
-  // nuevas propiedades simples
   fConfig: FormGroup;
 
   selectedPlayerId: number | null = null;
@@ -30,12 +28,13 @@ export class AdminPanelComponent implements OnInit {
     { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
     { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' }
   ];
+  regalandoXuxemonUserId: number | null = null;
+  mensajeRegalo = '';
 
   constructor(
     private fb: FormBuilder,
     private xuxemonService: Xuxemon,
-    private authService: AuthService,
-    private inventoryService: InventoryService
+    private authService: AuthService
   ) {
     this.xuxemonForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -43,7 +42,7 @@ export class AdminPanelComponent implements OnInit {
       descripcion: [''],
       tamano: ['', Validators.required]
     });
-    // form de configuracion
+
     this.fConfig = this.fb.group({
       infection_pct: [0],
       evolve_xuxes: [0],
@@ -51,49 +50,50 @@ export class AdminPanelComponent implements OnInit {
     });
   }
 
-
   ngOnInit(): void {
     this.cargarXuxemons();
     this.cargarUsuarios();
-    this.xuxemonService.getConfigs().subscribe((d: any) => this.fConfig.patchValue(d));
+    this.xuxemonService.getConfigs().subscribe((data: any) => this.fConfig.patchValue(data));
   }
 
   cargarUsuarios(): void {
     this.authService.getUsers().subscribe({
-      next: (data: any) => this.users = data,
+      next: (data: any) => (this.users = data),
       error: (err: any) => console.error('Error al cargar usuarios', err)
     });
   }
 
-
   cargarXuxemons(): void {
     this.xuxemonService.getXuxemons().subscribe({
-      next: (data: any) => this.xuxemons = data,
+      next: (data: any) => (this.xuxemons = data),
       error: (err: any) => console.error('Error al cargar Xuxemons', err)
     });
   }
 
   guardarXuxemon(): void {
     if (this.xuxemonForm.invalid) return;
+
     if (this.isEditing && this.currentId) {
       this.xuxemonService.updateXuxemon(this.currentId, this.xuxemonForm.value).subscribe({
         next: () => {
-          alert('¡Xuxemon actualizado correctamente!');
+          alert('Xuxemon actualizado correctamente');
           this.resetForm();
           this.cargarXuxemons();
         },
         error: () => alert('Error al actualizar')
       });
-    } else {
-      this.xuxemonService.createXuxemon(this.xuxemonForm.value).subscribe({
-        next: () => {
-          alert('¡Nuevo Xuxemon creado!');
-          this.resetForm();
-          this.cargarXuxemons();
-        },
-        error: () => alert('Error al crear')
-      });
+
+      return;
     }
+
+    this.xuxemonService.createXuxemon(this.xuxemonForm.value).subscribe({
+      next: () => {
+        alert('Nuevo Xuxemon creado');
+        this.resetForm();
+        this.cargarXuxemons();
+      },
+      error: () => alert('Error al crear')
+    });
   }
 
   editarXuxemon(xuxe: any): void {
@@ -107,15 +107,17 @@ export class AdminPanelComponent implements OnInit {
   }
 
   borrarXuxemon(id: number): void {
-    if (confirm(' ¿Estás totalmente seguro de que quieres borrar este Xuxemon?')) {
-      this.xuxemonService.deleteXuxemon(id).subscribe({
-        next: () => {
-          alert('Xuxemon eliminado');
-          this.cargarXuxemons();
-        },
-        error: () => alert('Error al borrar')
-      });
+    if (!confirm('Estas seguro de que quieres borrar este Xuxemon?')) {
+      return;
     }
+
+    this.xuxemonService.deleteXuxemon(id).subscribe({
+      next: () => {
+        alert('Xuxemon eliminado');
+        this.cargarXuxemons();
+      },
+      error: () => alert('Error al borrar')
+    });
   }
 
   resetForm(): void {
@@ -124,14 +126,12 @@ export class AdminPanelComponent implements OnInit {
     this.xuxemonForm.reset();
   }
 
-  // guardar configs
-  saveConf() {
-    this.xuxemonService.saveConfigs(this.fConfig.value).subscribe(() => alert('guardado'));
+  saveConf(): void {
+    this.xuxemonService.saveConfigs(this.fConfig.value).subscribe(() => alert('Guardado'));
   }
 
-  // dar vacuna
-  vacuna(id: number, n: string) {
-    this.xuxemonService.darVacuna(id, n).subscribe(() => alert('vacuna enviada'));
+  vacuna(id: number, nombre: string): void {
+    this.xuxemonService.darVacuna(id, nombre).subscribe(() => alert('Vacuna enviada'));
   }
 
   addXuxesToPlayer(): void {
@@ -173,30 +173,31 @@ export class AdminPanelComponent implements OnInit {
       next: () => {
         player.inventory = inventory;
         this.xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
-        alert('Item añadido correctamente.');
+        alert('Item anadido correctamente.');
       },
-      error: () => {
-        alert('No se ha podido añadir el item.');
-      }
+      error: () => alert('No se ha podido anadir el item.')
     });
   }
 
-  
-  // Dar Xuxemon Aleatorio
   darXuxemonAleatorio(idJugador: string | number): void {
     if (!idJugador) {
-      alert('Por favor, introduce un ID de jugador válido.');
+      alert('Introduce un ID de jugador valido.');
       return;
     }
 
-    // Llamamos al servicio para que hable con tu backend
+    this.regalandoXuxemonUserId = Number(idJugador);
+    this.mensajeRegalo = '';
+
     this.xuxemonService.darXuxemonAleatorio(idJugador).subscribe({
       next: (response: any) => {
-        alert('🎲 ¡Xuxemon aleatorio añadido con éxito al jugador ' + idJugador + '!');
+        const sufijo = response?.nuevo_desbloqueo ? 'nuevo desbloqueo' : 'ya lo tenia';
+        this.mensajeRegalo = `Jugador ${idJugador}: ${response?.xuxemon || 'Xuxemon'} (${sufijo})`;
+        this.regalandoXuxemonUserId = null;
       },
       error: (err: any) => {
         console.error('Error al dar Xuxemon:', err);
-        alert('Hubo un error al añadir el Xuxemon. Comprueba que el jugador existe y el servicio esté configurado.');
+        this.regalandoXuxemonUserId = null;
+        alert('Hubo un error al anadir el Xuxemon.');
       }
     });
   }
