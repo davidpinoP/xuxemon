@@ -2,20 +2,23 @@
     <app-sidebar></app-sidebar>
 
     <main class="main-content">
-        <h1 class="page-title">Mi Perfil</h1>
+        <header class="page-header">
+            <h1 class="page-title" id="profile-title">Mi Perfil</h1>
 
-        @if (cargando) {
-        <p>Cargando perfil...</p>
-        }
+            @if (cargando) {
+            <p role="status">Cargando perfil...</p>
+            }
 
-        @if (mensajeExito) {
-        <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
-        }
-        @if (mensajeError) {
-        <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
-        }
+            @if (mensajeExito) {
+            <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
+            }
+            @if (mensajeError) {
+            <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
+            }
+        </header>
 
         @if (!cargando) {
+        <section class="profile-form-section" aria-labelledby="profile-title">
         <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
             <label for="nombre">Nombre:</label>
             <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
@@ -35,14 +38,15 @@
 
             <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
         </form>
+        </section>
 
         <div class="acciones">
             <button type="button" class="btn-volver" (click)="volver()">Volver</button>
             <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
         </div>
 
-        <div class="amigos-section">
-            <h2>Mis Amigos</h2>
+        <section class="amigos-section" aria-labelledby="friends-title">
+            <h2 id="friends-title">Mis Amigos</h2>
             @if (amigos.length > 0) {
             <ul class="amigos-lista">
                 @for (amigo of amigos; track amigo.id) {
@@ -64,7 +68,7 @@
             } @else {
             <p class="sin-amigos">Aún no tienes amigos agregados.</p>
             }
-        </div>
+        </section>
 
         @if (mostrarModal) {
         <div class="modal-overlay" (click)="cerrarModal()">

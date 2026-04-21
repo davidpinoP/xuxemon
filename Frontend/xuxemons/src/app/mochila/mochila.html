@@ -2,22 +2,27 @@
     <app-sidebar></app-sidebar>
 
     <main class="main-content">
-        <h1 class="page-title">Mochila</h1>
+        <header class="page-header">
+            <h1 class="page-title">Mochila</h1>
+        </header>
 
-        <div class="mochila-grid">
-            @for (slot of slots; track $index) {
-            <div class="slot" [class.occupied]="slot">
-                @if (slot) {
-                <div class="item-container">
-                    <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
-                    @if (slot.cantidad > 1 || slot.stackable) {
-                    <span class="quantity">{{ slot.cantidad }}</span>
+        <section class="inventory-section" aria-labelledby="inventory-title">
+            <h2 id="inventory-title" class="sr-only">Inventario de objetos</h2>
+            <div class="mochila-grid">
+                @for (slot of slots; track $index) {
+                <article class="slot" [class.occupied]="slot" aria-label="Espacio de inventari">
+                    @if (slot) {
+                    <div class="item-container">
+                        <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
+                        @if (slot.cantidad > 1 || slot.stackable) {
+                        <span class="quantity">{{ slot.cantidad }}</span>
+                        }
+                    </div>
                     }
-                </div>
+                </article>
                 }
             </div>
-            }
-        </div>
+        </section>
 
         <div style="display: flex; gap: 10px; margin-top: 20px;">
             <button class="btn-alimentar" (click)="abrirModal()" type="button">🍬 Alimentar Xuxemon</button>
@@ -163,39 +168,41 @@
 
 
     @if (isAdmin) {
-    <div class="admin-panel">
-        <h2>Gestión de Jugadores (Admin)</h2>
-        <fieldset class="admin-fieldset">
-            <legend class="admin-legend">Entrega de Xuxes</legend>
-            <div class="admin-controls">
-                <div class="control-group">
-                    <label for="admin-jugador">Jugador:</label>
-                    <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
-                        <option [ngValue]="null">Selecciona un jugador</option>
-                        @for (player of players; track player.id) {
-                        <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
-                        }
-                    </select>
-                </div>
+    <section class="admin-section" aria-labelledby="admin-title">
+        <div class="admin-panel">
+            <h2 id="admin-title" class="admin-title">Gestión de Jugadores (Admin)</h2>
+            <fieldset class="admin-fieldset">
+                <legend class="admin-legend">Entrega de Xuxes</legend>
+                <div class="admin-controls">
+                    <div class="control-group">
+                        <label for="admin-jugador">Jugador:</label>
+                        <select id="admin-jugador" [(ngModel)]="selectedPlayerId">
+                            <option [ngValue]="null">Selecciona un jugador</option>
+                            @for (player of players; track player.id) {
+                            <option [ngValue]="player.id">{{ player.name }} ({{ player.player_id }})</option>
+                            }
+                        </select>
+                    </div>
 
-                <div class="control-group">
-                    <label for="admin-xuxe">Xuxe:</label>
-                    <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
-                        @for (tipo of tiposXuxe; track tipo.nombre) {
-                        <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
-                        }
-                    </select>
-                </div>
+                    <div class="control-group">
+                        <label for="admin-xuxe">Xuxe:</label>
+                        <select id="admin-xuxe" [(ngModel)]="xuxeToAdd.nombre">
+                            @for (tipo of tiposXuxe; track tipo.nombre) {
+                            <option [value]="tipo.nombre">{{ tipo.nombre }}</option>
+                            }
+                        </select>
+                    </div>
 
-                <div class="control-group">
-                    <label for="admin-cantidad">Cantidad:</label>
-                    <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
-                </div>
+                    <div class="control-group">
+                        <label for="admin-cantidad">Cantidad:</label>
+                        <input id="admin-cantidad" type="number" [(ngModel)]="xuxeToAdd.cantidad" min="1">
+                    </div>
 
-                <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
-            </div>
-        </fieldset>
-    </div>
+                    <button class="btn-admin" (click)="addXuxesToPlayer()" type="button">Añadir Xuxes</button>
+                </div>
+            </fieldset>
+        </div>
+    </section>
     }
     </main>
 </div>
