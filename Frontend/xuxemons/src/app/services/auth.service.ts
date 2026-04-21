@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -48,8 +48,33 @@ export class AuthService {
         return this.http.get(`${this.apiUrl}/user/profile`).pipe(
             tap((user: any) => {
                 this.currentUserSubject.next(user);
+            }),
+            catchError(err => {
+                // Si falla el perfil (token expirat o invàlid), netegem
+                if (err.status === 401) {
+                    this.logout();
+                }
+                return of(null);
             })
         );
+    }
+
+    autoLogin(): Promise<void> {
+        const token = this.getToken();
+        if (!token) {
+            return Promise.resolve();
+        }
+
+        // Si hi ha un token, intentem recuperar el perfil
+        return new Promise((resolve) => {
+            this.getProfile().subscribe({
+                next: () => resolve(),
+                error: () => {
+                    this.logout();
+                    resolve();
+                }
+            });
+        });
     }
 
     updateProfile(userData: any): Observable<any> {
