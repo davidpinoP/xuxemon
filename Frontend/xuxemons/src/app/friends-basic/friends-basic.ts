@@ -7,6 +7,7 @@ import {
   FriendsService,
   PendingFriendRequest
 } from '../services/friends.service';
+import { FriendSearchComponent } from '../components/friend-search/friend-search';
 
 interface FriendCard {
   id: number;
@@ -27,7 +28,7 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
 @Component({
   selector: 'app-friends-basic',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent, FriendSearchComponent],
   templateUrl: './friends-basic.html',
   styleUrl: './friends-basic.css'
 })
