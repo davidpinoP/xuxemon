@@ -32,14 +32,18 @@ export class Xuxedex implements OnInit {
   ngOnInit(): void {
     this.xuxemonService.getXuxemons().subscribe({
       next: (data: IXuxemon[]) => {
-        this.todosXuxemons = data.length > 0 ? this.prepararXuxemons(data) : this.getDatosEjemplo();
+        this.todosXuxemons = this.prepararXuxemons(data);
         this.aplicarFiltros();
         this.cargando = false;
       },
       error: (err) => {
         console.error('Error al cargar los xuxemons', err);
-        this.todosXuxemons = this.getDatosEjemplo();
-        this.aplicarFiltros();
+
+        if (err.status !== 401) {
+          this.todosXuxemons = [];
+          this.aplicarFiltros();
+        }
+
         this.cargando = false;
       }
     });
@@ -97,51 +101,6 @@ export class Xuxedex implements OnInit {
   getTipoNombre(tipo: string): string {
     if (tipo === 'todos') return 'Todos';
     return tipo.charAt(0).toUpperCase() + tipo.slice(1);
-  }
-
-  private getDatosEjemplo(): IXuxemon[] {
-    return this.prepararXuxemons([
-      {
-        id: 1,
-        nombre: 'Aquarion',
-        tipo: 'agua',
-        tamano: 'Grande',
-        descripcion: 'Un xuxemon acuatico que controla las mareas.',
-        imagen: '/imagenes/assets/1.png',
-        desbloqueado: true,
-        bloqueado: false
-      },
-      {
-        id: 2,
-        nombre: 'Terrock',
-        tipo: 'tierra',
-        tamano: 'Mediano',
-        descripcion: 'Xuxemon de roca con una defensa impenetrable.',
-        imagen: '/imagenes/assets/2.png',
-        desbloqueado: true,
-        bloqueado: false
-      },
-      {
-        id: 3,
-        nombre: 'Ventus',
-        tipo: 'aire',
-        tamano: 'Pequeno',
-        descripcion: 'Xuxemon volador veloz como el viento.',
-        imagen: '/imagenes/assets/3.png',
-        desbloqueado: false,
-        bloqueado: true
-      },
-      {
-        id: 4,
-        nombre: 'Ondina',
-        tipo: 'agua',
-        tamano: 'Pequeno',
-        descripcion: 'Xuxemon acuatico agil y jugueton.',
-        imagen: '/imagenes/assets/4.png',
-        desbloqueado: false,
-        bloqueado: true
-      }
-    ]);
   }
 
   private prepararXuxemons(xuxemons: IXuxemon[]): IXuxemon[] {
