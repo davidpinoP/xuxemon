@@ -5,42 +5,42 @@
     <h1 class="page-title">Amigos</h1>
 
     <section class="requests-panel" aria-labelledby="requests-title">
-    <div class="section-title-row">
-      <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
-      <span class="requests-badge" [attr.aria-label]="solicitudesPendientes.length + ' solicitudes pendientes'">
-        {{ solicitudesPendientes.length }}
-      </span>
-    </div>
+      <div class="section-title-row">
+        <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
+        <span class="requests-badge" [attr.aria-label]="solicitudesPendientes.length + ' solicitudes pendientes'">
+          {{ solicitudesPendientes.length }}
+        </span>
+      </div>
 
-    @if (solicitudesPendientes.length > 0) {
+      @if (solicitudesPendientes.length > 0) {
       <ul class="request-list">
         @for (request of solicitudesPendientes; track request.id) {
-          <li class="request-card" [class.is-removing]="procesandoSolicitudIds.has(request.id)">
-            <div>
-              <p class="request-name">{{ request.name }}</p>
-              <p class="request-id">{{ request.playerId }}</p>
-            </div>
+        <li class="request-card" [class.is-removing]="procesandoSolicitudIds.has(request.id)">
+          <div>
+            <p class="request-name">{{ request.name }}</p>
+            <p class="request-id">{{ request.playerId }}</p>
+          </div>
 
-            <div class="request-actions">
-              <button type="button" class="btn-accept" (click)="aceptarSolicitud(request)">Aceptar</button>
-              <button type="button" class="btn-reject" (click)="rechazarSolicitud(request)">Rechazar</button>
-            </div>
-          </li>
+          <div class="request-actions">
+            <button type="button" class="btn-accept" (click)="aceptarSolicitud(request)">Aceptar</button>
+            <button type="button" class="btn-reject" (click)="rechazarSolicitud(request)">Rechazar</button>
+          </div>
+        </li>
         }
       </ul>
-    } @else {
+      } @else {
       <p class="requests-empty">No tienes solicitudes pendientes.</p>
-    }
-  </section>
+      }
+    </section>
 
-  <section class="search-panel" aria-labelledby="search-title">
-    <h3 id="search-title" class="section-title">Buscar amigos</h3>
-    <app-friend-search [control]="searchControl" [statusMessage]="mensaje"></app-friend-search>
-  </section>
+    <section class="search-panel" aria-labelledby="search-title">
+      <h3 id="search-title" class="section-title">Buscar amigos</h3>
+      <app-friend-search [control]="searchControl" [statusMessage]="mensaje"></app-friend-search>
+    </section>
 
-  <section class="cards-section" aria-label="Resultados de busqueda">
-    <div class="cards-grid">
-      @for (card of tarjetasVisibles; track card.playerId) {
+    <section class="cards-section" aria-label="Resultados de busqueda">
+      <div class="cards-grid">
+        @for (card of tarjetasVisibles; track card.playerId) {
         <article class="friend-card" [class.request-sent]="card.requestSent && card.canAdd"
           [class.is-removing]="eliminandoAmigoIds.has(card.id)">
           <div class="friend-top">
@@ -53,30 +53,30 @@
           </div>
 
           @if (card.canAdd) {
-            <button type="button" class="btn-add" [disabled]="card.requestSent" (click)="enviarSolicitud(card)">
-              @if (card.requestSent) {
-                Solicitud enviada
-              } @else {
-                Anadir Amigo
-              }
-            </button>
+          <button type="button" class="btn-add" [disabled]="card.requestSent" (click)="enviarSolicitud(card)">
+            @if (card.requestSent) {
+            Solicitud enviada
+            } @else {
+            Anadir Amigo
+            }
+          </button>
           } @else {
-            <div class="friend-actions">
-              <button type="button" class="btn-light">Mensaje</button>
-              <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar</button>
-            </div>
+          <div class="friend-actions">
+            <button type="button" class="btn-light">Mensaje</button>
+            <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar</button>
+          </div>
           }
         </article>
-      }
-    </div>
+        }
+      </div>
 
-    <div class="pagination">
-      <button type="button" class="page-btn page-btn-light">&lt;</button>
-      <button type="button" class="page-btn page-btn-active">1</button>
-      <button type="button" class="page-btn">2</button>
-      <button type="button" class="page-btn">3</button>
-      <button type="button" class="page-btn">&gt;</button>
-    </div>
-  </section>
+      <div class="pagination">
+        <button type="button" class="page-btn page-btn-light">&lt;</button>
+        <button type="button" class="page-btn page-btn-active">1</button>
+        <button type="button" class="page-btn">2</button>
+        <button type="button" class="page-btn">3</button>
+        <button type="button" class="page-btn">&gt;</button>
+      </div>
+    </section>
   </main>
 </div>

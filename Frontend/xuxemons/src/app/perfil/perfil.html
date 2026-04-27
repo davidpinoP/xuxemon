@@ -112,7 +112,8 @@
                 </div>
 
                 <div class="acciones">
-                    <button type="submit" class="btn-primary" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
+                    <button type="submit" class="btn-primary" [disabled]="formularioPerfil.invalid">Guardar
+                        cambios</button>
                     <button type="button" class="btn-volver" (click)="volver()">Volver</button>
                     <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
                 </div>
@@ -152,7 +153,8 @@
         <div class="modal-overlay" (click)="cerrarModal()">
             <div class="modal-content" (click)="$event.stopPropagation()">
                 <h2>Eliminar amigo</h2>
-                <p>Estas seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de amigos?</p>
+                <p>Estas seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de
+                    amigos?</p>
                 <div class="modal-acciones">
                     <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
                     <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">Eliminar</button>

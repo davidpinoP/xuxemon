@@ -27,7 +27,7 @@ export class Xuxedex implements OnInit {
   tiposDisponibles: string[] = ['todos', 'agua', 'tierra', 'aire'];
   tamanosDisponibles: string[] = ['todos', 'pequeno', 'mediano', 'grande'];
 
-  constructor(private xuxemonService: XuxemonService, private router: Router) {}
+  constructor(private xuxemonService: XuxemonService, private router: Router) { }
 
   ngOnInit(): void {
     this.xuxemonService.getXuxemons().subscribe({

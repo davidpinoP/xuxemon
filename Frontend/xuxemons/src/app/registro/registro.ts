@@ -59,16 +59,16 @@ export class Registro {
         },
         error: (err) => {
           console.error('Error en el registro', err);
-          
+
           if (err.status === 422 && err.error?.errors) {
             // Extraemos los mensajes específicos de validación de Laravel
             const backendErrors = err.error.errors;
             const messages = [];
-            
+
             for (const field in backendErrors) {
               messages.push(...backendErrors[field]);
             }
-            
+
             this.error_msg = messages.join(' ');
           } else {
             this.error_msg = err.error?.error || err.error?.message || 'Error al registrar el usuario. El correo o el nombre pueden estar ya en uso.';

@@ -43,7 +43,7 @@ export class FriendsBasic implements OnInit {
   procesandoSolicitudIds = new Set<number>();
   eliminandoAmigoIds = new Set<number>();
 
-  constructor(private friendsService: FriendsService) {}
+  constructor(private friendsService: FriendsService) { }
 
   ngOnInit(): void {
     this.cargarAmigos();

@@ -48,10 +48,7 @@
               <button (click)="vacuna(u.id, vacName.value)" type="button">Dar vacuna</button>
             </td>
             <td class="action-cell">
-              <button
-                class="gift-btn"
-                (click)="darXuxemonAleatorio(u.id)"
-                type="button"
+              <button class="gift-btn" (click)="darXuxemonAleatorio(u.id)" type="button"
                 [disabled]="regalandoXuxemonUserId === u.id">
                 @if (regalandoXuxemonUserId === u.id) {
                 Regalando...
