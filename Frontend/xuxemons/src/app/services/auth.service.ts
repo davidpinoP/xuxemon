@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +12,7 @@ export class AuthService {
     private currentUserSubject = new BehaviorSubject<any>(null);
     public currentUser$ = this.currentUserSubject.asObservable();
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient, private router: Router) { }
 
     login(credentials: any): Observable<any> {
         return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
@@ -37,8 +38,12 @@ export class AuthService {
 
     logout(): void {
         localStorage.removeItem('auth_token');
-        localStorage.removeItem('userRole'); // Netegem el rol al sortir
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('player_id'); // Netegem ID del jugador
         this.currentUserSubject.next(null);
+        
+        // Redirigim a login
+        this.router.navigate(['/login']);
     }
 
     savePlayerId(playerId: string): void {
@@ -48,8 +53,33 @@ export class AuthService {
         return this.http.get(`${this.apiUrl}/user/profile`).pipe(
             tap((user: any) => {
                 this.currentUserSubject.next(user);
+            }),
+            catchError(err => {
+                // Si falla el perfil (token expirat o invàlid), netegem
+                if (err.status === 401) {
+                    this.logout();
+                }
+                return of(null);
             })
         );
+    }
+
+    autoLogin(): Promise<void> {
+        const token = this.getToken();
+        if (!token) {
+            return Promise.resolve();
+        }
+
+        // Si hi ha un token, intentem recuperar el perfil
+        return new Promise((resolve) => {
+            this.getProfile().subscribe({
+                next: () => resolve(),
+                error: () => {
+                    this.logout();
+                    resolve();
+                }
+            });
+        });
     }
 
     updateProfile(userData: any): Observable<any> {

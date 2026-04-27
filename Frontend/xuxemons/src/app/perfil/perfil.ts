@@ -119,13 +119,13 @@ export class Perfil implements OnInit {
         surname: this.formularioPerfil.value.apellidos,
         email: this.formularioPerfil.value.correo
       };
-      
+
       const pwd = this.formularioPerfil.value.password;
       if (pwd) {
         datos.password = pwd;
         datos.password_confirmation = this.formularioPerfil.value.password_confirmation;
       }
-      
+
       this.authService.updateProfile(datos).subscribe({
         next: () => {
           this.perfilUsuario.name = datos.name;
@@ -173,7 +173,7 @@ export class Perfil implements OnInit {
         next: () => {
           this.amigoEnEliminacionId = idAEliminar;
           this.cerrarModal();
-          
+
           // Esperar a que la animación termine antes de refrescar la lista
           setTimeout(() => {
             this.cargarAmigos();
