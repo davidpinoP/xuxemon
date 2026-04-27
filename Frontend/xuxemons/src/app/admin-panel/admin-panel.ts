@@ -197,7 +197,12 @@ export class AdminPanelComponent implements OnInit {
       error: (err: any) => {
         console.error('Error al dar Xuxemon:', err);
         this.regalandoXuxemonUserId = null;
-        alert('Hubo un error al anadir el Xuxemon.');
+        const backendMessage =
+          err?.error?.message ||
+          err?.error?.mensaje ||
+          err?.error?.error ||
+          `Error HTTP ${err?.status || 'desconocido'}`;
+        alert(`Hubo un error al anadir el Xuxemon: ${backendMessage}`);
       }
     });
   }
