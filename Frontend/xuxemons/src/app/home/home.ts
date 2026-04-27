@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
+import { Meta } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-home',
@@ -15,9 +16,16 @@ export class Home implements OnInit {
   user: any = null;
   equipo: any[] = [];
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private meta: Meta
+  ) { }
 
   ngOnInit(): void {
+    //Meta tag
+    this.meta.updateTag({ name: 'description', content: 'Bienvenido a tu panel de control de Xuxemons.' });
+
     this.authService.getProfile().subscribe({
       next: (data: any) => {
         this.user = data;

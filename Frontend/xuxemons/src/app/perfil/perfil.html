@@ -1,130 +1,52 @@
 <div class="app-layout">
     <app-sidebar></app-sidebar>
 
-    <main class="main-content profile-page">
-        <h1 class="page-title">Perfil de Usuario</h1>
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title" id="profile-title">Mi Perfil</h1>
 
-        @if (cargando) {
-        <p class="loading-text">Cargando perfil...</p>
-        }
+            @if (cargando) {
+            <p role="status">Cargando perfil...</p>
+            }
 
-        @if (mensajeExito) {
-        <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
-        }
-        @if (mensajeError) {
-        <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
-        }
+            @if (mensajeExito) {
+            <p class="mensaje-exito" role="alert">{{ mensajeExito }}</p>
+            }
+            @if (mensajeError) {
+            <p class="mensaje-error" role="alert">{{ mensajeError }}</p>
+            }
+        </header>
 
         @if (!cargando) {
-        <section class="hero-card">
-            <div class="profile-avatar" aria-hidden="true">
-                <span class="avatar-head"></span>
-                <span class="avatar-body"></span>
-            </div>
+        <section class="profile-form-section" aria-labelledby="profile-title">
+        <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
+            <label for="nombre">Nombre:</label>
+            <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
 
-            <div class="hero-copy">
-                <div class="hero-name-block">
-                    <h2 class="hero-name">{{ perfilUsuario.name || 'Entrenador' }}</h2>
-                    <p class="hero-handle">{{ playerIdVisible }}</p>
-                    <p class="hero-role">{{ perfilUsuario.role }}</p>
-                </div>
+            <label for="apellidos">Apellidos:</label>
+            <input id="apellidos" type="text" formControlName="apellidos" placeholder="Tus apellidos">
 
-                <div class="hero-stats">
-                    <span>Batallas Ganadas: {{ batallasGanadas }}</span>
-                    <span>Xuxemons: {{ misXuxemons.length }}/50</span>
-                    <span>Amigos: {{ amigos.length }}</span>
-                </div>
-            </div>
+            <label for="correo">Correo:</label>
+            <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
+
+            <label for="password">Nueva contraseña (opcional):</label>
+            <input id="password" type="password" formControlName="password" placeholder="Nueva contraseña">
+
+            <label for="password_confirmation">Confirmar nueva contraseña:</label>
+            <input id="password_confirmation" type="password" formControlName="password_confirmation"
+                placeholder="Repite la nueva contraseña">
+
+            <button type="submit" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
+        </form>
         </section>
 
-        <section class="profile-grid">
-            <article class="info-card about-card">
-                <h2>Sobre Mi</h2>
-                <p>{{ descripcionPerfil }}</p>
-            </article>
+        <div class="acciones">
+            <button type="button" class="btn-volver" (click)="volver()">Volver</button>
+            <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
+        </div>
 
-            <article class="info-card duo-card">
-                <h2>Duo favorito</h2>
-                <div class="xuxemon-showcase duo-showcase">
-                    @for (xuxemon of duoFavorito; track xuxemon.id) {
-                    <figure class="mini-xuxemon">
-                        <img [src]="getXuxemonImage(xuxemon)" [alt]="'Xuxemon favorito ' + xuxemon.nombre">
-                    </figure>
-                    }
-                </div>
-            </article>
-
-            <article class="info-card medals-card">
-                <h2>Medallas recientes</h2>
-                <div class="medals-row" aria-label="Medallas recientes">
-                    @for (medalla of medallas; track $index) {
-                    <span class="medal-star" aria-hidden="true">{{ medalla }}</span>
-                    }
-                </div>
-            </article>
-
-            <article class="info-card favorite-card">
-                <h2>Xuxemon favorito</h2>
-                @if (xuxemonFavorito) {
-                <div class="favorite-content">
-                    <img [src]="getXuxemonImage(xuxemonFavorito)" [alt]="'Xuxemon favorito ' + xuxemonFavorito.nombre">
-                    <p>{{ xuxemonFavorito.nombre }}</p>
-                </div>
-                } @else {
-                <p class="empty-copy">Todavia no tienes un favorito.</p>
-                }
-            </article>
-        </section>
-
-        <section class="panel-card settings-card">
-            <div class="panel-header">
-                <h2>Ajustes del perfil</h2>
-                <p>Edita tus datos principales y tu contrasena.</p>
-            </div>
-
-            <form [formGroup]="formularioPerfil" (ngSubmit)="guardarPerfil()">
-                <div class="form-grid">
-                    <div class="field-group">
-                        <label for="nombre">Nombre</label>
-                        <input id="nombre" type="text" formControlName="nombre" placeholder="Tu nombre">
-                    </div>
-
-                    <div class="field-group">
-                        <label for="apellidos">Apellidos</label>
-                        <input id="apellidos" type="text" formControlName="apellidos" placeholder="Tus apellidos">
-                    </div>
-
-                    <div class="field-group field-full">
-                        <label for="correo">Correo</label>
-                        <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
-                    </div>
-
-                    <div class="field-group">
-                        <label for="password">Nueva contrasena</label>
-                        <input id="password" type="password" formControlName="password" placeholder="Opcional">
-                    </div>
-
-                    <div class="field-group">
-                        <label for="password_confirmation">Confirmar contrasena</label>
-                        <input id="password_confirmation" type="password" formControlName="password_confirmation"
-                            placeholder="Repite la contrasena">
-                    </div>
-                </div>
-
-                <div class="acciones">
-                    <button type="submit" class="btn-primary" [disabled]="formularioPerfil.invalid">Guardar cambios</button>
-                    <button type="button" class="btn-volver" (click)="volver()">Volver</button>
-                    <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
-                </div>
-            </form>
-        </section>
-
-        <section class="panel-card amigos-section">
-            <div class="panel-header">
-                <h2>Mis Amigos</h2>
-                <p>Gestiona tu lista de amistades desde tu perfil.</p>
-            </div>
-
+        <section class="amigos-section" aria-labelledby="friends-title">
+            <h2 id="friends-title">Mis Amigos</h2>
             @if (amigos.length > 0) {
             <ul class="amigos-lista">
                 @for (amigo of amigos; track amigo.id) {
@@ -144,18 +66,19 @@
                 }
             </ul>
             } @else {
-            <p class="sin-amigos">Aun no tienes amigos agregados.</p>
+            <p class="sin-amigos">Aún no tienes amigos agregados.</p>
             }
         </section>
 
         @if (mostrarModal) {
         <div class="modal-overlay" (click)="cerrarModal()">
             <div class="modal-content" (click)="$event.stopPropagation()">
-                <h2>Eliminar amigo</h2>
-                <p>Estas seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de amigos?</p>
+                <h2>¿Eliminar amigo?</h2>
+                <p>¿Estás seguro de que quieres eliminar a <strong>{{ amigoParaEliminar?.name }}</strong> de tu lista de
+                    amigos?</p>
                 <div class="modal-acciones">
                     <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
-                    <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">Eliminar</button>
+                    <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">ELIMINAR</button>
                 </div>
             </div>
         </div>

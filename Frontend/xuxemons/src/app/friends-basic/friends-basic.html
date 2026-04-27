@@ -5,17 +5,12 @@
     <h1 class="page-title">Amigos</h1>
 
     <section class="requests-panel" aria-labelledby="requests-title">
-    <div class="section-title-row">
-      <h3 id="requests-title" class="section-title">Solicitudes recibidas</h3>
-      <span class="requests-badge" [attr.aria-label]="solicitudesPendientes.length + ' solicitudes pendientes'">
-        {{ solicitudesPendientes.length }}
-      </span>
-    </div>
+    <h2 id="requests-title" class="section-title">Solicitudes recibidas</h2>
 
     @if (solicitudesPendientes.length > 0) {
       <ul class="request-list">
         @for (request of solicitudesPendientes; track request.id) {
-          <li class="request-card" [class.is-removing]="procesandoSolicitudIds.has(request.id)">
+          <li class="request-card">
             <div>
               <p class="request-name">{{ request.name }}</p>
               <p class="request-id">{{ request.playerId }}</p>
@@ -34,20 +29,29 @@
   </section>
 
   <section class="search-panel" aria-labelledby="search-title">
-    <h3 id="search-title" class="section-title">Buscar amigos</h3>
-    <app-friend-search [control]="searchControl" [statusMessage]="mensaje"></app-friend-search>
+    <label for="friend-search" class="search-label" id="search-title">Buscar amigos</label>
+    <input
+      id="friend-search"
+      type="text"
+      class="search-input"
+      [formControl]="searchControl"
+      placeholder="Buscar amigos"
+    >
+
+    <div class="search-status" aria-live="polite">
+      <p>{{ mensaje }}</p>
+    </div>
   </section>
 
   <section class="cards-section" aria-label="Resultados de busqueda">
     <div class="cards-grid">
       @for (card of tarjetasVisibles; track card.playerId) {
-        <article class="friend-card" [class.request-sent]="card.requestSent && card.canAdd"
-          [class.is-removing]="eliminandoAmigoIds.has(card.id)">
+        <article class="friend-card">
           <div class="friend-top">
             <div class="friend-avatar" aria-hidden="true"></div>
 
             <div class="friend-info">
-              <h2>{{ card.name }}</h2>
+              <h3>{{ card.name }}</h3>
               <p>{{ card.playerId }}</p>
             </div>
           </div>
