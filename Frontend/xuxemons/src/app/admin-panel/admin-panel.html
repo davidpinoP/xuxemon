@@ -6,7 +6,6 @@
       <h1 class="page-title">Panel de Control Admin</h1>
     </header>
 
-    <!-- parametros -->
     <section class="admin-settings-section" aria-labelledby="settings-title">
       <h2 id="settings-title" class="sr-only">Ajustes globales</h2>
       <fieldset style="border: 1px solid #ccc; padding: 10px; margin-bottom: 20px; border-radius: 8px;">
@@ -20,7 +19,6 @@
       </fieldset>
     </section>
 
-    <!-- jugadores -->
     <section class="players-list-section" aria-labelledby="players-title">
       <h2 id="players-title" class="sr-only">Lista de jugadores</h2>
       <fieldset style="border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
@@ -39,10 +37,27 @@
               <td>
                 <input #vacName type="text" placeholder="nombre vacuna">
                 <button (click)="vacuna(u.id, vacName.value)" style="cursor: pointer;">dar vacuna</button>
+                
+                <button 
+                  (click)="darXuxemonAleatorio(u.id)" 
+                  [disabled]="regalandoXuxemonUserId === u.id"
+                  style="cursor: pointer; margin-left: 10px; background-color: #9B9BFF; color: white; border: none; padding: 5px 10px; border-radius: 4px;">
+                  @if (regalandoXuxemonUserId === u.id) {
+                    Repartiendo...
+                  } @else {
+                    Dar Xuxemon Aleatorio
+                  }
+                </button>
               </td>
             </tr>
             }
           </table>
+
+          @if (mensajeRegalo) {
+            <div style="margin-top: 15px; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 4px;">
+              {{ mensajeRegalo }}
+            </div>
+          }
         </div>
       </fieldset>
     </section>
