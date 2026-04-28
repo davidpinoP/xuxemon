@@ -28,6 +28,7 @@ export class Perfil implements OnInit {
     nombre: new FormControl('', [Validators.required]),
     apellidos: new FormControl('', [Validators.required]),
     correo: new FormControl('', [Validators.required, Validators.email]),
+    sobreMi: new FormControl(''),
     password: new FormControl(''),
     password_confirmation: new FormControl('')
   });
@@ -40,11 +41,13 @@ export class Perfil implements OnInit {
   duoFavorito: IXuxemon[] = [];
   xuxemonFavorito: IXuxemon | null = null;
   batallasGanadas = 200;
-  medallas = ['★', '★'];
+  avatarXuxemon: IXuxemon | null = null;
+  mostrarSelectorAvatar = false;
 
   mostrarModal = false;
   amigoParaEliminar: any = null;
   amigoEnEliminacionId: number | null = null;
+  private userId: string = '';
 
   constructor(
     private authService: AuthService,
@@ -75,12 +78,23 @@ export class Perfil implements OnInit {
           role: 'Entrenador'
         };
 
+        this.userId = String(data.id);
+
+        const sobreMiGuardado = localStorage.getItem('sobreMi_' + this.userId) || '';
+        const avatarId = localStorage.getItem('avatarXuxemonId_' + this.userId);
+
         this.formularioPerfil.patchValue({
           nombre: data.name,
           apellidos: data.surname,
-          correo: data.email
+          correo: data.email,
+          sobreMi: sobreMiGuardado
         });
         this.cargando = false;
+
+        // Restaurar avatar guardado tras cargar xuxemons
+        if (avatarId) {
+          this._avatarIdPendiente = parseInt(avatarId, 10);
+        }
       },
       error: () => {
         this.mensajeError = 'No se pudo cargar el perfil.';
@@ -88,6 +102,8 @@ export class Perfil implements OnInit {
       }
     });
   }
+
+  private _avatarIdPendiente: number | null = null;
 
   cargarXuxemons(): void {
     this.xuxemonService.getMisXuxemons().subscribe({
@@ -97,15 +113,35 @@ export class Perfil implements OnInit {
         if (data.length > 0) {
           this.duoFavorito = data.slice(0, 2);
           this.xuxemonFavorito = data[0];
-          return;
+        } else {
+          this.aplicarFavoritosDemo();
         }
 
-        this.aplicarFavoritosDemo();
+        // Restaurar avatar pendiente
+        if (this._avatarIdPendiente !== null) {
+          const encontrado = data.find(x => x.id === this._avatarIdPendiente);
+          if (encontrado) this.avatarXuxemon = encontrado;
+          this._avatarIdPendiente = null;
+        }
       },
       error: () => {
         this.aplicarFavoritosDemo();
       }
     });
+  }
+
+  get xuxemonsDesbloqueados(): IXuxemon[] {
+    return this.misXuxemons.filter(x => x.desbloqueado !== false && x.bloqueado !== true);
+  }
+
+  seleccionarAvatar(xuxemon: IXuxemon): void {
+    this.avatarXuxemon = xuxemon;
+    this.mostrarSelectorAvatar = false;
+    localStorage.setItem('avatarXuxemonId_' + this.userId, String(xuxemon.id));
+  }
+
+  getXuxemonImageUrl(xuxemon: IXuxemon): string {
+    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
   }
 
   cargarAmigos(): void {
@@ -132,6 +168,10 @@ export class Perfil implements OnInit {
         datos.password = pwd;
         datos.password_confirmation = this.formularioPerfil.value.password_confirmation;
       }
+
+      // Guardar "Sobre Mi" localmente
+      const sobreMi = this.formularioPerfil.value.sobreMi || '';
+      localStorage.setItem('sobreMi_' + this.userId, sobreMi);
 
       this.authService.updateProfile(datos).subscribe({
         next: () => {
@@ -201,6 +241,10 @@ export class Perfil implements OnInit {
 
   get nombreCompleto(): string {
     return `${this.perfilUsuario.name} ${this.perfilUsuario.surname}`.trim();
+  }
+
+  get sobreMiTexto(): string {
+    return this.formularioPerfil.value.sobreMi || this.descripcionPerfil;
   }
 
   get descripcionPerfil(): string {

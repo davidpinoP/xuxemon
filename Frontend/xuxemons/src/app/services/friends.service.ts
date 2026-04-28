@@ -62,13 +62,13 @@ export class FriendsService {
   }
 
   sendFriendRequest(receiverId: number): Observable<FriendRequestResponse> {
-    return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests`, {
+    return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests/send`, {
       receiver_id: receiverId
     });
   }
 
   getPendingFriendRequests(): Observable<PendingFriendRequest[]> {
-    return this.http.get<PendingFriendRequest[]>(`${this.apiUrl}/friend-requests`).pipe(
+    return this.http.get<PendingFriendRequest[]>(`${this.apiUrl}/friend-requests/pending`).pipe(
       tap((requests) => {
         this.pendingRequestsSubject.next(requests);
       })
@@ -76,10 +76,10 @@ export class FriendsService {
   }
 
   acceptFriendRequest(requestId: number): Observable<FriendRequestResponse> {
-    return this.http.put<FriendRequestResponse>(`${this.apiUrl}/friend-requests/${requestId}/accept`, {});
+    return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests/${requestId}/accept`, {});
   }
 
   rejectFriendRequest(requestId: number): Observable<FriendRequestResponse> {
-    return this.http.delete<FriendRequestResponse>(`${this.apiUrl}/friend-requests/${requestId}`);
+    return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests/${requestId}/reject`, {});
   }
 }
