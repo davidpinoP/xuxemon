@@ -17,9 +17,17 @@
 
         @if (!cargando) {
         <section class="hero-card">
-            <div class="profile-avatar" aria-hidden="true">
-                <span class="avatar-head"></span>
-                <span class="avatar-body"></span>
+            <div class="profile-avatar-wrapper">
+                <button type="button" class="avatar-btn" (click)="mostrarSelectorAvatar = true"
+                    aria-label="Cambiar foto de perfil">
+                    @if (avatarXuxemon) {
+                    <img [src]="getXuxemonImageUrl(avatarXuxemon)" [alt]="avatarXuxemon.nombre" class="avatar-img-xuxemon">
+                    } @else {
+                    <span class="avatar-head"></span>
+                    <span class="avatar-body"></span>
+                    }
+                    <span class="avatar-edit-hint">✏️</span>
+                </button>
             </div>
 
             <div class="hero-copy">
@@ -40,7 +48,7 @@
         <section class="profile-grid">
             <article class="info-card about-card">
                 <h2>Sobre Mi</h2>
-                <p>{{ descripcionPerfil }}</p>
+                <p>{{ sobreMiTexto }}</p>
             </article>
 
             <article class="info-card duo-card">
@@ -54,26 +62,6 @@
                 </div>
             </article>
 
-            <article class="info-card medals-card">
-                <h2>Medallas recientes</h2>
-                <div class="medals-row" aria-label="Medallas recientes">
-                    @for (medalla of medallas; track $index) {
-                    <span class="medal-star" aria-hidden="true">{{ medalla }}</span>
-                    }
-                </div>
-            </article>
-
-            <article class="info-card favorite-card">
-                <h2>Xuxemon favorito</h2>
-                @if (xuxemonFavorito) {
-                <div class="favorite-content">
-                    <img [src]="getXuxemonImage(xuxemonFavorito)" [alt]="'Xuxemon favorito ' + xuxemonFavorito.nombre">
-                    <p>{{ xuxemonFavorito.nombre }}</p>
-                </div>
-                } @else {
-                <p class="empty-copy">Todavia no tienes un favorito.</p>
-                }
-            </article>
         </section>
 
         <section class="panel-card settings-card">
@@ -95,6 +83,12 @@
                     </div>
 
                     <div class="field-group field-full">
+                        <label for="sobreMi">Sobre Mi</label>
+                        <textarea id="sobreMi" formControlName="sobreMi" rows="3"
+                            placeholder="Cuéntanos algo sobre ti..."></textarea>
+                    </div>
+
+                    <div class="field-group field-full">
                         <label for="correo">Correo</label>
                         <input id="correo" type="email" formControlName="correo" placeholder="Tu correo">
                     </div>
@@ -112,7 +106,7 @@
                 </div>
 
                 <div class="acciones">
-                    <button type="submit" class="btn-primary" [disabled]="formularioPerfil.invalid">Guardar
+                    <button type="submit" class="btn-primary" [disabled]="cargando">Guardar
                         cambios</button>
                     <button type="button" class="btn-volver" (click)="volver()">Volver</button>
                     <button type="button" class="btn-desactivar" (click)="desactivarCuenta()">Desactivar cuenta</button>
@@ -159,6 +153,27 @@
                     <button class="btn-cancelar" (click)="cerrarModal()">Cancelar</button>
                     <button class="btn-confirmar" (click)="confirmarEliminarAmigo()">Eliminar</button>
                 </div>
+            </div>
+        </div>
+        }
+
+        @if (mostrarSelectorAvatar) {
+        <div class="modal-overlay" (click)="mostrarSelectorAvatar = false">
+            <div class="modal-content avatar-picker" (click)="$event.stopPropagation()">
+                <h2>Elige tu avatar</h2>
+                <p>Selecciona uno de tus Xuxemons desbloqueados</p>
+                <div class="avatar-grid">
+                    @for (x of xuxemonsDesbloqueados; track x.id) {
+                    <button type="button" class="avatar-option" (click)="seleccionarAvatar(x)"
+                        [class.selected]="avatarXuxemon?.id === x.id">
+                        <img [src]="getXuxemonImageUrl(x)" [alt]="x.nombre">
+                        <span>{{ x.nombre }}</span>
+                    </button>
+                    } @empty {
+                    <p class="empty-copy">No tienes Xuxemons desbloqueados todavía.</p>
+                    }
+                </div>
+                <button type="button" class="btn-cancelar" (click)="mostrarSelectorAvatar = false">Cancelar</button>
             </div>
         </div>
         }

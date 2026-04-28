@@ -18,9 +18,11 @@
       <div class="team-grid">
         @for (xuxemon of equipo; track xuxemon.id) {
         <article class="xuxemon-card" tabindex="0">
-          <img [src]="xuxemon.imagen" [alt]="'Xuxemon ' + xuxemon.nombre" class="xuxemon-img">
+          <img [src]="getImagen(xuxemon)" [alt]="'Xuxemon ' + xuxemon.nombre" class="xuxemon-img">
           <h3>{{ xuxemon.nombre }}</h3>
         </article>
+        } @empty {
+        <p class="empty-message">Aún no tienes xuxemons. ¡Explora la Xuxedex para conseguir los tuyos!</p>
         }
       </div>
     </section>
