@@ -5,6 +5,7 @@ import { Xuxemon } from '../services/xuxemon';
 import { AuthService } from '../services/auth.service';
 import { Objeto } from '../services/inventory.service';
 import { SidebarComponent } from '../components/sidebar/sidebar';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -34,7 +35,8 @@ export class AdminPanelComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private xuxemonService: Xuxemon,
-    private authService: AuthService
+    private authService: AuthService,
+    private seoService: SeoService
   ) {
     this.xuxemonForm = this.fb.group({
       nombre: ['', Validators.required],
@@ -51,6 +53,11 @@ export class AdminPanelComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.seoService.update({
+      title: 'Panel Admin',
+      description: 'Administra Xuxemons, configuracion global y acciones de gestion para jugadores.'
+    });
+
     this.cargarXuxemons();
     this.cargarUsuarios();
     this.xuxemonService.getConfigs().subscribe((data: any) => this.fConfig.patchValue(data));

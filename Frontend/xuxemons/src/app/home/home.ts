@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
-import { Meta } from '@angular/platform-browser';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-home',
@@ -19,12 +19,14 @@ export class Home implements OnInit {
   constructor(
     private authService: AuthService,
     private router: Router,
-    private meta: Meta
+    private seoService: SeoService
   ) { }
 
   ngOnInit(): void {
-    //Meta tag
-    this.meta.updateTag({ name: 'description', content: 'Bienvenido a tu panel de control de Xuxemons.' });
+    this.seoService.update({
+      title: 'Inicio',
+      description: 'Bienvenido a tu panel principal de Xuxemons con tu equipo destacado y progreso.'
+    });
 
     this.authService.getProfile().subscribe({
       next: (data: any) => {

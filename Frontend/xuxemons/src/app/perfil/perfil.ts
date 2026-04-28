@@ -6,6 +6,7 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
 import { AuthService } from '../services/auth.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-perfil',
@@ -48,10 +49,16 @@ export class Perfil implements OnInit {
   constructor(
     private authService: AuthService,
     private xuxemonService: XuxemonService,
-    private router: Router
+    private router: Router,
+    private seoService: SeoService
   ) { }
 
   ngOnInit(): void {
+    this.seoService.update({
+      title: 'Perfil',
+      description: 'Consulta y edita tu perfil de entrenador, tus amigos y tus Xuxemons favoritos.'
+    });
+
     this.cargarPerfil();
     this.cargarAmigos();
     this.cargarXuxemons();

@@ -25,23 +25,25 @@
       <h2 id="players-title" class="sr-only">Lista de jugadores</h2>
       <fieldset style="border: 1px solid #ccc; padding: 10px; border-radius: 8px;">
         <legend style="font-weight: bold; padding: 0 10px; font-variant: small-caps;">lista de jugadores</legend>
-        <table border="1" style="width: 100%; border-collapse: collapse;">
-          <tr style="background-color: #f2f2f2;">
-            <th>id</th>
-            <th>nombre</th>
-            <th>accion</th>
-          </tr>
-          @for (u of users; track u.id) {
-          <tr style="text-align: center;">
-            <td>{{ u.player_id }}</td>
-            <td>{{ u.name }}</td>
-            <td>
-              <input #vacName type="text" placeholder="nombre vacuna">
-              <button (click)="vacuna(u.id, vacName.value)" style="cursor: pointer;">dar vacuna</button>
-            </td>
-          </tr>
-          }
-        </table>
+        <div class="users-table-wrapper">
+          <table border="1" style="width: 100%; border-collapse: collapse;">
+            <tr style="background-color: #f2f2f2;">
+              <th>id</th>
+              <th>nombre</th>
+              <th>accion</th>
+            </tr>
+            @for (u of users; track u.id) {
+            <tr style="text-align: center;">
+              <td>{{ u.player_id }}</td>
+              <td>{{ u.name }}</td>
+              <td>
+                <input #vacName type="text" placeholder="nombre vacuna">
+                <button (click)="vacuna(u.id, vacName.value)" style="cursor: pointer;">dar vacuna</button>
+              </td>
+            </tr>
+            }
+          </table>
+        </div>
       </fieldset>
     </section>
   </main>
