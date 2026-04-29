@@ -48,7 +48,7 @@ class DailyRewardService
             ];
         }
 
-        $xuxes = 10;
+        $xuxes = $this->getRewardXuxesAmount();
 
         $xuxeEntry = $user->mochila()->where('nombre', 'Xuxe')->first();
         if ($xuxeEntry) {
@@ -75,7 +75,7 @@ class DailyRewardService
             ]);
 
             $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
-            $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
+            $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeno';
             $entradaMochila->save();
 
             UserXuxemon::firstOrCreate(
@@ -84,7 +84,7 @@ class DailyRewardService
                     'xuxemon_id' => $xuxemonAlea->id,
                 ],
                 [
-                    'tamano' => 'Pequeño',
+                    'tamano' => 'Pequeno',
                     'comidas' => 0,
                     'imagen' => $xuxemonAlea->imagen,
                     'enfermedad' => null,
@@ -107,7 +107,7 @@ class DailyRewardService
     public function getRewardHour(): int
     {
         $rewardHour = Config::getInt('reward_hour', 8);
-        
+
         if ($rewardHour < 0) {
             return 0;
         }
@@ -117,6 +117,13 @@ class DailyRewardService
         }
 
         return $rewardHour;
+    }
+
+    public function getRewardXuxesAmount(): int
+    {
+        $amount = Config::getInt('reward_xuxes_amount', 10);
+
+        return $amount > 0 ? $amount : 10;
     }
 
     private function obtenerXuxemonAleatorioParaUsuario(User $user): ?Xuxemon
