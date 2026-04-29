@@ -44,9 +44,9 @@
   </section>
 
   <section class="cards-section" aria-label="Resultados de busqueda">
-    <div class="cards-grid">
+    <ul class="cards-grid">
       @for (card of tarjetasVisibles; track card.playerId) {
-        <article class="friend-card">
+        <li class="friend-card">
           <div class="friend-top">
             <div class="friend-avatar" aria-hidden="true"></div>
 
@@ -70,9 +70,9 @@
               <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar</button>
             </div>
           }
-        </article>
+        </li>
       }
-    </div>
+    </ul>
 
     <div class="pagination">
       <button type="button" class="page-btn page-btn-light">&lt;</button>
