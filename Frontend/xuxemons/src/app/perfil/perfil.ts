@@ -64,7 +64,6 @@ export class Perfil implements OnInit {
 
     this.cargarPerfil();
     this.cargarAmigos();
-    this.cargarXuxemons();
   }
 
   cargarPerfil(): void {
@@ -95,6 +94,9 @@ export class Perfil implements OnInit {
         if (avatarId) {
           this._avatarIdPendiente = parseInt(avatarId, 10);
         }
+
+        // Ahora que tenemos el userId y el posible avatar pendiente, cargamos los xuxemons
+        this.cargarXuxemons();
       },
       error: () => {
         this.mensajeError = 'No se pudo cargar el perfil.';

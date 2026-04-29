@@ -103,6 +103,11 @@ class UserController extends Controller
     public function deactivate(Request $request)
     {
         $user = $request->user();
+
+        if ($user->role === 'admin') {
+            return response()->json(['message' => 'No puedes desactivar una cuenta de administrador.'], 403);
+        }
+
         $user->is_active = false;
         $user->save();
 
@@ -112,6 +117,31 @@ class UserController extends Controller
         }
 
         return response()->json(['message' => 'Cuenta desactivada correctamente']);
+    }
+
+    // 3b. Reactivar cuenta (Solo Admin)
+    public function restoreUser($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+        $user->is_active = true;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario reactivado correctamente', 'user' => $user]);
+    }
+
+    // 3c. Desactivar cuenta de otro usuario (Solo Admin)
+    public function deactivateUser($id)
+    {
+        $user = \App\Models\User::findOrFail($id);
+
+        if ($user->role === 'admin') {
+            return response()->json(['message' => 'No puedes desactivar a otro administrador.'], 403);
+        }
+
+        $user->is_active = false;
+        $user->save();
+
+        return response()->json(['message' => 'Usuario desactivado correctamente', 'user' => $user]);
     }
 
     // 4. Listar todos los usuarios (Solo Admin)

@@ -4,11 +4,22 @@
 
 <!-- notificacion de recompensa -->
 @if (showReward) {
-<div class="reward-overlay">
+<div class="reward-overlay" (click)="$event.stopPropagation()">
     <div class="reward-card">
-        <h2>¡tienes una recompensa diaria!</h2>
-        <p>10 xuxes + 1 Xuxemon pequeño te estan esperando</p>
-        <button (click)="claim()" class="reward-button">reclamar ya</button>
+        <div class="reward-icon">🎁</div>
+        <h2>¡Recompensa diaria!</h2>
+        <p class="reward-desc">Tienes un regalo esperándote</p>
+        <div class="reward-items">
+            <div class="reward-item">
+                <span class="reward-emoji">🍬</span>
+                <span>10 Xuxes</span>
+            </div>
+            <div class="reward-item">
+                <span class="reward-emoji">🐣</span>
+                <span>1 Xuxemon</span>
+            </div>
+        </div>
+        <button (click)="claim()" class="reward-button">✨ Reclamar ✨</button>
     </div>
 </div>
 }

@@ -57,11 +57,6 @@
   border-collapse: collapse;
 }
 
-.users-table-wrapper {
-  width: 100%;
-  overflow-x: auto;
-}
-
 .users-table th,
 .users-table td {
   border: 1px solid #ccc;
@@ -85,34 +80,39 @@
   min-width: 170px;
 }
 
-@media (max-width: 768px) {
-  .admin-form {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .admin-form label {
-    min-width: 0;
-  }
-
-  .action-cell {
-    flex-direction: column;
-  }
-
-  .gift-btn {
-    min-width: 0;
-    width: 100%;
-  }
+.btn-toggle-user {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
 }
 
-@media (max-width: 480px) {
-  .page-title {
-    font-size: 2rem;
-  }
+.btn-toggle-user:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 
-  .users-table th,
-  .users-table td {
-    padding: 8px;
-    font-size: 0.9rem;
-  }
+.btn-deactivate {
+  background: #ffe0e0;
+  color: #c0392b;
+}
+
+.btn-deactivate:hover:not(:disabled) {
+  background: #f5b7b1;
+}
+
+.btn-restore {
+  background: #d5f5e3;
+  color: #1e8449;
+}
+
+.btn-restore:hover {
+  background: #a9dfbf;
+}
+
+.user-inactive td {
+  opacity: 0.5;
 }
