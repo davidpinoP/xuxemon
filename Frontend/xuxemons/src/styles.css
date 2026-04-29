@@ -10,10 +10,16 @@
     box-sizing: border-box;
 }
 
+:focus-visible {
+    outline: 3px solid #2357d1;
+    outline-offset: 3px;
+}
+
 html,
 body {
     margin: 0;
     padding: 0;
+    min-width: 320px;
 }
 
 body {
@@ -21,6 +27,14 @@ body {
     background:
         radial-gradient(circle at top right, rgba(124, 108, 240, 0.12), transparent 25%),
         #f4f2fb;
+}
+
+button,
+input,
+select,
+textarea,
+a {
+    font: inherit;
 }
 
 .app-layout {
@@ -37,6 +51,12 @@ body {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    overflow-x: hidden;
+    align-items: center;
+}
+
+.main-content > * {
+    width: min(100%, 1180px);
 }
 
 .sr-only {
@@ -61,9 +81,19 @@ body {
 
 @media (max-width: 768px) {
     .main-content {
-        margin-left: var(--sidebar-width-mobile);
-        width: calc(100% - var(--sidebar-width-mobile));
-        padding: 24px 16px 30px;
+        margin-left: 0;
+        width: 100%;
+        padding: 104px 16px 30px;
         gap: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-content {
+        padding: 94px 12px 24px;
+    }
+
+    .page-title {
+        overflow-wrap: anywhere;
     }
 }

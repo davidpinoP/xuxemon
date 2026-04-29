@@ -5,6 +5,11 @@
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+:host {
+  display: block;
+  min-width: 320px;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -33,6 +38,13 @@
   flex-direction: column;
   gap: 24px;
   width: calc(100% - 250px);
+  min-width: 0;
+  overflow-x: hidden;
+  align-items: center;
+}
+
+.main-content > * {
+  width: min(100%, 1180px);
 }
 
 @media (max-width: 960px) {
@@ -45,10 +57,16 @@
 
 @media (max-width: 768px) {
   .main-content {
-    margin-left: 72px;
-    padding: 24px 16px 30px;
+    margin-left: 0;
+    padding: 104px 16px 30px;
     gap: 18px;
-    width: calc(100% - 72px);
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 94px 12px 24px;
   }
 }
 
