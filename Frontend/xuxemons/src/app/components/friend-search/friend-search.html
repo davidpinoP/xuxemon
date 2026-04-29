@@ -1,0 +1,19 @@
+<div class="friend-search-block">
+  <label for="friend-search" class="search-label">Buscar amigos</label>
+
+  <div class="input-group">
+    <span class="input-group-text" id="friend-search-addon">ID</span>
+    <input
+      id="friend-search"
+      type="text"
+      class="form-control"
+      [formControl]="control"
+      placeholder="Buscar por ID de usuario"
+      aria-describedby="friend-search-status friend-search-addon"
+    >
+  </div>
+
+  <div class="search-status" id="friend-search-status" aria-live="polite">
+    <p>{{ statusMessage }}</p>
+  </div>
+</div>

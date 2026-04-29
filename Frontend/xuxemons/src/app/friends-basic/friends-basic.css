@@ -4,6 +4,66 @@
     color: #222222;
 }
 
+.section-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.requests-badge {
+    min-width: 32px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.request-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.request-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.request-name,
+.request-id {
+    margin: 0;
+}
+
+.request-name {
+    font-weight: 700;
+    color: #222222;
+}
+
+.request-id {
+    margin-top: 4px;
+    color: #888888;
+    font-size: 0.9rem;
+}
+
+.request-actions {
+    display: flex;
+    gap: 10px;
+}
+
 .search-panel {
     display: flex;
     flex-direction: column;
@@ -56,6 +116,7 @@
     flex-direction: column;
     gap: 14px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
 }
 
 .friend-top {
@@ -138,8 +199,20 @@
     cursor: default;
 }
 
+.request-card.is-removing,
+.friend-card.is-removing {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+    pointer-events: none;
+}
+
+.friend-card.request-sent {
+    animation: requestPulse 0.45s ease;
+}
+
 .pagination {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     gap: 10px;
     margin-top: 24px;
@@ -161,6 +234,21 @@
     color: #ffffff;
 }
 
+@keyframes requestPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 10px 24px rgba(148, 136, 239, 0.18);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
 @media (max-width: 768px) {
     .request-card {
         flex-direction: column;
@@ -178,5 +266,34 @@
 
     .cards-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .search-input {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
+
+    .friend-card {
+        padding: 16px;
+    }
+
+    .friend-top {
+        gap: 12px;
+    }
+
+    .friend-avatar {
+        width: 64px;
+        height: 64px;
+    }
+
+    .friend-actions {
+        flex-direction: column;
+    }
+
+    .btn-light,
+    .btn-add {
+        width: 100%;
     }
 }

@@ -1,4 +1,4 @@
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" *ngIf="xuxemon" tabindex="0">
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" [class.bloqueado]="estaBloqueado" *ngIf="xuxemon" tabindex="0">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
@@ -8,24 +8,31 @@
 
     <div class="imagen-container">
         <div class="circle-bg">
-            @if (xuxemon.imagen) {
             <img [src]="imagenMostrada" [alt]="imagenAlt" class="xuxemon-img transition-size" [ngClass]="tamanoClase"
                 (error)="onImageError()">
-            } @else {
-            <img src="https://via.placeholder.com/100" [alt]="imagenAlt" class="xuxemon-img placeholder transition-size" [ngClass]="tamanoClase">
+            @if (estaBloqueado) {
+            <div class="bloqueo-overlay" aria-hidden="true">
+                <span class="bloqueo-icono">🔒</span>
+            </div>
             }
         </div>
     </div>
 
     <h3 class="xuxemon-nombre">{{ xuxemon.nombre || '?????' }}</h3>
 
+    @if (estaBloqueado) {
+    <div class="bloqueo-box" aria-live="polite">
+        <strong class="bloqueo-titulo">Bloqueado</strong>
+        <p class="bloqueo-texto">{{ bloqueoTexto }}</p>
+    </div>
+    } @else {
     <p class="estado-texto" [class.estado-enfermo]="xuxemon.enfermedad" [class.estado-sano]="!xuxemon.enfermedad">
         {{ estadoTexto }}
     </p>
 
     @if (xuxemon.enfermedad) {
     <div class="badge-enfermedad" aria-live="assertive">
-        🤒 <strong>¡Malito!</strong> {{ xuxemon.enfermedad }}
+        🤒 <strong>Malito</strong> {{ xuxemon.enfermedad }}
     </div>
     }
     @if (xuxemon.descripcion) {
@@ -34,41 +41,39 @@
 
     <div class="stats-container">
         <div class="stat-row">
-            <span class="stat-label">❤️ Vida</span>
+            <span class="stat-label">Vida</span>
             <div class="stat-bar-bg">
                 <div class="stat-bar stat-vida" [style.width.%]="getStatValue('vida')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('vida') }}</span>
         </div>
         <div class="stat-row">
-            <span class="stat-label">⚔️ Ataque</span>
+            <span class="stat-label">Ataque</span>
             <div class="stat-bar-bg">
                 <div class="stat-bar stat-ataque" [style.width.%]="getStatValue('ataque')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('ataque') }}</span>
         </div>
         <div class="stat-row">
-            <span class="stat-label">🛡️ Defensa</span>
+            <span class="stat-label">Defensa</span>
             <div class="stat-bar-bg">
                 <div class="stat-bar stat-defensa" [style.width.%]="getStatValue('defensa')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('defensa') }}</span>
         </div>
         <div class="stat-row">
-            <span class="stat-label">💨 Velocidad</span>
+            <span class="stat-label">Velocidad</span>
             <div class="stat-bar-bg">
-                <div class="stat-bar stat-velocidad" [style.width.%]="getStatValue('velocidad')">
-                </div>
+                <div class="stat-bar stat-velocidad" [style.width.%]="getStatValue('velocidad')"></div>
             </div>
             <span class="stat-valor">{{ getStatValue('velocidad') }}</span>
         </div>
     </div>
 
-    <!-- Sección de evolución -->
     <div class="evolucion-container">
         <span class="tamano-badge">📏 {{ xuxemon.tamano | titlecase }}</span>
 
-        <p class="tamano-texto">Tamaño actual: {{ xuxemon.tamano | titlecase }}</p>
+        <p class="tamano-texto">Tamano actual: {{ xuxemon.tamano | titlecase }}</p>
         @if (xuxesNecesarias > 0) {
         <p class="evolucion-info">
             Necesitas <strong>{{ xuxesNecesarias }} xuxes</strong> para evolucionar a {{ siguienteTamano }}
@@ -79,17 +84,17 @@
             type="button"
             [attr.aria-label]="'Evolucionar ' + xuxemon.nombre">
             @if (evolucionando) {
-                ✨ Evolucionando...
+                Evolucionando...
             } @else {
-                ⬆️ Evolucionar
+                Evolucionar
             }
         </button>
         } @else {
-        <p class="evolucion-info evolucion-max">🏆 ¡Tamaño máximo alcanzado!</p>
+        <p class="evolucion-info evolucion-max">Tamano maximo alcanzado</p>
         }
     </div>
+    }
 
-    <!-- Overlay de animación -->
     @if (evolucionando) {
     <div class="evolucion-overlay">
         <div class="particula"></div>
@@ -97,7 +102,7 @@
         <div class="particula"></div>
         <div class="particula"></div>
         <div class="particula"></div>
-        <span class="texto-evolucion">✨ ¡Evolucionando! ✨</span>
+        <span class="texto-evolucion">Evolucionando</span>
     </div>
     }
 

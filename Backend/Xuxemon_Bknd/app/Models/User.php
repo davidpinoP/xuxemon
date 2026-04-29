@@ -92,4 +92,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(User::class, 'friends', 'user_id', 'friend_id');
     }
+
+    public function userXuxemons()
+    {
+        return $this->hasMany(UserXuxemon::class);
+    }
 }

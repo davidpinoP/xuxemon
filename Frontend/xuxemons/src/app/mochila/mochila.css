@@ -48,6 +48,7 @@
     box-shadow: 0 4px 12px rgba(124, 108, 240, 0.15);
 }
 
+.slot:focus,
 .slot:focus-within {
     outline: 3px solid #2357d1;
     outline-offset: 3px;
@@ -113,9 +114,35 @@
     box-shadow: 0 4px 15px rgba(124, 108, 231, 0.3);
 }
 
+.inventory-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 .btn-alimentar:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(124, 108, 231, 0.4);
+}
+
+.btn-hospital {
+    margin-top: 25px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #ff7a7a, #f25d7b);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(242, 93, 123, 0.25);
+}
+
+.btn-hospital:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(242, 93, 123, 0.35);
 }
 
 .btn-alimentar:focus,
@@ -457,40 +484,6 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-        padding-top: 20px;
-    }
-
-    .sidebar-header {
-        margin-bottom: 20px;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-    }
-
-    .nav-item {
-        font-size: 0;
-        padding: 15px;
-    }
-
-    .nav-item .icon-user {
-        font-size: 1.3rem;
-        margin: 0;
-    }
-
-    .nav-item.active {
-        margin-left: 5px;
-        border-radius: 15px 0 0 15px;
-    }
-
-    .main-content {
-        margin-left: 60px;
-        padding: 20px 15px;
-    }
-
     .page-title {
         font-size: 1.8rem;
     }
@@ -506,10 +499,34 @@
         width: 100%;
         max-width: none;
     }
+
+    .inventory-actions {
+        flex-direction: column;
+    }
+
+    .btn-alimentar,
+    .btn-hospital {
+        width: 100%;
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 480px) {
     .mochila-grid {
         grid-template-columns: repeat(4, 1fr);
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .slot {
+        border-radius: 12px;
+    }
+
+    .modal-contenido {
+        padding: 22px 18px;
+    }
+
+    .preview-botones {
+        flex-direction: column;
     }
 }

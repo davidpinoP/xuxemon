@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { SidebarComponent } from '../components/sidebar/sidebar';
-import { Meta } from '@angular/platform-browser';
+import { XuxemonService } from '../services/xuxemon.service';
+import { IXuxemon } from '../models/xuxemon.interface';
 
 @Component({
   selector: 'app-home',
@@ -14,38 +15,41 @@ import { Meta } from '@angular/platform-browser';
 })
 export class Home implements OnInit {
   user: any = null;
-  equipo: any[] = [];
+  equipo: IXuxemon[] = [];
 
   constructor(
     private authService: AuthService,
-    private router: Router,
-    private meta: Meta
+    private xuxemonService: XuxemonService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    //Meta tag
-    this.meta.updateTag({ name: 'description', content: 'Bienvenido a tu panel de control de Xuxemons.' });
-
     this.authService.getProfile().subscribe({
       next: (data: any) => {
         this.user = data;
-        // TODO: Cargar equipo real del usuario desde el backend
-        this.cargarEquipoEjemplo();
+        this.cargarEquipo();
       },
       error: (err: any) => {
         console.error('Error cargando perfil', err);
-        this.cargarEquipoEjemplo();
+        this.cargarEquipo();
       }
     });
   }
 
-  cargarEquipoEjemplo() {
-    this.equipo = [
-      { id: 1, nombre: 'Loro', tipo: 'aire', imagen: '/imagenes/assets/1.png' },
-      { id: 2, nombre: 'Tortuga', tipo: 'planta', imagen: '/imagenes/assets/2.png' },
-      { id: 3, nombre: 'Ballena', tipo: 'agua', imagen: '/imagenes/assets/3.png' },
-      { id: 4, nombre: 'Caracol', tipo: 'agua', imagen: '/imagenes/assets/4.png' },
-    ];
+  cargarEquipo(): void {
+    this.xuxemonService.getMisXuxemons().subscribe({
+      next: (xuxemons: IXuxemon[]) => {
+        this.equipo = xuxemons.slice(0, 4);
+      },
+      error: (err: any) => {
+        console.error('Error cargando xuxemons', err);
+        this.equipo = [];
+      }
+    });
+  }
+
+  getImagen(xuxemon: IXuxemon): string {
+    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
   }
 
   getTipoIcon(tipo: string): string {

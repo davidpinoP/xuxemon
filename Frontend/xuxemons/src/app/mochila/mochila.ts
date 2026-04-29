@@ -7,6 +7,7 @@ import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { GameConfigService } from '../services/game-config.service';
 import { SidebarComponent } from '../components/sidebar/sidebar';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-mochila',
@@ -50,10 +51,16 @@ export class Mochila implements OnInit {
     private authService: AuthService,
     private inventoryService: InventoryService,
     private xuxemonService: XuxemonService,
-    private gameConfigService: GameConfigService
+    private gameConfigService: GameConfigService,
+    private seoService: SeoService
   ) { }
 
   ngOnInit() {
+    this.seoService.update({
+      title: 'Mochila',
+      description: 'Gestiona tu inventario, alimenta a tus Xuxemons y usa vacunas desde la mochila.'
+    });
+
     // Me suscribo al BehaviorSubject para tener siempre la mochila actualizada
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
@@ -381,7 +388,7 @@ export class Mochila implements OnInit {
 
     // 4. Calculamos cuántos slots nuevos vamos a gastar dividiendo entre 5
     const slotsNeeded = Math.ceil(newItem.cantidad / 5);
-    
+
     // 5. Si gastamos más huecos de los que tenemos libres, le quitamos el exceso
     if (slotsNeeded > availableSlots) {
       const allowedAmount = availableSlots * 5;
@@ -401,7 +408,7 @@ export class Mochila implements OnInit {
     });
   }
 
-  // 4️⃣ Esta es una maravilla técnica para engañar astutamente al frontend:
+
   // Coge el mogollón de datos que viene de la BBDD de Laravel y le añade propiedades clave visuales para nosotros.
   private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
     const objetos: Objeto[] = [];

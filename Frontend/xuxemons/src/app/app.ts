@@ -3,23 +3,29 @@ import { RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from './services/xuxemon';
 import { GameConfigService } from './services/game-config.service';
+import { LoadingService } from './services/loading.service';
+import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner';
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule],
+  imports: [RouterOutlet, CommonModule, LoadingSpinnerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
 export class App implements OnInit {
   title = 'xuxemons';
   showReward = false;
+  readonly loading$;
 
   constructor(
     private xuxemonService: Xuxemon,
-    private gameConfigService: GameConfigService
-  ) { }
+    private gameConfigService: GameConfigService,
+    private loadingService: LoadingService
+  ) {
+    this.loading$ = this.loadingService.loading$;
+  }
 
   ngOnInit() {
     this.gameConfigService.load().subscribe();
