@@ -3,6 +3,7 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding: 20px;
     background-color: #f0f0f3;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -14,6 +15,7 @@
     width: 100%;
     max-width: 420px;
     padding: 40px 20px;
+    border-radius: 28px;
 }
 
 /* ── Mascota ── */
@@ -84,6 +86,8 @@ input::placeholder {
 
 input:focus {
     background-color: #d0d0d5;
+    outline: 3px solid #4f34b7;
+    outline-offset: 3px;
 }
 
 /* ── Botón ── */
@@ -114,6 +118,12 @@ button:disabled {
     cursor: not-allowed;
 }
 
+button:focus-visible,
+.login-link:focus-visible {
+    outline: 3px solid #4f34b7;
+    outline-offset: 4px;
+}
+
 /* ── Link ── */
 .login-link {
     margin-top: 20px;
@@ -126,4 +136,35 @@ button:disabled {
 .login-link:hover {
     color: #5a4abf;
     text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+    :host {
+        align-items: flex-start;
+        min-height: 100dvh;
+        padding: 18px 12px;
+    }
+
+    .registro-container {
+        padding: 28px 10px;
+    }
+
+    .logo-container {
+        margin-bottom: 20px;
+    }
+
+    .mascot-logo {
+        width: 76px;
+        height: 76px;
+    }
+
+    input,
+    .error-service {
+        max-width: 100%;
+    }
+
+    button {
+        width: 100%;
+        padding: 13px 20px;
+    }
 }

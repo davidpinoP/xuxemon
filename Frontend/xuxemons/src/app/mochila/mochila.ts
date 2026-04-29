@@ -301,6 +301,9 @@ export class Mochila implements OnInit {
     if (this.mostrarModal) {
       this.cerrarModal();
     }
+    if (this.mostrarModalVacuna) {
+      this.cerrarModalVacuna();
+    }
   }
 
   trapFocus(event: KeyboardEvent) {

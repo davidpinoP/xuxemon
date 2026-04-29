@@ -13,6 +13,7 @@
   margin-bottom: 20px;
   border-radius: 8px;
   background: #fff;
+  overflow: hidden;
 }
 
 .admin-box legend {
@@ -55,6 +56,10 @@
 .users-table {
   width: 100%;
   border-collapse: collapse;
+}
+
+.admin-box:has(.users-table) {
+  overflow-x: auto;
 }
 
 .users-table th,
@@ -115,4 +120,28 @@
 
 .user-inactive td {
   opacity: 0.5;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: clamp(2rem, 9vw, 3rem);
+  }
+
+  .admin-box {
+    padding: 14px;
+  }
+
+  .admin-form {
+    align-items: stretch;
+  }
+
+  .admin-form label,
+  .admin-form button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .users-table {
+    min-width: 720px;
+  }
 }

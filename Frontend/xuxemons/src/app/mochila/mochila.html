@@ -10,7 +10,8 @@
             <h2 id="inventory-title" class="sr-only">Inventario de objetos</h2>
             <div class="mochila-grid">
                 @for (slot of slots; track $index) {
-                <article class="slot" [class.occupied]="slot" aria-label="Espacio de inventari">
+                <article class="slot" [class.occupied]="slot"
+                    [attr.aria-label]="slot ? 'Hueco ocupado por ' + slot.nombre + ', cantidad ' + slot.cantidad : 'Hueco vacío de inventario'">
                     @if (slot) {
                     <div class="item-container">
                         <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
@@ -32,7 +33,8 @@
         <!-- ═══ MODAL HOSPITAL (VACUNACIÓN) ═══ -->
         @if (mostrarModalVacuna) {
         <div class="modal-overlay" (click)="cerrarModalVacuna()">
-            <div class="modal-contenido" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-labelledby="modal-titulo-hospital">
+            <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
+                role="dialog" aria-modal="true" aria-labelledby="modal-titulo-hospital" tabindex="-1">
                 <button class="modal-cerrar" (click)="cerrarModalVacuna()" type="button" aria-label="Cerrar modal">✕</button>
                 
                 <h2 id="modal-titulo-hospital">🏥 Hospital Xuxemon</h2>
