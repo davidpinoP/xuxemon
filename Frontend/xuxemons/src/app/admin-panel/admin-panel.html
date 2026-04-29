@@ -16,8 +16,12 @@
           <input type="number" formControlName="evolve_xuxes">
         </label>
         <label>
-          <span>Hora recompensa</span>
+          <span>Hora recompensa diaria</span>
           <input type="number" formControlName="reward_hour">
+        </label>
+        <label>
+          <span>Xuxes recompensa diaria</span>
+          <input type="number" formControlName="reward_xuxes_amount">
         </label>
         <button type="submit">Guardar ajustes</button>
       </form>
@@ -52,7 +56,7 @@
                 (click)="toggleUser(u)"
                 [disabled]="u.role === 'admin'"
                 type="button">
-                {{ u.is_active ? (u.role === 'admin' ? '🔒 Admin' : '✅ Activo') : '🔴 Inactivo' }}
+                {{ u.is_active ? (u.role === 'admin' ? 'Admin' : 'Activo') : 'Inactivo' }}
               </button>
             </td>
             <td class="action-cell">
