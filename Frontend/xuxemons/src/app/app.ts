@@ -6,7 +6,6 @@ import { GameConfigService } from './services/game-config.service';
 import { LoadingService } from './services/loading.service';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner';
 
-
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -30,7 +29,6 @@ export class App implements OnInit {
   ngOnInit() {
     this.gameConfigService.load().subscribe();
 
-    // comprobar si hay recompensa al entrar
     this.xuxemonService.checkRewards().subscribe((res: any) => {
       if (res.can_claim) {
         this.showReward = true;
@@ -40,13 +38,18 @@ export class App implements OnInit {
 
   claim() {
     this.xuxemonService.claimReward().subscribe({
-      next: () => {
+      next: (response: any) => {
         this.showReward = false;
-        alert('recompensa recibida: 10 xuxes + 1 xuxemon pequeño.');
+        const amount = response?.reward?.xuxes ?? this.rewardXuxesAmount;
+        alert(`recompensa recibida: ${amount} xuxes + 1 xuxemon pequeno.`);
       },
       error: (err) => {
         alert(err?.error?.message || 'No puedes reclamar la recompensa en este momento.');
       }
     });
+  }
+
+  get rewardXuxesAmount(): number {
+    return this.gameConfigService.snapshot.reward_xuxes_amount;
   }
 }
