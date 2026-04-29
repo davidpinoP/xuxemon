@@ -92,7 +92,7 @@
                     <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
                         <option [ngValue]="null">-- Elige un Xuxemon --</option>
                         @for (xuxe of misXuxemons; track xuxe.id) {
-                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(xuxe.enfermedad){ 🤒 } </option>
+                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(xuxe.enfermedad){ 🤒 (Enfermo) } </option>
                         }
                     </select>
                 </div>
