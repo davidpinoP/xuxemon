@@ -2,15 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\UserXuxemon;
 use App\Models\User;
+use App\Models\UserXuxemon;
 use App\Models\Xuxemon;
-use App\Models\Mochila;
+use Illuminate\Http\Request;
 
 class AdminController extends Controller
 {
-    // Dar xuxes a un usuario
+    private const VACCINE_NAMES = [
+        'xocolatina' => 'Vacuna Xocolatina',
+        'xal de fruites' => 'Vacuna Xal de fruites',
+        'inxulina' => 'Vacuna Inxulina',
+    ];
+
     public function darChuches(Request $request)
     {
         $request->validate([
@@ -19,8 +23,6 @@ class AdminController extends Controller
         ]);
 
         $usuario = User::findOrFail($request->user_id);
-
-        // Buscamos el item 1 para saber su nombre (asumimos que 1 es la xuxe básica)
         $itemXuxe = \App\Models\Item::find(1);
         $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
 
@@ -33,12 +35,11 @@ class AdminController extends Controller
         $mochilaEntry->save();
 
         return response()->json([
-            'mensaje' => 'Chuches añadidas al jugador',
+            'mensaje' => 'Chuches anadidas al jugador',
             'inventario' => $usuario->mochila
         ], 200);
     }
 
-    // Regalar un xuxemon al azar al jugador
     public function darXuxemonAleatorio(Request $request)
     {
         $request->validate([
@@ -46,7 +47,6 @@ class AdminController extends Controller
         ]);
 
         $usuario = User::findOrFail($request->user_id);
-
         $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($usuario);
 
         if (!$xuxemonAlea) {
@@ -57,14 +57,13 @@ class AdminController extends Controller
             ->where('xuxemon_id', $xuxemonAlea->id)
             ->exists();
 
-        // Se lo guarda al usuario en tamaño pequeño en la mochila
         $entradaMochila = $usuario->mochila()->firstOrNew([
             'nombre' => $xuxemonAlea->nombre,
             'tipo' => 'xuxemon',
         ]);
 
         $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
-        $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
+        $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeno';
         $entradaMochila->save();
 
         UserXuxemon::firstOrCreate(
@@ -73,7 +72,7 @@ class AdminController extends Controller
                 'xuxemon_id' => $xuxemonAlea->id,
             ],
             [
-                'tamano' => 'Pequeño',
+                'tamano' => 'Pequeno',
                 'comidas' => 0,
                 'imagen' => $xuxemonAlea->imagen,
                 'enfermedad' => null,
@@ -88,19 +87,24 @@ class AdminController extends Controller
         ], 201);
     }
 
-    // dar una vacuna a un jugador
     public function darVacuna(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'nombre' => ['required', 'string', 'max:50', 'regex:/^Vacuna/i'],
-        ], [
-            'nombre.regex' => 'El nombre del objeto debe empezar por "Vacuna" para que el sistema lo reconozca.'
+            'nombre' => 'required|string|max:50',
         ]);
 
-        $u = User::findOrFail($request->user_id);
-        $entrada = $u->mochila()->firstOrNew([
-            'nombre' => $request->nombre,
+        $usuario = User::findOrFail($request->user_id);
+        $nombreVacuna = $this->normalizarVacuna($request->nombre);
+
+        if (!$nombreVacuna) {
+            return response()->json([
+                'message' => 'Vacuna no valida. Usa Xocolatina, Xal de fruites o Inxulina.',
+            ], 422);
+        }
+
+        $entrada = $usuario->mochila()->firstOrNew([
+            'nombre' => $nombreVacuna,
             'tipo' => 'item'
         ]);
 
@@ -126,5 +130,13 @@ class AdminController extends Controller
             ->first();
 
         return $pendiente ?: Xuxemon::inRandomOrder()->first();
+    }
+
+    private function normalizarVacuna(string $nombre): ?string
+    {
+        $normalized = mb_strtolower(trim($nombre));
+        $normalized = preg_replace('/^vacuna\s+/u', '', $normalized ?? '');
+
+        return self::VACCINE_NAMES[$normalized] ?? null;
     }
 }

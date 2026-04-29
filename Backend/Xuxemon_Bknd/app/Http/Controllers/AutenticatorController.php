@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\DailyRewardService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AutenticatorController extends Controller
 {
@@ -16,9 +15,6 @@ class AutenticatorController extends Controller
     {
         $this->dailyRewardService = $dailyRewardService;
     }
-
-
-    // ---- Rutas API (JWT) ----
 
     public function login(Request $request)
     {
@@ -38,11 +34,11 @@ class AutenticatorController extends Controller
 
         $user = auth('api')->user();
 
-        // Comprobar si la cuenta está activa
         if (!$user->is_active) {
-            auth('api')->logout(); // Invalidamos el intento
+            auth('api')->logout();
+
             return response()->json([
-                'error' => 'Tu cuenta está desactivada. Por favor, contacta con soporte.'
+                'error' => 'Tu cuenta esta desactivada. Por favor, contacta con soporte.'
             ], 403);
         }
 
@@ -51,6 +47,7 @@ class AutenticatorController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
+            'expires_in' => config('jwt.ttl') * 60,
             'user' => $user
         ]);
     }
@@ -62,7 +59,7 @@ class AutenticatorController extends Controller
             'surname' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:6',
-            'role' => 'sometimes|in:admin,user', // Optional role parameter
+            'role' => 'sometimes|in:admin,user',
         ]);
 
         $isFirstUser = User::count() === 0;
@@ -84,7 +81,9 @@ class AutenticatorController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'player_id' => $user->player_id
+            'expires_in' => config('jwt.ttl') * 60,
+            'player_id' => $user->player_id,
+            'user' => $user,
         ]);
     }
 
@@ -93,12 +92,22 @@ class AutenticatorController extends Controller
         return response()->json(auth('api')->user());
     }
 
-    // ---- Helpers ----
+    public function logout()
+    {
+        $token = JWTAuth::getToken();
 
-    /**
-     * Comprueba si el usuario tiene derecho a la recompensa diaria (después de la hora configurada).
-     */
-    private function checkDailyRewards(User $user)
+        if ($token) {
+            JWTAuth::invalidate($token);
+        }
+
+        auth('api')->logout();
+
+        return response()->json([
+            'message' => 'Sesion cerrada correctamente.'
+        ]);
+    }
+
+    private function checkDailyRewards(User $user): void
     {
         $this->dailyRewardService->grantIfEligible($user);
     }

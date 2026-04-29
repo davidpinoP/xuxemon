@@ -37,13 +37,17 @@ export class AuthService {
     }
 
     logout(): void {
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('userRole');
-        localStorage.removeItem('player_id'); // Netegem ID del jugador
-        this.currentUserSubject.next(null);
-        
-        // Redirigim a login
-        this.router.navigate(['/login']);
+        const token = this.getToken();
+
+        if (!token) {
+            this.clearSession();
+            return;
+        }
+
+        this.http.post(`${this.apiUrl}/logout`, {}).subscribe({
+            next: () => this.clearSession(),
+            error: () => this.clearSession()
+        });
     }
 
     savePlayerId(playerId: string): void {
@@ -116,5 +120,13 @@ export class AuthService {
 
     eliminarAmigo(amigoId: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/amigos/${amigoId}`);
+    }
+
+    private clearSession(): void {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('userRole');
+        localStorage.removeItem('player_id');
+        this.currentUserSubject.next(null);
+        this.router.navigate(['/login']);
     }
 }
