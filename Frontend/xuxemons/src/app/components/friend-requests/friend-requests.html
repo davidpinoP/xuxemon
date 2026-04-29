@@ -15,14 +15,14 @@
     </div>
   }
 
-  <div class="requests-list">
-    @if (pendingRequests.length === 0) {
-      <div class="empty-state">
-        <p>No tienes solicitudes de amistad pendientes. 🏖️</p>
-      </div>
-    } @else {
+  @if (pendingRequests.length === 0) {
+    <div class="empty-state">
+      <p>No tienes solicitudes de amistad pendientes. 🏖️</p>
+    </div>
+  } @else {
+    <ul class="requests-list">
       @for (req of pendingRequests; track req.id) {
-        <div class="request-card" [class.fade-out]="animatingIds.has(req.id)">
+        <li class="request-card" [class.fade-out]="animatingIds.has(req.id)">
           
           <div class="user-info">
             <div class="avatar">
@@ -39,8 +39,8 @@
             <button class="btn-reject" (click)="rechazar(req.id)" aria-label="Rechazar solicitud">Rechazar</button>
           </div>
           
-        </div>
+        </li>
       }
-    }
-  </div>
+    </ul>
+  }
 </div>
