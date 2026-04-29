@@ -49,7 +49,12 @@ export class Home implements OnInit {
   }
 
   getImagen(xuxemon: IXuxemon): string {
-    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
+    return this.normalizarImagen(xuxemon.imagen) || `/imagenes/assets/${xuxemon.id}.webp`;
+  }
+
+  private normalizarImagen(ruta?: string): string | undefined {
+    if (!ruta) return undefined;
+    return ruta.trim().replace(/\.png$/i, '.webp');
   }
 
   getTipoIcon(tipo: string): string {

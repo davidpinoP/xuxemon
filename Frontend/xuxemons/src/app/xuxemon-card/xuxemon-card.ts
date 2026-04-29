@@ -173,7 +173,7 @@ export class XuxemonCardComponent implements OnChanges {
       return [this.placeholderImage];
     }
 
-    const imagenBase = this.normalizarRutaImagen(this.xuxemon.imagen) || `/imagenes/assets/${this.xuxemon.id}.png`;
+    const imagenBase = this.normalizarRutaImagen(this.xuxemon.imagen) || `/imagenes/assets/${this.xuxemon.id}.webp`;
     const tamano = this.normalizarTamano(this.xuxemon.tamano);
     const variantes = this.getVariantesImagen();
     const rutas: Array<string | undefined> = [];
@@ -203,7 +203,7 @@ export class XuxemonCardComponent implements OnChanges {
       );
     }
 
-    rutas.push(`/imagenes/assets/${this.xuxemon.id}.png`, this.placeholderImage);
+    rutas.push(`/imagenes/assets/${this.xuxemon.id}.webp`, this.placeholderImage);
 
     return Array.from(new Set(rutas.filter((ruta): ruta is string => Boolean(ruta))));
   }
@@ -229,11 +229,13 @@ export class XuxemonCardComponent implements OnChanges {
       return undefined;
     }
 
-    if (limpia.startsWith('http://') || limpia.startsWith('https://') || limpia.startsWith('/')) {
-      return limpia;
+    const rutaWebp = limpia.replace(/\.png$/i, '.webp');
+
+    if (rutaWebp.startsWith('http://') || rutaWebp.startsWith('https://') || rutaWebp.startsWith('/')) {
+      return rutaWebp;
     }
 
-    return `/${limpia}`;
+    return `/${rutaWebp}`;
   }
 
   private normalizarTamano(tamano?: string): 'pequeno' | 'mediano' | 'grande' {
@@ -276,7 +278,7 @@ export class XuxemonCardComponent implements OnChanges {
     const indicePunto = imagenBase.lastIndexOf('.');
 
     if (indicePunto === -1) {
-      return `${imagenBase}-${tamano}-ia.png`;
+      return `${imagenBase}-${tamano}-ia.webp`;
     }
 
     const nombre = imagenBase.substring(0, indicePunto);

@@ -65,7 +65,7 @@ class XuxemonSeeder extends Seeder
                     'nombre' => $nombre,
                     'tipo' => $tipo,
                     'descripcion' => $descripcion,
-                    'imagen' => "/imagenes/assets/{$id}.png",
+                    'imagen' => "/imagenes/assets/{$id}.webp",
                     'tamano' => 'Pequeño',
                     'enfermedad' => null,
                 ]

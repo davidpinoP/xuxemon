@@ -143,7 +143,7 @@ export class Perfil implements OnInit {
   }
 
   getXuxemonImageUrl(xuxemon: IXuxemon): string {
-    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
+    return this.normalizarImagen(xuxemon.imagen) || `/imagenes/assets/${xuxemon.id}.webp`;
   }
 
   cargarAmigos(): void {
@@ -260,7 +260,7 @@ export class Perfil implements OnInit {
   }
 
   getXuxemonImage(xuxemon: IXuxemon): string {
-    return xuxemon.imagen || `/imagenes/assets/${xuxemon.id}.png`;
+    return this.normalizarImagen(xuxemon.imagen) || `/imagenes/assets/${xuxemon.id}.webp`;
   }
 
   private crearXuxemonDemo(id: number, nombre: string): IXuxemon {
@@ -269,7 +269,7 @@ export class Perfil implements OnInit {
       nombre,
       tipo: 'agua',
       tamano: 'pequeno',
-      imagen: `/imagenes/assets/${id}.png`
+      imagen: `/imagenes/assets/${id}.webp`
     };
   }
 
@@ -279,5 +279,10 @@ export class Perfil implements OnInit {
       this.crearXuxemonDemo(2, 'Terrock')
     ];
     this.xuxemonFavorito = this.crearXuxemonDemo(3, 'Ventus');
+  }
+
+  private normalizarImagen(ruta?: string): string | undefined {
+    if (!ruta) return undefined;
+    return ruta.trim().replace(/\.png$/i, '.webp');
   }
 }
