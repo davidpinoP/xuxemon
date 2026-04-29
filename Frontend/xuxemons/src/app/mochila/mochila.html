@@ -8,9 +8,9 @@
 
         <section class="inventory-section" aria-labelledby="inventory-title">
             <h2 id="inventory-title" class="sr-only">Inventario de objetos</h2>
-            <div class="mochila-grid">
+            <ul class="mochila-grid">
                 @for (slot of slots; track $index) {
-                <article class="slot" [class.occupied]="slot" aria-label="Espacio de inventari">
+                <li class="slot" [class.occupied]="slot" aria-label="Espacio de inventario">
                     @if (slot) {
                     <div class="item-container">
                         <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
@@ -19,9 +19,9 @@
                         }
                     </div>
                     }
-                </article>
+                </li>
                 }
-            </div>
+            </ul>
         </section>
 
         <div class="inventory-actions">
