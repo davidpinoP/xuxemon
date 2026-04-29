@@ -126,3 +126,36 @@
         transform: translateX(4px);
     }
 }
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 20px 14px 28px;
+}
+
+.btn-logout {
+    width: 100%;
+    padding: 13px 18px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 0 20px 20px 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.95rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.25s ease, color 0.25s ease, transform 0.2s ease;
+}
+
+.btn-logout:hover {
+    background: rgba(220, 60, 60, 0.55);
+    color: #fff;
+    transform: translateX(4px);
+}
+
+@media (max-width: 768px) {
+    .btn-logout {
+        font-size: 0;
+        padding: 13px 10px;
+    }
+}
