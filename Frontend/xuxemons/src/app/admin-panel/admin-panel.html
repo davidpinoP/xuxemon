@@ -34,15 +34,27 @@
           <tr>
             <th>Player ID</th>
             <th>Nombre</th>
+            <th>Estado</th>
             <th>Vacuna</th>
             <th>Regalo Xuxemon</th>
           </tr>
         </thead>
         <tbody>
           @for (u of users; track u.id) {
-          <tr>
+          <tr [class.user-inactive]="!u.is_active">
             <td>{{ u.player_id }}</td>
             <td>{{ u.name }}</td>
+            <td>
+              <button
+                class="btn-toggle-user"
+                [class.btn-restore]="!u.is_active"
+                [class.btn-deactivate]="u.is_active && u.role !== 'admin'"
+                (click)="toggleUser(u)"
+                [disabled]="u.role === 'admin'"
+                type="button">
+                {{ u.is_active ? (u.role === 'admin' ? '🔒 Admin' : '✅ Activo') : '🔴 Inactivo' }}
+              </button>
+            </td>
             <td class="action-cell">
               <input #vacName type="text" placeholder="Nombre vacuna">
               <button (click)="vacuna(u.id, vacName.value)" type="button">Dar vacuna</button>

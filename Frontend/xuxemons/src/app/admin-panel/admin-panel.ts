@@ -134,6 +134,20 @@ export class AdminPanelComponent implements OnInit {
     this.xuxemonService.darVacuna(id, nombre).subscribe(() => alert('Vacuna enviada'));
   }
 
+  toggleUser(user: any): void {
+    const accion = user.is_active
+      ? this.authService.deactivateUser(user.id)
+      : this.authService.restoreUser(user.id);
+
+    accion.subscribe({
+      next: (res: any) => {
+        user.is_active = !user.is_active;
+        this.mensajeRegalo = res.message;
+      },
+      error: (err: any) => alert(err?.error?.message || 'Error al cambiar estado del usuario')
+    });
+  }
+
   addXuxesToPlayer(): void {
     if (!this.selectedPlayerId) {
       alert('Selecciona un jugador.');

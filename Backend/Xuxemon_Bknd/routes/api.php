@@ -63,6 +63,8 @@ Route::middleware([\App\Http\Middleware\ApiAuthMiddleware::class, \App\Http\Midd
         Route::post('/users/{id}/inventory', [UserController::class, 'updateInventory']);
         Route::put('/users/{id}/inventory/{itemName}', [UserController::class, 'modifyItemInInventory']);
         Route::delete('/users/{id}/inventory/{itemName}', [UserController::class, 'deleteItemFromInventory']);
+        Route::post('/users/{id}/restore', [UserController::class, 'restoreUser']);
+        Route::post('/users/{id}/deactivate', [UserController::class, 'deactivateUser']);
 
         Route::get('/admin/dashboard', function () {
             return response()->json(['message' => 'Bienvenido, Administrador']);

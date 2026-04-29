@@ -79,3 +79,40 @@
 .gift-btn {
   min-width: 170px;
 }
+
+.btn-toggle-user {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: opacity 0.2s;
+}
+
+.btn-toggle-user:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-deactivate {
+  background: #ffe0e0;
+  color: #c0392b;
+}
+
+.btn-deactivate:hover:not(:disabled) {
+  background: #f5b7b1;
+}
+
+.btn-restore {
+  background: #d5f5e3;
+  color: #1e8449;
+}
+
+.btn-restore:hover {
+  background: #a9dfbf;
+}
+
+.user-inactive td {
+  opacity: 0.5;
+}

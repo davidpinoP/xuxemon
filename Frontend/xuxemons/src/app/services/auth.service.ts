@@ -68,6 +68,14 @@ export class AuthService {
         return this.http.get<any[]>(`${this.apiUrl}/users`);
     }
 
+    restoreUser(userId: number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/users/${userId}/restore`, {});
+    }
+
+    deactivateUser(userId: number): Observable<any> {
+        return this.http.post(`${this.apiUrl}/users/${userId}/deactivate`, {});
+    }
+
     updateUserInventory(userId: number, inventory: any[]): Observable<any> {
         return this.http.post(`${this.apiUrl}/users/${userId}/inventory`, { inventory });
     }
