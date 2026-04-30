@@ -5,24 +5,27 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Exceptions\TokenExpiredException;
 use Tymon\JWTAuth\Exceptions\UserNotDefinedException;
 
 class ApiAuthMiddleware
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
     public function handle(Request $request, Closure $next): Response
     {
         try {
-            // Intentamos obtener el usuario autenticado vía JWT
-            // userOrFail lanza UserNotDefinedException si el token es inválido o no existe
-            $user = auth('api')->userOrFail();
+            auth('api')->userOrFail();
+        } catch (TokenExpiredException $e) {
+            return response()->json([
+                'message' => 'No autorizado: el token ha expirado.'
+            ], 401);
         } catch (UserNotDefinedException $e) {
             return response()->json([
-                'message' => 'No autorizado (Token inválido o ausente)'
+                'message' => 'No autorizado: token invalido o ausente.'
+            ], 401);
+        } catch (JWTException $e) {
+            return response()->json([
+                'message' => 'No autorizado: no se pudo validar el token.'
             ], 401);
         }
 

@@ -7,6 +7,7 @@ import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { GameConfigService } from '../services/game-config.service';
 import { SidebarComponent } from '../components/sidebar/sidebar';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-mochila',
@@ -50,10 +51,16 @@ export class Mochila implements OnInit {
     private authService: AuthService,
     private inventoryService: InventoryService,
     private xuxemonService: XuxemonService,
-    private gameConfigService: GameConfigService
+    private gameConfigService: GameConfigService,
+    private seoService: SeoService
   ) { }
 
   ngOnInit() {
+    this.seoService.update({
+      title: 'Mochila',
+      description: 'Gestiona tu inventario, alimenta a tus Xuxemons y usa vacunas desde la mochila.'
+    });
+
     // Me suscribo al BehaviorSubject para tener siempre la mochila actualizada
     this.inventoryService.slots$.subscribe(slots => {
       this.slots = slots;
@@ -293,6 +300,9 @@ export class Mochila implements OnInit {
   onEscape() {
     if (this.mostrarModal) {
       this.cerrarModal();
+    }
+    if (this.mostrarModalVacuna) {
+      this.cerrarModalVacuna();
     }
   }
 

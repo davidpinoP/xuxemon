@@ -8,13 +8,15 @@ export interface GameConfig {
   pct_atracon: number;
   evolve_xuxes: number;
   reward_hour: number;
+  reward_xuxes_amount: number;
 }
 
 const DEFAULT_GAME_CONFIG: GameConfig = {
   pct_bajon_azucar: 0,
   pct_atracon: 0,
   evolve_xuxes: 3,
-  reward_hour: 8
+  reward_hour: 8,
+  reward_xuxes_amount: 10
 };
 
 @Injectable({
@@ -48,12 +50,14 @@ export class GameConfigService {
     const atracon = this.toNumber(safe.pct_atracon, DEFAULT_GAME_CONFIG.pct_atracon);
     const evolve = this.toNumber(safe.evolve_xuxes, DEFAULT_GAME_CONFIG.evolve_xuxes);
     const reward = this.toNumber(safe.reward_hour, DEFAULT_GAME_CONFIG.reward_hour);
+    const rewardXuxesAmount = this.toNumber(safe.reward_xuxes_amount, DEFAULT_GAME_CONFIG.reward_xuxes_amount);
 
     return {
       pct_bajon_azucar: Math.max(0, Math.min(100, bajon)),
       pct_atracon: Math.max(0, Math.min(100, atracon)),
       evolve_xuxes: evolve > 0 ? evolve : DEFAULT_GAME_CONFIG.evolve_xuxes,
-      reward_hour: Math.max(0, Math.min(23, reward))
+      reward_hour: Math.max(0, Math.min(23, reward)),
+      reward_xuxes_amount: rewardXuxesAmount > 0 ? rewardXuxesAmount : DEFAULT_GAME_CONFIG.reward_xuxes_amount
     };
   }
 

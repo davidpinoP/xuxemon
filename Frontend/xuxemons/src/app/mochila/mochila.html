@@ -2,52 +2,41 @@
     <app-sidebar></app-sidebar>
 
     <main class="main-content">
-        <section aria-labelledby="titulo-mochila" class="inventory-section">
-            <h1 class="page-title" id="titulo-mochila">Mochila</h1>
+        <header class="page-header">
+            <h1 class="page-title">Mochila</h1>
+        </header>
 
-            <ul class="mochila-grid" aria-label="Inventario del jugador">
+        <section class="inventory-section" aria-labelledby="inventory-title">
+            <h2 id="inventory-title" class="sr-only">Inventario de objetos</h2>
+            <div class="mochila-grid">
                 @for (slot of slots; track $index) {
-                <li class="slot" [class.occupied]="slot" tabindex="0">
+                <article class="slot" [class.occupied]="slot"
+                    [attr.aria-label]="slot ? 'Hueco ocupado por ' + slot.nombre + ', cantidad ' + slot.cantidad : 'Hueco vacío de inventario'">
                     @if (slot) {
                     <div class="item-container">
-                        <img [src]="slot.imagen" [alt]="'Objeto ' + slot.nombre + ', cantidad ' + slot.cantidad"
-                            class="item-image">
+                        <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
                         @if (slot.cantidad > 1 || slot.stackable) {
-                        <span class="quantity" [attr.aria-label]="'Cantidad ' + slot.cantidad">{{ slot.cantidad
-                            }}</span>
+                        <span class="quantity">{{ slot.cantidad }}</span>
                         }
                     </div>
-                    <span class="slot-text">
-                        Slot {{ $index + 1 }} - {{ slot.cantidad }} {{ slot.nombre }}
-                        @if (slot.stackable) {
-                        (Apilable)
-                        } @else {
-                        (No apilable)
-                        }
-                    </span>
-                    } @else {
-                    <span class="slot-text">Slot {{ $index + 1 }} vacío</span>
                     }
-                </li>
+                </article>
                 }
-            </ul>
+            </div>
         </section>
 
-        <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <div class="inventory-actions">
             <button class="btn-alimentar" (click)="abrirModal()" type="button">🍬 Alimentar Xuxemon</button>
-            <button class="btn-hospital" (click)="abrirModalVacuna()" type="button"
-                style="background-color: #ff6b6b; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: background-color 0.3s;">🏥
-                Hospital Xuxemon</button>
+            <button class="btn-hospital" (click)="abrirModalVacuna()" type="button">🏥 Hospital Xuxemon</button>
         </div>
 
         <!-- ═══ MODAL HOSPITAL (VACUNACIÓN) ═══ -->
         @if (mostrarModalVacuna) {
         <div class="modal-overlay" (click)="cerrarModalVacuna()">
-            <div class="modal-contenido" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
-                aria-labelledby="modal-titulo-hospital">
-                <button class="modal-cerrar" (click)="cerrarModalVacuna()" type="button"
-                    aria-label="Cerrar modal">✕</button>
-
+            <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
+                role="dialog" aria-modal="true" aria-labelledby="modal-titulo-hospital" tabindex="-1">
+                <button class="modal-cerrar" (click)="cerrarModalVacuna()" type="button" aria-label="Cerrar modal">✕</button>
+                
                 <h2 id="modal-titulo-hospital">🏥 Hospital Xuxemon</h2>
                 <p style="margin-bottom: 20px; color: #555;">Selecciona a un paciente y la vacuna a utilizar.</p>
 
@@ -60,8 +49,7 @@
                         }
                     </select>
                     @if (getXuxemonsEnfermos().length === 0) {
-                    <p style="color: #28a745; margin-top: 5px; font-size: 0.9em;">¡Todos tus Xuxemons están sanos! 🎉
-                    </p>
+                        <p style="color: #28a745; margin-top: 5px; font-size: 0.9em;">¡Todos tus Xuxemons están sanos! 🎉</p>
                     }
                 </div>
 
@@ -74,19 +62,16 @@
                         }
                     </select>
                     @if (getVacunasDisponibles().length === 0) {
-                    <p style="color: #dc3545; margin-top: 5px; font-size: 0.9em;">No tienes vacunas en tu mochila. 🎒
-                    </p>
+                        <p style="color: #dc3545; margin-top: 5px; font-size: 0.9em;">No tienes vacunas en tu mochila. 🎒</p>
                     }
                 </div>
 
                 @if (mensajeErrorVacuna) {
-                <p class="error" role="alert"
-                    style="color: #dc3545; background: #fff5f5; padding: 8px; border-radius: 4px; margin-top: 10px;">{{
-                    mensajeErrorVacuna }}</p>
+                <p class="error" role="alert" style="color: #dc3545; background: #fff5f5; padding: 8px; border-radius: 4px; margin-top: 10px;">{{ mensajeErrorVacuna }}</p>
                 }
 
-                <button class="btn-confirmar" (click)="confirmarCuracion()" type="button"
-                    style="margin-top: 20px; width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+                <button class="btn-confirmar" (click)="confirmarCuracion()" type="button" 
+                        style="margin-top: 20px; width: 100%; background-color: #28a745; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold;">
                     🩹 Aplicar Vacuna
                 </button>
             </div>
@@ -96,8 +81,8 @@
         <!-- ═══ MODAL ALIMENTACIÓN ═══ -->
         @if (mostrarModal) {
         <div class="modal-overlay" (click)="cerrarModal()">
-            <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)" role="dialog"
-                aria-modal="true" aria-labelledby="modal-titulo-alimentar" tabindex="-1">
+            <div class="modal-contenido" (click)="$event.stopPropagation()" (keydown)="trapFocus($event)"
+                 role="dialog" aria-modal="true" aria-labelledby="modal-titulo-alimentar" tabindex="-1">
 
                 <button class="modal-cerrar" (click)="cerrarModal()" type="button" aria-label="Cerrar modal">✕</button>
 
@@ -109,8 +94,7 @@
                     <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
                         <option [ngValue]="null">-- Elige un Xuxemon --</option>
                         @for (xuxe of misXuxemons; track xuxe.id) {
-                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(xuxe.enfermedad){ 🤒 }
-                        </option>
+                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(xuxe.enfermedad){ 🤒 } </option>
                         }
                     </select>
                 </div>
@@ -127,8 +111,7 @@
 
                 <div class="campo">
                     <label for="cantidad-alimentar">Cantidad:</label>
-                    <input id="cantidad-alimentar" type="number" [(ngModel)]="cantidadAlimentar" min="1"
-                        [max]="getMaxCantidad()">
+                    <input id="cantidad-alimentar" type="number" [(ngModel)]="cantidadAlimentar" min="1" [max]="getMaxCantidad()">
                 </div>
 
                 @if (mensajeError) {
@@ -180,15 +163,16 @@
                     ⚠️ Está enfermo. Intentar alimentarlo fallará.
                 </div>
                 }
-                }
+            } 
             </div>
         </div>
         }
 
 
-        @if (isAdmin) {
+    @if (isAdmin) {
+    <section class="admin-section" aria-labelledby="admin-title">
         <div class="admin-panel">
-            <h2>Gestión de Jugadores (Admin)</h2>
+            <h2 id="admin-title" class="admin-title">Gestión de Jugadores (Admin)</h2>
             <fieldset class="admin-fieldset">
                 <legend class="admin-legend">Entrega de Xuxes</legend>
                 <div class="admin-controls">
@@ -220,6 +204,7 @@
                 </div>
             </fieldset>
         </div>
-        }
+    </section>
+    }
     </main>
 </div>

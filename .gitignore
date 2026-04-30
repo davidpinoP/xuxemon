@@ -1,1 +1,30 @@
-Frontend/xuxemons/.angular/cache/20.3.17/xuxemons/.tsbuildinfo
+# Dependencies
+node_modules/
+vendor/
+
+# Build output and caches
+dist/
+.angular/
+bootstrap/cache/*.php
+
+# Environment files
+.env
+.env.*
+!.env.example
+!.env.docker
+
+# Logs and runtime files
+*.log
+storage/logs/*.log
+storage/framework/sessions/*
+storage/framework/views/*
+storage/framework/cache/data/*
+
+# Databases generated locally
+*.sqlite
+database/database.sqlite
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/

@@ -7,7 +7,7 @@ import {
   FriendsService,
   PendingFriendRequest
 } from '../services/friends.service';
-import { FriendSearchComponent } from '../components/friend-search/friend-search';
+import { SeoService } from '../services/seo.service';
 
 interface FriendCard {
   id: number;
@@ -28,7 +28,7 @@ import { SidebarComponent } from '../components/sidebar/sidebar';
 @Component({
   selector: 'app-friends-basic',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SidebarComponent, FriendSearchComponent],
+  imports: [CommonModule, ReactiveFormsModule, SidebarComponent],
   templateUrl: './friends-basic.html',
   styleUrl: './friends-basic.css'
 })
@@ -43,9 +43,17 @@ export class FriendsBasic implements OnInit {
   procesandoSolicitudIds = new Set<number>();
   eliminandoAmigoIds = new Set<number>();
 
-  constructor(private friendsService: FriendsService) { }
+  constructor(
+    private friendsService: FriendsService,
+    private seoService: SeoService
+  ) { }
 
   ngOnInit(): void {
+    this.seoService.update({
+      title: 'Amigos',
+      description: 'Busca entrenadores, revisa solicitudes pendientes y administra tu lista de amigos.'
+    });
+
     this.cargarAmigos();
     this.cargarSolicitudesPendientes();
 

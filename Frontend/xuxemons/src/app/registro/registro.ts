@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
+import { SeoService } from '../services/seo.service';
 
 // Validador reactivo para comparar contraseñas
 export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
@@ -20,7 +21,7 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
   templateUrl: './registro.html',
   styleUrl: './registro.css'
 })
-export class Registro {
+export class Registro implements OnInit {
 
   FormularioRegistro = new FormGroup({
     nombre: new FormControl('', [Validators.required]),
@@ -32,7 +33,18 @@ export class Registro {
 
   error_msg: string = '';
 
-  constructor(private authService: AuthService, private router: Router) { }
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private seoService: SeoService
+  ) { }
+
+  ngOnInit(): void {
+    this.seoService.update({
+      title: 'Registro',
+      description: 'Crea tu cuenta en Xuxemons y consigue tu nuevo ID de jugador.'
+    });
+  }
 
   // Generación ID visual para la rúbrica (#Nom0000)
   get generatedId(): string {
@@ -51,17 +63,16 @@ export class Registro {
 
       this.authService.register(userData).subscribe({
         next: (response) => {
-          console.log('Registro exitoso', response);
           this.authService.saveToken(response.access_token);
           this.authService.savePlayerId(response.player_id);
-          alert('¡Registro completado! Tu ID de jugador es: ' + response.player_id);
+          alert('Registro completado. Tu ID de jugador es: ' + response.player_id);
           this.router.navigate(['/login']);
         },
         error: (err) => {
           console.error('Error en el registro', err);
 
           if (err.status === 422 && err.error?.errors) {
-            // Extraemos los mensajes específicos de validación de Laravel
+            // Extraemos los mensajes especificos de validacion de Laravel
             const backendErrors = err.error.errors;
             const messages = [];
 

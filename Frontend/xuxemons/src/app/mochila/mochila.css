@@ -10,7 +10,7 @@
 /* ===== Mochila Grid ===== */
 .mochila-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(68px, 1fr));
     gap: 14px;
     padding: 22px;
     background: white;
@@ -19,6 +19,7 @@
     margin-bottom: 40px;
     list-style: none;
     max-width: 860px;
+    width: 100%;
 }
 
 .slot {
@@ -114,9 +115,35 @@
     box-shadow: 0 4px 15px rgba(124, 108, 231, 0.3);
 }
 
+.inventory-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
 .btn-alimentar:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(124, 108, 231, 0.4);
+}
+
+.btn-hospital {
+    margin-top: 25px;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #ff7a7a, #f25d7b);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(242, 93, 123, 0.25);
+}
+
+.btn-hospital:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(242, 93, 123, 0.35);
 }
 
 .btn-alimentar:focus,
@@ -144,6 +171,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 16px;
     z-index: 1000;
     animation: fadeIn 0.2s ease;
 }
@@ -162,6 +190,8 @@
     padding: 35px;
     width: 400px;
     max-width: 90vw;
+    max-height: calc(100vh - 32px);
+    overflow-y: auto;
     position: relative;
     box-shadow: 0 15px 50px rgba(0, 0, 0, 0.15);
     animation: slideUp 0.3s ease;
@@ -458,46 +488,12 @@
 
 /* ===== Responsive ===== */
 @media (max-width: 768px) {
-    .sidebar {
-        width: 60px;
-        padding-top: 20px;
-    }
-
-    .sidebar-header {
-        margin-bottom: 20px;
-    }
-
-    .avatar-circle {
-        width: 40px;
-        height: 40px;
-    }
-
-    .nav-item {
-        font-size: 0;
-        padding: 15px;
-    }
-
-    .nav-item .icon-user {
-        font-size: 1.3rem;
-        margin: 0;
-    }
-
-    .nav-item.active {
-        margin-left: 5px;
-        border-radius: 15px 0 0 15px;
-    }
-
-    .main-content {
-        margin-left: 60px;
-        padding: 20px 15px;
-    }
-
     .page-title {
         font-size: 1.8rem;
     }
 
     .mochila-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(auto-fit, minmax(72px, 1fr));
         padding: 15px;
         gap: 10px;
         max-width: 100%;
@@ -507,10 +503,36 @@
         width: 100%;
         max-width: none;
     }
+
+    .inventory-actions {
+        flex-direction: column;
+    }
+
+    .btn-alimentar,
+    .btn-hospital {
+        width: 100%;
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 480px) {
     .mochila-grid {
-        grid-template-columns: repeat(4, 1fr);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        padding: 12px;
+        gap: 8px;
+    }
+
+    .slot {
+        border-radius: 12px;
+    }
+
+    .modal-contenido {
+        padding: 22px 18px;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    .preview-botones {
+        flex-direction: column;
     }
 }

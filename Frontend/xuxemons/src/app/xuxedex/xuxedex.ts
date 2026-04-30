@@ -6,6 +6,7 @@ import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { XuxemonCardComponent } from '../xuxemon-card/xuxemon-card';
 import { SidebarComponent } from '../components/sidebar/sidebar';
+import { SeoService } from '../services/seo.service';
 
 @Component({
   selector: 'app-xuxedex',
@@ -27,9 +28,18 @@ export class Xuxedex implements OnInit {
   tiposDisponibles: string[] = ['todos', 'agua', 'tierra', 'aire'];
   tamanosDisponibles: string[] = ['todos', 'pequeno', 'mediano', 'grande'];
 
-  constructor(private xuxemonService: XuxemonService, private router: Router) { }
+  constructor(
+    private xuxemonService: XuxemonService,
+    private router: Router,
+    private seoService: SeoService
+  ) { }
 
   ngOnInit(): void {
+    this.seoService.update({
+      title: 'Xuxedex',
+      description: 'Explora el catalogo de Xuxemons, filtra por tipo y descubre cuales has desbloqueado.'
+    });
+
     this.xuxemonService.getXuxemons().subscribe({
       next: (data: IXuxemon[]) => {
         this.todosXuxemons = this.prepararXuxemons(data);

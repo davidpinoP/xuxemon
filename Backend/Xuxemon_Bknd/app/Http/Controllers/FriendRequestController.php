@@ -143,4 +143,9 @@ class FriendRequestController extends Controller
             'message' => 'Solicitud rechazada.',
         ], 200);
     }
+
+    public function reject(Request $request, $id)
+    {
+        return $this->destroy($request, $id);
+    }
 }
