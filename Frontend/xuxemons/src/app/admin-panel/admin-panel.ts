@@ -150,7 +150,10 @@ export class AdminPanelComponent implements OnInit {
   }
 
   vacuna(id: number, nombre: string): void {
-    this.xuxemonService.darVacuna(id, nombre).subscribe(() => alert('Vacuna enviada'));
+    this.xuxemonService.darVacuna(id, nombre).subscribe({
+      next: () => alert('Vacuna enviada'),
+      error: (err: any) => alert(err?.error?.message || 'Error al enviar vacuna')
+    });
   }
 
   toggleUser(user: any): void {

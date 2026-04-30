@@ -10,6 +10,21 @@ use App\Models\Mochila;
 
 class AdminController extends Controller
 {
+    private function calcularSlotsUsados(User $usuario): int
+    {
+        $slots = 0;
+        foreach ($usuario->mochila as $item) {
+            if ($item->tipo === 'xuxemon') continue;
+            
+            if ($item->tipo === 'vacuna') {
+                $slots += $item->cantidad;
+            } else {
+                $slots += (int) ceil($item->cantidad / 5);
+            }
+        }
+        return $slots;
+    }
+
     // Dar xuxes a un usuario
     public function darChuches(Request $request)
     {
@@ -20,7 +35,7 @@ class AdminController extends Controller
 
         $usuario = User::findOrFail($request->user_id);
 
-        // Buscamos el item 1 para saber su nombre (asumimos que 1 es la xuxe básica)
+        $slotsUsados = $this->calcularSlotsUsados($usuario);
         $itemXuxe = \App\Models\Item::find(1);
         $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
 
@@ -28,6 +43,16 @@ class AdminController extends Controller
             'nombre' => $nombreXuxe,
             'tipo' => 'item',
         ]);
+
+        $cantidadAnterior = $mochilaEntry->cantidad ?? 0;
+        $slotsItemAnterior = (int) ceil($cantidadAnterior / 5);
+        $slotsItemNuevos = (int) ceil(($cantidadAnterior + $request->cantidad) / 5);
+        
+        if (($slotsUsados - $slotsItemAnterior + $slotsItemNuevos) > 20) {
+            return response()->json([
+                'error' => 'La mochila del jugador está llena (límite de 20 casillas).'
+            ], 400);
+        }
 
         $mochilaEntry->cantidad += $request->cantidad;
         $mochilaEntry->save();
@@ -99,9 +124,17 @@ class AdminController extends Controller
         ]);
 
         $u = User::findOrFail($request->user_id);
+        
+        if ($this->calcularSlotsUsados($u) >= 20) {
+            return response()->json([
+                'ok'      => false,
+                'message' => 'La mochila del jugador está llena (límite de 20 casillas).'
+            ], 400);
+        }
+
         $entrada = $u->mochila()->firstOrNew([
             'nombre' => $request->nombre,
-            'tipo'   => 'item'
+            'tipo'   => 'vacuna'
         ]);
 
         $entrada->cantidad = ($entrada->cantidad ?? 0) + 1;
