@@ -179,17 +179,31 @@ class XuxemonController extends Controller
             ], 400);
         }
 
-        $esVacuna = str_contains(strtolower($datos['xuxe']), 'vacuna');
+        // Vacunas validas y qué enfermedad cura cada una
+        $vacunas = [
+            'Xocolatina'     => 'Bajón de azúcar',
+            'Xal de fruites' => 'Atracón',
+            'Inxulina'       => '*',  // cura cualquier enfermedad
+        ];
+        $esVacuna = array_key_exists($datos['xuxe'], $vacunas);
 
         // LÓGICA DE ENFERMEDAD / VACUNA
         if ($registro->enfermedad) {
             if (!$esVacuna) {
                 return response()->json([
-                    'message' => 'El Xuxemon está enfermo y no puede comer. ¡Cúralo primero!'
+                    'message' => 'El Xuxemon está enfermo de "' . $registro->enfermedad . '". ¡Cúralo primero!'
                 ], 400);
             }
 
-            // Es una vacuna -> lo curamos
+            // Comprobar si la vacuna sirve para esta enfermedad
+            $cura = $vacunas[$datos['xuxe']];
+            if ($cura !== '*' && $cura !== $registro->enfermedad) {
+                return response()->json([
+                    'message' => $datos['xuxe'] . ' no cura "' . $registro->enfermedad . '". Prueba con otra vacuna.'
+                ], 400);
+            }
+
+            // Vacuna correcta -> curamos
             $itemXuxe->cantidad -= 1;
             if ($itemXuxe->cantidad <= 0) {
                 $itemXuxe->delete();
@@ -201,7 +215,7 @@ class XuxemonController extends Controller
             $registro->save();
 
             return response()->json([
-                'message' => '¡Xuxemon curado con éxito!',
+                'message' => '¡Xuxemon curado con ' . $datos['xuxe'] . '!',
                 'curado' => true,
                 'xuxemon' => $registro
             ]);
@@ -225,13 +239,17 @@ class XuxemonController extends Controller
         $tamanoAnterior = $registro->tamano ?: 'Pequeño';
         $seInfecto = false;
 
-        // Roll para nueva infección al comer
-        $infectionPct = Config::getFloat('infection_pct', 0);
-        if ($infectionPct > 0) {
-            $roll = random_int(1, 100);
-            if ($roll <= $infectionPct) {
-                $registro->enfermedad = 'Resfriado';
+        // Roll por cada enfermedad al comer
+        $enfermedades = [
+            'Bajón de azúcar' => Config::getFloat('pct_bajon_azucar', 0),
+            'Atracón'         => Config::getFloat('pct_atracon', 0),
+        ];
+
+        foreach ($enfermedades as $nombre => $pct) {
+            if ($pct > 0 && random_int(1, 100) <= $pct) {
+                $registro->enfermedad = $nombre;
                 $seInfecto = true;
+                break;
             }
         }
 

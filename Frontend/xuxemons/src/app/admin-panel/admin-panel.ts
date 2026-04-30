@@ -44,7 +44,8 @@ export class AdminPanelComponent implements OnInit {
     });
 
     this.fConfig = this.fb.group({
-      infection_pct: [0],
+      pct_bajon_azucar: [0],
+      pct_atracon: [0],
       evolve_xuxes: [0],
       reward_hour: [0]
     });

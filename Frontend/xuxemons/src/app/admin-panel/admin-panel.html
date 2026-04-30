@@ -8,8 +8,12 @@
       <legend>Ajustes globales</legend>
       <form [formGroup]="fConfig" (ngSubmit)="saveConf()" class="admin-form">
         <label>
-          <span>% infeccion</span>
-          <input type="number" formControlName="infection_pct">
+          <span>% Bajón de azúcar</span>
+          <input type="number" formControlName="pct_bajon_azucar" min="0" max="100">
+        </label>
+        <label>
+          <span>% Atracón</span>
+          <input type="number" formControlName="pct_atracon" min="0" max="100">
         </label>
         <label>
           <span>Xuxes para evolucion</span>
@@ -17,7 +21,7 @@
         </label>
         <label>
           <span>Hora recompensa</span>
-          <input type="number" formControlName="reward_hour">
+          <input type="number" formControlName="reward_hour" min="0" max="23">
         </label>
         <button type="submit">Guardar ajustes</button>
       </form>
@@ -56,7 +60,11 @@
               </button>
             </td>
             <td class="action-cell">
-              <input #vacName type="text" placeholder="Nombre vacuna">
+              <select #vacName>
+                <option value="Xocolatina">🍫 Xocolatina</option>
+                <option value="Xal de fruites">🍬 Xal de fruites</option>
+                <option value="Inxulina">🍭 Inxulina (cura todo)</option>
+              </select>
               <button (click)="vacuna(u.id, vacName.value)" type="button">Dar vacuna</button>
             </td>
             <td class="action-cell">

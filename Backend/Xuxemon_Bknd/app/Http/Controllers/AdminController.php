@@ -93,23 +93,23 @@ class AdminController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'nombre' => ['required', 'string', 'max:50', 'regex:/^Vacuna/i'],
+            'nombre'  => 'required|string|in:Xocolatina,Xal de fruites,Inxulina',
         ], [
-            'nombre.regex' => 'El nombre del objeto debe empezar por "Vacuna" para que el sistema lo reconozca.'
+            'nombre.in' => 'La vacuna debe ser: Xocolatina, Xal de fruites o Inxulina.'
         ]);
 
         $u = User::findOrFail($request->user_id);
         $entrada = $u->mochila()->firstOrNew([
             'nombre' => $request->nombre,
-            'tipo' => 'item'
+            'tipo'   => 'item'
         ]);
 
         $entrada->cantidad = ($entrada->cantidad ?? 0) + 1;
         $entrada->save();
 
         return response()->json([
-            'ok' => true,
-            'mensaje' => 'Vacuna entregada al jugador'
+            'ok'      => true,
+            'mensaje' => $request->nombre . ' entregada al jugador'
         ]);
     }
 
