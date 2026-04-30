@@ -38,7 +38,7 @@ class AutenticatorController extends Controller
             auth('api')->logout();
 
             return response()->json([
-                'error' => 'Tu cuenta esta desactivada. Por favor, contacta con soporte.'
+                'error' => 'Tu cuenta está desactivada. Por favor, contacta con soporte.'
             ], 403);
         }
 

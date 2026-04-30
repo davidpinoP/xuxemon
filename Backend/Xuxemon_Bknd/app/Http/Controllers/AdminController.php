@@ -2,19 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\UserXuxemon;
-use App\Models\Xuxemon;
 use Illuminate\Http\Request;
+use App\Models\UserXuxemon;
+use App\Models\User;
+use App\Models\Xuxemon;
+use App\Models\Mochila;
 
 class AdminController extends Controller
 {
-    private const VACCINE_NAMES = [
-        'xocolatina' => 'Vacuna Xocolatina',
-        'xal de fruites' => 'Vacuna Xal de fruites',
-        'inxulina' => 'Vacuna Inxulina',
-    ];
+    private function calcularSlotsUsados(User $usuario): int
+    {
+        $slots = 0;
+        foreach ($usuario->mochila as $item) {
+            if ($item->tipo === 'xuxemon') continue;
+            
+            if ($item->tipo === 'vacuna') {
+                $slots += $item->cantidad;
+            } else {
+                $slots += (int) ceil($item->cantidad / 5);
+            }
+        }
+        return $slots;
+    }
 
+    // Dar xuxes a un usuario
     public function darChuches(Request $request)
     {
         $request->validate([
@@ -23,6 +34,8 @@ class AdminController extends Controller
         ]);
 
         $usuario = User::findOrFail($request->user_id);
+
+        $slotsUsados = $this->calcularSlotsUsados($usuario);
         $itemXuxe = \App\Models\Item::find(1);
         $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
 
@@ -31,15 +44,26 @@ class AdminController extends Controller
             'tipo' => 'item',
         ]);
 
+        $cantidadAnterior = $mochilaEntry->cantidad ?? 0;
+        $slotsItemAnterior = (int) ceil($cantidadAnterior / 5);
+        $slotsItemNuevos = (int) ceil(($cantidadAnterior + $request->cantidad) / 5);
+        
+        if (($slotsUsados - $slotsItemAnterior + $slotsItemNuevos) > 20) {
+            return response()->json([
+                'error' => 'La mochila del jugador está llena (límite de 20 casillas).'
+            ], 400);
+        }
+
         $mochilaEntry->cantidad += $request->cantidad;
         $mochilaEntry->save();
 
         return response()->json([
-            'mensaje' => 'Chuches anadidas al jugador',
+            'mensaje' => 'Chuches añadidas al jugador',
             'inventario' => $usuario->mochila
         ], 200);
     }
 
+    // Regalar un xuxemon al azar al jugador
     public function darXuxemonAleatorio(Request $request)
     {
         $request->validate([
@@ -47,6 +71,7 @@ class AdminController extends Controller
         ]);
 
         $usuario = User::findOrFail($request->user_id);
+
         $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($usuario);
 
         if (!$xuxemonAlea) {
@@ -57,13 +82,14 @@ class AdminController extends Controller
             ->where('xuxemon_id', $xuxemonAlea->id)
             ->exists();
 
+        // Se lo guarda al usuario en tamaño pequeño en la mochila
         $entradaMochila = $usuario->mochila()->firstOrNew([
             'nombre' => $xuxemonAlea->nombre,
             'tipo' => 'xuxemon',
         ]);
 
         $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
-        $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeno';
+        $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
         $entradaMochila->save();
 
         UserXuxemon::firstOrCreate(
@@ -72,7 +98,7 @@ class AdminController extends Controller
                 'xuxemon_id' => $xuxemonAlea->id,
             ],
             [
-                'tamano' => 'Pequeno',
+                'tamano' => 'Pequeño',
                 'comidas' => 0,
                 'imagen' => $xuxemonAlea->imagen,
                 'enfermedad' => null,
@@ -87,33 +113,36 @@ class AdminController extends Controller
         ], 201);
     }
 
+    // dar una vacuna a un jugador
     public function darVacuna(Request $request)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'nombre' => 'required|string|max:50',
+            'nombre'  => 'required|string|in:Xocolatina,Xal de fruites,Inxulina',
+        ], [
+            'nombre.in' => 'La vacuna debe ser: Xocolatina, Xal de fruites o Inxulina.'
         ]);
 
-        $usuario = User::findOrFail($request->user_id);
-        $nombreVacuna = $this->normalizarVacuna($request->nombre);
-
-        if (!$nombreVacuna) {
+        $u = User::findOrFail($request->user_id);
+        
+        if ($this->calcularSlotsUsados($u) >= 20) {
             return response()->json([
-                'message' => 'Vacuna no valida. Usa Xocolatina, Xal de fruites o Inxulina.',
-            ], 422);
+                'ok'      => false,
+                'message' => 'La mochila del jugador está llena (límite de 20 casillas).'
+            ], 400);
         }
 
-        $entrada = $usuario->mochila()->firstOrNew([
-            'nombre' => $nombreVacuna,
-            'tipo' => 'item'
+        $entrada = $u->mochila()->firstOrNew([
+            'nombre' => $request->nombre,
+            'tipo'   => 'vacuna'
         ]);
 
         $entrada->cantidad = ($entrada->cantidad ?? 0) + 1;
         $entrada->save();
 
         return response()->json([
-            'ok' => true,
-            'mensaje' => 'Vacuna entregada al jugador'
+            'ok'      => true,
+            'mensaje' => $request->nombre . ' entregada al jugador'
         ]);
     }
 
@@ -130,13 +159,5 @@ class AdminController extends Controller
             ->first();
 
         return $pendiente ?: Xuxemon::inRandomOrder()->first();
-    }
-
-    private function normalizarVacuna(string $nombre): ?string
-    {
-        $normalized = mb_strtolower(trim($nombre));
-        $normalized = preg_replace('/^vacuna\s+/u', '', $normalized ?? '');
-
-        return self::VACCINE_NAMES[$normalized] ?? null;
     }
 }

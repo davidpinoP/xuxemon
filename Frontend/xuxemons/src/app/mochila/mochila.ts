@@ -422,17 +422,16 @@ export class Mochila implements OnInit {
       }
 
       const nombre = item?.nombre || 'Item';
-      // MIRA AQUÍ: Aquí es donde detecta si lleva la palabra "vacuna" en la BBDD
-      const esVacuna = nombre.toLowerCase().includes('vacuna');
+      
+      const vacunasValidas = ['Xocolatina', 'Xal de fruites', 'Inxulina'];
+      const esVacuna = item?.tipo === 'vacuna' || vacunasValidas.includes(nombre) || nombre.toLowerCase().includes('vacuna');
 
       objetos.push({
         nombre,
         tipo: esVacuna ? 'Vacuna' : 'Xuxe',
         cantidad: Number(item?.cantidad || 1),
-        // MIRA AQUÍ 2: Como stackable (apilable) significa que NO es vacuna, 
-        // le pone 'false' y luego el InventoryService jamás las amontonará.
         stackable: !esVacuna,
-        imagen: this.obtenerImagenItem(nombre), // Llama a la función de abajo y le inserta su dibujito
+        imagen: this.obtenerImagenItem(nombre),
       });
     }
 
@@ -442,15 +441,15 @@ export class Mochila implements OnInit {
   private obtenerImagenItem(nombre: string): string {
     const nombreNormalizado = nombre.toLowerCase();
 
-    if (nombreNormalizado.includes('choco')) {
+    if (nombreNormalizado.includes('choco') || nombre === 'Xocolatina') {
       return '/assets/images/choco.png';
     }
 
-    if (nombreNormalizado.includes('menta')) {
+    if (nombreNormalizado.includes('menta') || nombre === 'Xal de fruites') {
       return '/assets/images/menta.png';
     }
 
-    if (nombreNormalizado.includes('vacuna')) {
+    if (nombreNormalizado.includes('vacuna') || nombre === 'Inxulina') {
       return '/assets/images/nube.png';
     }
 

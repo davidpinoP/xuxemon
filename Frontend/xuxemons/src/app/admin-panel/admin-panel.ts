@@ -48,7 +48,8 @@ export class AdminPanelComponent implements OnInit {
     });
 
     this.fConfig = this.fb.group({
-      infection_pct: [0],
+      pct_bajon_azucar: [0],
+      pct_atracon: [0],
       evolve_xuxes: [0],
       reward_hour: [0],
       reward_xuxes_amount: [10]
@@ -149,7 +150,10 @@ export class AdminPanelComponent implements OnInit {
   }
 
   vacuna(id: number, nombre: string): void {
-    this.xuxemonService.darVacuna(id, nombre).subscribe(() => alert('Vacuna enviada'));
+    this.xuxemonService.darVacuna(id, nombre).subscribe({
+      next: () => alert('Vacuna enviada'),
+      error: (err: any) => alert(err?.error?.message || 'Error al enviar vacuna')
+    });
   }
 
   toggleUser(user: any): void {

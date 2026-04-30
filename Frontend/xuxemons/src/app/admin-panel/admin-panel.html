@@ -8,20 +8,20 @@
       <legend>Ajustes globales</legend>
       <form [formGroup]="fConfig" (ngSubmit)="saveConf()" class="admin-form">
         <label>
-          <span>% infeccion</span>
-          <input type="number" formControlName="infection_pct">
+          <span>% Bajón de azúcar</span>
+          <input type="number" formControlName="pct_bajon_azucar" min="0" max="100">
+        </label>
+        <label>
+          <span>% Atracón</span>
+          <input type="number" formControlName="pct_atracon" min="0" max="100">
         </label>
         <label>
           <span>Xuxes para evolucion</span>
           <input type="number" formControlName="evolve_xuxes">
         </label>
         <label>
-          <span>Hora recompensa diaria</span>
-          <input type="number" formControlName="reward_hour">
-        </label>
-        <label>
-          <span>Xuxes recompensa diaria</span>
-          <input type="number" formControlName="reward_xuxes_amount">
+          <span>Hora recompensa</span>
+          <input type="number" formControlName="reward_hour" min="0" max="23">
         </label>
         <button type="submit">Guardar ajustes</button>
       </form>
@@ -56,22 +56,30 @@
                 (click)="toggleUser(u)"
                 [disabled]="u.role === 'admin'"
                 type="button">
-                {{ u.is_active ? (u.role === 'admin' ? 'Admin' : 'Activo') : 'Inactivo' }}
+                {{ u.is_active ? (u.role === 'admin' ? '🔒 Admin' : '✅ Activo') : '🔴 Inactivo' }}
               </button>
             </td>
-            <td class="action-cell">
-              <input #vacName type="text" placeholder="Nombre vacuna">
-              <button (click)="vacuna(u.id, vacName.value)" type="button">Dar vacuna</button>
+            <td>
+              <div class="action-cell">
+                <select #vacName>
+                  <option value="Xocolatina">🍫 Xocolatina</option>
+                  <option value="Xal de fruites">🍬 Xal de fruites</option>
+                  <option value="Inxulina">🍭 Inxulina (cura todo)</option>
+                </select>
+                <button (click)="vacuna(u.id, vacName.value)" type="button">Dar vacuna</button>
+              </div>
             </td>
-            <td class="action-cell">
-              <button class="gift-btn" (click)="darXuxemonAleatorio(u.id)" type="button"
-                [disabled]="regalandoXuxemonUserId === u.id">
-                @if (regalandoXuxemonUserId === u.id) {
-                Regalando...
-                } @else {
-                Dar Xuxemon aleatorio
-                }
-              </button>
+            <td>
+              <div class="action-cell">
+                <button class="gift-btn" (click)="darXuxemonAleatorio(u.id)" type="button"
+                  [disabled]="regalandoXuxemonUserId === u.id">
+                  @if (regalandoXuxemonUserId === u.id) {
+                  Regalando...
+                  } @else {
+                  Dar Xuxemon aleatorio
+                  }
+                </button>
+              </div>
             </td>
           </tr>
           }
