@@ -173,37 +173,36 @@ export class XuxemonCardComponent implements OnChanges {
       return [this.placeholderImage];
     }
 
-    const imagenBase = this.normalizarRutaImagen(this.xuxemon.imagen) || `/imagenes/assets/${this.xuxemon.id}.webp`;
     const tamano = this.normalizarTamano(this.xuxemon.tamano);
     const variantes = this.getVariantesImagen();
+    const id = this.xuxemon.id;
     const rutas: Array<string | undefined> = [];
 
     if (tamano === 'grande') {
       rutas.push(
         variantes.grande,
-        this.crearRutaPorTamano(imagenBase, 'grande'),
-        variantes.mediana,
-        imagenBase
+        `/imagenes/assets/${id}-grande-ia.webp`
       );
     } else if (tamano === 'pequeno') {
       rutas.push(
         variantes.pequena,
-        this.crearRutaPorTamano(imagenBase, 'pequeno'),
-        variantes.mediana,
-        imagenBase
+        `/imagenes/assets/${id}-pequeno-ia.webp`
       );
     } else {
       rutas.push(
         variantes.mediana,
-        imagenBase,
-        variantes.pequena,
-        this.crearRutaPorTamano(imagenBase, 'pequeno'),
-        variantes.grande,
-        this.crearRutaPorTamano(imagenBase, 'grande')
+        `/imagenes/assets/${id}.webp`
       );
     }
 
-    rutas.push(`/imagenes/assets/${this.xuxemon.id}.webp`, this.placeholderImage);
+    const imagenBase = this.normalizarRutaImagen(this.xuxemon.imagen);
+    rutas.push(
+      imagenBase,
+      `/imagenes/assets/${id}.webp`,
+      `/imagenes/assets/${id}-pequeno-ia.webp`,
+      `/imagenes/assets/${id}-grande-ia.webp`,
+      this.placeholderImage
+    );
 
     return Array.from(new Set(rutas.filter((ruta): ruta is string => Boolean(ruta))));
   }
@@ -272,19 +271,6 @@ export class XuxemonCardComponent implements OnChanges {
 
   get bloqueoTexto(): string {
     return 'Desbloquealo para ver sus stats y evolucion.';
-  }
-
-  private crearRutaPorTamano(imagenBase: string, tamano: 'pequeno' | 'grande'): string {
-    const indicePunto = imagenBase.lastIndexOf('.');
-
-    if (indicePunto === -1) {
-      return `${imagenBase}-${tamano}-ia.webp`;
-    }
-
-    const nombre = imagenBase.substring(0, indicePunto);
-    const extension = imagenBase.substring(indicePunto);
-
-    return `${nombre}-${tamano}-ia${extension}`;
   }
 
   private getEvolveBase(): number {
