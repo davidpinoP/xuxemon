@@ -17,8 +17,8 @@
             </div>
 
             <div class="request-actions">
-              <button type="button" class="btn-accept" (click)="aceptarSolicitud(request)">Aceptar</button>
-              <button type="button" class="btn-reject" (click)="rechazarSolicitud(request)">Rechazar</button>
+              <button type="button" class="btn btn-primary btn-accept" (click)="aceptarSolicitud(request)">Aceptar</button>
+              <button type="button" class="btn btn-outline-secondary btn-reject" (click)="rechazarSolicitud(request)">Rechazar</button>
             </div>
           </li>
         }
@@ -33,7 +33,7 @@
     <input
       id="friend-search"
       type="text"
-      class="search-input"
+      class="search-input form-control"
       [formControl]="searchControl"
       placeholder="Buscar por ID de jugador"
     >
@@ -57,7 +57,7 @@
           </div>
 
           @if (card.canAdd) {
-            <button type="button" class="btn-add" [disabled]="card.requestSent" (click)="enviarSolicitud(card)">
+            <button type="button" class="btn btn-primary btn-add" [disabled]="card.requestSent" (click)="enviarSolicitud(card)">
               @if (card.requestSent) {
                 Solicitud enviada
               } @else {
@@ -66,7 +66,7 @@
             </button>
           } @else {
             <div class="friend-actions">
-              <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar amigo</button>
+              <button type="button" class="btn btn-outline-danger btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar amigo</button>
             </div>
           }
         </li>

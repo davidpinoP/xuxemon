@@ -8,10 +8,10 @@
 
   <section class="registration-form-section" aria-labelledby="registration-title">
     <h1 id="registration-title" class="sr-only">Crear cuenta</h1>
-    <form [formGroup]="FormularioRegistro" (ngSubmit)="Submit()" aria-label="Formulario de registro">
+    <form class="d-flex flex-column align-items-center w-100 gap-3" [formGroup]="FormularioRegistro" (ngSubmit)="Submit()" aria-label="Formulario de registro">
       <div class="input-group">
         <label for="reg-nombre" class="sr-only">Nombre</label>
-        <input id="reg-nombre" type="text" formControlName="nombre" placeholder="Nombre"
+        <input class="form-control" id="reg-nombre" type="text" formControlName="nombre" placeholder="Nombre"
           autocomplete="given-name" aria-describedby="reg-nombre-error"
           [attr.aria-invalid]="FormularioRegistro.get('nombre')?.invalid && (FormularioRegistro.get('nombre')?.dirty || FormularioRegistro.get('nombre')?.touched)">
         @if (FormularioRegistro.get('nombre')?.invalid && (FormularioRegistro.get('nombre')?.dirty ||
@@ -22,7 +22,7 @@
 
       <div class="input-group">
         <label for="reg-apellidos" class="sr-only">Apellidos</label>
-        <input id="reg-apellidos" type="text" formControlName="apellidos" placeholder="Apellidos"
+        <input class="form-control" id="reg-apellidos" type="text" formControlName="apellidos" placeholder="Apellidos"
           autocomplete="family-name" aria-describedby="reg-apellidos-error"
           [attr.aria-invalid]="FormularioRegistro.get('apellidos')?.invalid && (FormularioRegistro.get('apellidos')?.dirty || FormularioRegistro.get('apellidos')?.touched)">
         @if (FormularioRegistro.get('apellidos')?.invalid && (FormularioRegistro.get('apellidos')?.dirty ||
@@ -33,7 +33,7 @@
 
       <div class="input-group">
         <label for="reg-correo" class="sr-only">Correo</label>
-        <input id="reg-correo" type="email" formControlName="correo" placeholder="Correo"
+        <input class="form-control" id="reg-correo" type="email" formControlName="correo" placeholder="Correo"
           autocomplete="email" aria-describedby="reg-correo-error"
           [attr.aria-invalid]="FormularioRegistro.get('correo')?.invalid && (FormularioRegistro.get('correo')?.dirty || FormularioRegistro.get('correo')?.touched)">
         @if (FormularioRegistro.get('correo')?.invalid && (FormularioRegistro.get('correo')?.dirty ||
@@ -47,7 +47,7 @@
 
       <div class="input-group">
         <label for="reg-password" class="sr-only">Contraseña</label>
-        <input id="reg-password" type="password" formControlName="password" placeholder="Contraseña"
+        <input class="form-control" id="reg-password" type="password" formControlName="password" placeholder="Contraseña"
           autocomplete="new-password" aria-describedby="reg-password-error"
           [attr.aria-invalid]="FormularioRegistro.get('password')?.invalid && (FormularioRegistro.get('password')?.dirty || FormularioRegistro.get('password')?.touched)">
         @if (FormularioRegistro.get('password')?.invalid && (FormularioRegistro.get('password')?.dirty ||
@@ -61,7 +61,7 @@
 
       <div class="input-group">
         <label for="reg-confirmar" class="sr-only">Repite la contraseña</label>
-        <input id="reg-confirmar" type="password" formControlName="confirmar_password"
+        <input class="form-control" id="reg-confirmar" type="password" formControlName="confirmar_password"
           placeholder="Repite la contraseña" autocomplete="new-password"
           aria-describedby="reg-confirmar-error reg-mismatch-error"
           [attr.aria-invalid]="(FormularioRegistro.get('confirmar_password')?.invalid || FormularioRegistro.errors?.['passwordMismatch']) && (FormularioRegistro.get('confirmar_password')?.dirty || FormularioRegistro.get('confirmar_password')?.touched)">
@@ -76,13 +76,13 @@
         }
       </div>
 
-      <button type="submit" [disabled]="FormularioRegistro.invalid">Registrarse</button>
+      <button class="btn btn-primary" type="submit" [disabled]="FormularioRegistro.invalid">Registrarse</button>
 
       @if (error_msg) {
-      <div class="error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
+      <div class="alert alert-danger error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
       }
     </form>
   </section>
 
-  <a routerLink="/login" class="login-link">¿Ya tienes cuenta? Inicia sesión</a>
+  <a routerLink="/login" class="login-link link-primary">¿Ya tienes cuenta? Inicia sesión</a>
 </main>
