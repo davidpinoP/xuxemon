@@ -63,6 +63,7 @@ export class FriendsBasic implements OnInit {
         distinctUntilChanged(),
         map((value) => value.trim()),
         tap((texto) => {
+          // Mientras no haya 3 caracteres, no consultamos backend y dejamos la pantalla en modo lista.
           if (texto.length >= 3) {
             return;
           }
@@ -106,6 +107,7 @@ export class FriendsBasic implements OnInit {
     this.buscando = true;
     this.mensaje = 'Buscando usuarios...';
 
+    // La busqueda se hace por player_id y el backend filtra usuarios ya amigos o con solicitud pendiente.
     this.friendsService.searchUsers(query).subscribe({
       next: (users: FriendSearchUser[]) => {
         this.resultados = users.map((user) => ({
@@ -167,6 +169,7 @@ export class FriendsBasic implements OnInit {
   aceptarSolicitud(requestCard: RequestCard): void {
     this.friendsService.acceptFriendRequest(requestCard.id).subscribe({
       next: (response) => {
+        // Tras aceptar, recargamos solicitudes y lista de amigos para reflejar la amistad bidireccional.
         this.procesandoSolicitudIds.add(requestCard.id);
         setTimeout(() => {
           this.cargarSolicitudesPendientes();
@@ -204,6 +207,7 @@ export class FriendsBasic implements OnInit {
 
   eliminarAmigo(id: number): void {
     if (confirm('¿Estás seguro de que quieres eliminar a este amigo?')) {
+      // La eliminacion borra la relacion por ambos lados desde backend.
       this.eliminandoAmigoIds.add(id);
       this.friendsService.deleteFriend(id).subscribe({
         next: (response) => {

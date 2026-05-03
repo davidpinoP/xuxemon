@@ -10,6 +10,7 @@ export const passwordMatchValidator: ValidatorFn = (control: AbstractControl): V
   const password = control.get('password');
   const confirmPassword = control.get('confirmar_password');
 
+  // Si ambas contrasenas no coinciden, el formulario completo queda marcado con error.
   return password && confirmPassword && password.value !== confirmPassword.value
     ? { passwordMismatch: true }
     : null;
@@ -48,12 +49,14 @@ export class Registro implements OnInit {
 
   // Generación ID visual para la rúbrica (#Nom0000)
   get generatedId(): string {
+    // Es solo una previsualizacion en cliente; el ID real lo genera Laravel al registrar.
     const nombre = this.FormularioRegistro.get('nombre')?.value || '';
     return nombre ? `#${nombre}0000` : '';
   }
 
   Submit() {
     if (this.FormularioRegistro.valid) {
+      // Traducimos los nombres del formulario al formato que espera la API.
       const userData = {
         name: this.FormularioRegistro.value.nombre,
         surname: this.FormularioRegistro.value.apellidos,
@@ -63,6 +66,7 @@ export class Registro implements OnInit {
 
       this.authService.register(userData).subscribe({
         next: (response) => {
+          // Aunque redirigimos luego al login, guardamos el token y el player_id devueltos por la API.
           this.authService.saveToken(response.access_token);
           this.authService.savePlayerId(response.player_id);
           alert('Registro completado. Tu ID de jugador es: ' + response.player_id);
@@ -72,7 +76,7 @@ export class Registro implements OnInit {
           console.error('Error en el registro', err);
 
           if (err.status === 422 && err.error?.errors) {
-            // Extraemos los mensajes especificos de validacion de Laravel
+            // Si Laravel devuelve errores de validacion, los juntamos para ensenarlos al usuario.
             const backendErrors = err.error.errors;
             const messages = [];
 

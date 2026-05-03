@@ -97,9 +97,9 @@ export class Mochila implements OnInit {
     this.authService.getProfile().subscribe({
       next: (user: any) => {
         const mochila = Array.isArray(user?.mochila) ? user.mochila : [];
-        // Transforma los datos crudos del backend en una lista limpia y lista para mostrar
+        // Convertimos la mochila del backend al formato visual que usa el frontend.
         this.inventarioBase = this.convertirMochilaAObjetos(mochila);
-        // Le dice al InventoryService que apile los caramelos de 5 en 5 y ponga el límite a 20 huecos
+        // Aqui se aplica el apilamiento y el limite de 20 huecos.
         this.inventoryService.organizarMochila(this.inventarioBase);
       },
       error: () => {
@@ -171,6 +171,7 @@ export class Mochila implements OnInit {
       return false;
     }
 
+    // La preview calcula en cliente si con esta cantidad le toca subir de tamano.
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
     const nuevasComidas = comidasActuales + this.cantidadAlimentar;
     const threshold = this.getStageRequirement(this.xuxemonSeleccionado);
@@ -272,7 +273,7 @@ export class Mochila implements OnInit {
       return;
     }
 
-    // Reutilizamos alimentarXuxemon ya que el backend ahora distingue vacunas por nombre
+    // Reutilizamos la misma ruta porque backend distingue si lo enviado es xuxe o vacuna.
     this.xuxemonService.alimentarXuxemon(
       this.xuxemonEnfermoSeleccionado.id,
       this.vacunaSeleccionada,
@@ -365,14 +366,13 @@ export class Mochila implements OnInit {
     }
   }
 
-  // 3️⃣ 'El portero de disco': Comprueba a través del servidor (AuthService) qué 'role' tiene la persona conectada.
-  // Si el usuario tiene un rol "admin", pone esa variable a 'true' para repintar el HTML y mostrar los secretitos.
   checkUserRole() {
     this.authService.me().subscribe({
       next: (user: any) => {
         this.isAdmin = user.role === 'admin';
         if (this.isAdmin) {
-          this.loadPlayers(); // Solo si es admin, se descarga la lista completa de jugadores.
+          // El bloque admin de mochila solo se activa si el usuario autenticado tiene ese rol.
+          this.loadPlayers();
         }
       }
     });
@@ -414,8 +414,8 @@ export class Mochila implements OnInit {
   }
 
 
-  // Coge el mogollón de datos que viene de la BBDD de Laravel y le añade propiedades clave visuales para nosotros.
   private convertirMochilaAObjetos(mochila: any[]): Objeto[] {
+    // Este paso traduce los nombres del backend a objetos que el grid visual sabe pintar.
     const objetos: Objeto[] = [];
 
     for (const item of mochila) {

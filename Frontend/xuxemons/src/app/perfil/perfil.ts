@@ -69,6 +69,7 @@ export class Perfil implements OnInit {
   cargarPerfil(): void {
     this.authService.getProfile().subscribe({
       next: (data: any) => {
+        // El perfil mezcla datos reales de backend con pequenos extras guardados en localStorage.
         this.perfilUsuario = {
           name: data.name || '',
           surname: data.surname || '',
@@ -90,12 +91,12 @@ export class Perfil implements OnInit {
         });
         this.cargando = false;
 
-        // Restaurar avatar guardado tras cargar xuxemons
+        // Si el usuario ya eligio avatar antes, guardamos el id para restaurarlo luego.
         if (avatarId) {
           this._avatarIdPendiente = parseInt(avatarId, 10);
         }
 
-        // Ahora que tenemos el userId y el posible avatar pendiente, cargamos los xuxemons
+        // La coleccion se carga despues porque se usa para estadisticas y avatar personalizado.
         this.cargarXuxemons();
       },
       error: () => {
@@ -113,6 +114,7 @@ export class Perfil implements OnInit {
       catalogo: this.xuxemonService.getXuxemons()
     }).subscribe({
       next: ({ coleccion, catalogo }) => {
+        // Aqui calculamos progreso real: cuantos tiene el usuario y cuantos existen en total.
         this.misXuxemons = coleccion;
         this.totalCatalogo = catalogo.length;
 
@@ -122,7 +124,7 @@ export class Perfil implements OnInit {
           this.duoFavorito = [];
         }
 
-        // Restaurar avatar pendiente
+        // Si habia un avatar guardado, lo buscamos dentro de su coleccion actual.
         if (this._avatarIdPendiente !== null) {
           const encontrado = coleccion.find(x => x.id === this._avatarIdPendiente);
           if (encontrado) this.avatarXuxemon = encontrado;
@@ -163,6 +165,7 @@ export class Perfil implements OnInit {
 
   guardarPerfil(): void {
     if (this.formularioPerfil.valid) {
+      // Solo enviamos password si el usuario realmente quiere cambiarla.
       const datos: any = {
         name: this.formularioPerfil.value.nombre,
         surname: this.formularioPerfil.value.apellidos,
@@ -175,7 +178,7 @@ export class Perfil implements OnInit {
         datos.password_confirmation = this.formularioPerfil.value.password_confirmation;
       }
 
-      // Guardar "Sobre Mi" localmente
+      // "Sobre mi" es un dato decorativo local del frontend, no del backend.
       const sobreMi = this.formularioPerfil.value.sobreMi || '';
       localStorage.setItem('sobreMi_' + this.userId, sobreMi);
 
@@ -197,6 +200,7 @@ export class Perfil implements OnInit {
 
   desactivarCuenta(): void {
     if (confirm('¿Estás seguro de que quieres desactivar tu cuenta?')) {
+      // La baja invalida la sesion actual y devuelve al usuario a login.
       this.authService.deactivateAccount().subscribe({
         next: () => {
           this.authService.logout();

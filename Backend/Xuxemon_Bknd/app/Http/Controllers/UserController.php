@@ -76,6 +76,7 @@ class UserController extends Controller
     {
         $user = $request->user();
 
+        // El perfil se actualiza desde backend para no depender solo de validaciones del frontend.
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'surname' => 'required|string|max:255',
@@ -104,6 +105,7 @@ class UserController extends Controller
     {
         $user = $request->user();
 
+        // Se bloquea la baja del propio admin para no dejar el sistema sin administrador.
         if ($user->role === 'admin') {
             return response()->json(['message' => 'No puedes desactivar una cuenta de administrador.'], 403);
         }
@@ -229,6 +231,7 @@ class UserController extends Controller
     public function checkRewards(Request $request)
     {
         $u = $request->user();
+        // Esta ruta solo responde si hoy toca mostrar el popup de recompensa.
         $canShow = $this->dailyRewardService->canClaim($u);
 
         return response()->json([
@@ -240,6 +243,7 @@ class UserController extends Controller
     public function claimReward(Request $request)
     {
         $u = $request->user();
+        // Aqui ya no solo comprobamos: tambien entregamos la recompensa del dia.
         $result = $this->dailyRewardService->grant($u);
 
         if (!$result['ok']) {

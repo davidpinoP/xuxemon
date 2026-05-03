@@ -10,7 +10,7 @@
   <section class="login-form-section" aria-labelledby="login-title">
     <h1 id="login-title" class="sr-only">Iniciar sesión</h1>
     <form class="d-flex flex-column align-items-center gap-3 w-100" [formGroup]="formulariLogin" (ngSubmit)="Submit()" aria-label="Formulario de inicio de sesión">
-      <div class="input-group">
+      <div class="form-field">
         <label for="player_id" class="sr-only">Player ID</label>
         <input class="form-control" id="player_id" type="text" formControlName="player_id" placeholder="Player ID"
           autocomplete="username" aria-describedby="player-id-error"
@@ -21,7 +21,7 @@
         }
       </div>
 
-      <div class="input-group">
+      <div class="form-field">
         <label for="password" class="sr-only">Contraseña</label>
         <input class="form-control" id="password" type="password" formControlName="password" placeholder="Contraseña"
           autocomplete="current-password" aria-describedby="password-error"

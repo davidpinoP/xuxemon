@@ -52,6 +52,7 @@ export class AdminPanelComponent implements OnInit {
     });
 
     this.cargarUsuarios();
+    // Al abrir el panel admin traemos tambien la configuracion actual del juego.
     this.xuxemonService.getConfigs().subscribe((data: any) => this.fConfig.patchValue(data));
   }
 
@@ -63,6 +64,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   saveConf(): void {
+    // Este formulario controla parametros globales como infecciones, evolucion y recompensa diaria.
     this.xuxemonService.saveConfigs(this.fConfig.value).subscribe({
       next: (response: any) => {
         this.gameConfigService.load().subscribe();
@@ -82,6 +84,7 @@ export class AdminPanelComponent implements OnInit {
   }
 
   toggleUser(user: any): void {
+    // Desde admin solo activamos o desactivamos usuarios normales; no administradores.
     const accion = user.is_active
       ? this.authService.deactivateUser(user.id)
       : this.authService.restoreUser(user.id);
@@ -106,6 +109,7 @@ export class AdminPanelComponent implements OnInit {
       return;
     }
 
+    // Esta accion regala xuxes concretas a un jugador desde el panel admin.
     this.xuxemonService.darXuxes(
       this.selectedPlayerId,
       this.xuxeToAdd.nombre,
@@ -129,6 +133,7 @@ export class AdminPanelComponent implements OnInit {
     this.regalandoXuxemonUserId = Number(idJugador);
     this.mensajeRegalo = '';
 
+    // El backend decide cual es el Xuxemon aleatorio y si era nuevo o repetido para ese usuario.
     this.xuxemonService.darXuxemonAleatorio(idJugador).subscribe({
       next: (response: any) => {
         const sufijo = response?.nuevo_desbloqueo ? 'nuevo desbloqueo' : 'ya lo tenia';

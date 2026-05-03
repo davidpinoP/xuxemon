@@ -35,6 +35,7 @@ export class Login implements OnInit {
 
   Submit() {
     if (this.formulariLogin.valid) {
+      // Enviamos al backend exactamente las dos credenciales que usa el juego: player_id y password.
       const credentials = {
         player_id: this.formulariLogin.value.player_id,
         password: this.formulariLogin.value.password
@@ -42,6 +43,7 @@ export class Login implements OnInit {
 
       this.authService.login(credentials).subscribe({
         next: (response) => {
+          // Si el login va bien, guardamos sesion y redirigimos a la pagina principal.
           this.authService.saveToken(response.access_token);
           if (response.user && response.user.role) {
             localStorage.setItem('userRole', response.user.role);
@@ -57,6 +59,7 @@ export class Login implements OnInit {
   }
 
   goToRegister() {
+    // Este boton solo cambia de vista; no hace ninguna llamada al backend.
     this.router.navigate(['/register']);
   }
 }

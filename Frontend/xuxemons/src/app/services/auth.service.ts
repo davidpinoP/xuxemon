@@ -17,6 +17,7 @@ export class AuthService {
     login(credentials: any): Observable<any> {
         return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
             tap((res: any) => {
+                // Guardamos el usuario en memoria para que otros componentes reaccionen al login.
                 if (res && res.user) {
                     this.currentUserSubject.next(res.user);
                 }
@@ -74,7 +75,7 @@ export class AuthService {
             return Promise.resolve();
         }
 
-        // Si hi ha un token, intentem recuperar el perfil
+        // Si ya habia token guardado, intentamos reconstruir la sesion pidiendo el perfil.
         return new Promise((resolve) => {
             this.getProfile().subscribe({
                 next: () => resolve(),
@@ -126,6 +127,7 @@ export class AuthService {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('userRole');
         localStorage.removeItem('player_id');
+        // Al cerrar sesion, tambien vaciamos el usuario compartido en memoria.
         this.currentUserSubject.next(null);
         this.router.navigate(['/login']);
     }

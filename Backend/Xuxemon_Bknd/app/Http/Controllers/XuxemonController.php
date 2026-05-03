@@ -76,6 +76,7 @@ class XuxemonController extends Controller
         $user = $request->user();
 
         if ($user) {
+            // Antes de mostrar catalogo, sincronizamos lo que tiene en mochila con su coleccion real.
             $this->sincronizarXuxemonsUsuario($user);
         }
 
@@ -122,6 +123,7 @@ class XuxemonController extends Controller
     {
         $user = $request->user();
 
+        // Esta ruta devuelve la coleccion real del usuario, incluyendo cantidad de repetidos.
         $this->sincronizarXuxemonsUsuario($user);
 
         $misXuxemons = UserXuxemon::with('xuxemon')
@@ -199,7 +201,7 @@ class XuxemonController extends Controller
         $esVacuna = array_key_exists($datos['xuxe'], $vacunas);
         $enfermedadesActuales = $this->getDiseaseList($registro);
 
-        // LÓGICA DE ENFERMEDAD / VACUNA
+        // Si lo usado es una vacuna, primero resolvemos toda la parte de curacion.
         if ($esVacuna && $enfermedadesActuales !== []) {
             // Comprobar si la vacuna sirve para esta enfermedad
             $cura = $vacunas[$datos['xuxe']];
@@ -241,6 +243,7 @@ class XuxemonController extends Controller
             ], 400);
         }
 
+        // Atracon bloquea completamente la alimentacion.
         if (in_array(self::DISEASE_ATRACON, $enfermedadesActuales, true)) {
             return response()->json([
                 'message' => 'El Xuxemon tiene Atracón y no puede alimentarse.'
@@ -259,6 +262,7 @@ class XuxemonController extends Controller
             $registro->comidas++;
             $cantidadConsumida++;
 
+            // Tras cada xuxe comprobamos si ya le toca evolucionar.
             $this->applyEvolutionProgress($registro, $enfermedadesActuales);
 
             foreach ($this->getDiseaseChances() as $nombre => $pct) {
@@ -427,6 +431,7 @@ class XuxemonController extends Controller
                 return;
             }
 
+            // El coste de evolucion depende del tamano actual y de si tiene Bajon de azucar.
             $objetivo = $this->getStageRequirement($tamanoActual, $enfermedades);
 
             if ($registro->comidas < $objetivo) {
