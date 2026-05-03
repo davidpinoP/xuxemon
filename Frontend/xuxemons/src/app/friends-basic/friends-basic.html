@@ -1,7 +1,7 @@
 <div class="app-layout">
   <app-sidebar></app-sidebar>
 
-  <main class="main-content">
+  <main id="main-content" tabindex="-1" class="main-content">
     <h1 class="page-title">Amigos</h1>
 
     <section class="requests-panel" aria-labelledby="requests-title">
@@ -29,13 +29,13 @@
   </section>
 
   <section class="search-panel" aria-labelledby="search-title">
-    <label for="friend-search" class="search-label" id="search-title">Buscar amigos</label>
+    <label for="friend-search" class="search-label" id="search-title">Buscar por ID</label>
     <input
       id="friend-search"
       type="text"
       class="search-input"
       [formControl]="searchControl"
-      placeholder="Buscar amigos"
+      placeholder="Buscar por ID de jugador"
     >
 
     <div class="search-status" aria-live="polite">
@@ -66,21 +66,12 @@
             </button>
           } @else {
             <div class="friend-actions">
-              <button type="button" class="btn-light">Mensaje</button>
-              <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar</button>
+              <button type="button" class="btn-light btn-delete" (click)="eliminarAmigo(card.id)">Eliminar amigo</button>
             </div>
           }
         </li>
       }
     </ul>
-
-    <div class="pagination">
-      <button type="button" class="page-btn page-btn-light">&lt;</button>
-      <button type="button" class="page-btn page-btn-active">1</button>
-      <button type="button" class="page-btn">2</button>
-      <button type="button" class="page-btn">3</button>
-      <button type="button" class="page-btn">&gt;</button>
-    </div>
   </section>
   </main>
 </div>

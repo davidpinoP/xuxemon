@@ -1,7 +1,7 @@
 <div class="app-layout">
     <app-sidebar></app-sidebar>
 
-    <main class="main-content profile-page">
+    <main id="main-content" tabindex="-1" class="main-content profile-page">
         <h1 class="page-title">Perfil de Usuario</h1>
 
         @if (cargando) {
@@ -32,13 +32,13 @@
 
             <div class="hero-copy">
                 <div class="hero-name-block">
-                    <h2 class="hero-name">{{ perfilUsuario.name || 'Entrenador' }}</h2>
+                    <h2 class="hero-name">{{ perfilUsuario.name || 'Jugador' }}</h2>
                     <p class="hero-handle">{{ playerIdVisible }}</p>
                     <p class="hero-role">{{ perfilUsuario.role }}</p>
                 </div>
 
                 <div class="hero-stats">
-                    <span>Xuxemons: {{ misXuxemons.length }}/50</span>
+                    <span>Xuxemons: {{ progresoColeccionTexto }}</span>
                     <span>Amigos: {{ amigos.length }}</span>
                 </div>
             </div>
@@ -57,6 +57,8 @@
                     <figure class="mini-xuxemon">
                         <img [src]="getXuxemonImage(xuxemon)" [alt]="'Xuxemon favorito ' + xuxemon.nombre">
                     </figure>
+                    } @empty {
+                    <p class="empty-copy">Aún no tienes suficientes Xuxemons para mostrar un dúo favorito.</p>
                     }
                 </div>
             </article>
@@ -138,7 +140,7 @@
                 }
             </ul>
             } @else {
-            <p class="sin-amigos">Aun no tienes amigos agregados.</p>
+            <p class="sin-amigos">Aún no tienes amigos agregados.</p>
             }
         </section>
 

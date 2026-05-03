@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
+import { forkJoin } from 'rxjs';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { XuxemonCardComponent } from '../xuxemon-card/xuxemon-card';
@@ -30,7 +31,6 @@ export class Xuxedex implements OnInit {
 
   constructor(
     private xuxemonService: XuxemonService,
-    private router: Router,
     private seoService: SeoService
   ) { }
 
@@ -40,9 +40,12 @@ export class Xuxedex implements OnInit {
       description: 'Explora tu colección real de Xuxemons, filtra por tipo y revisa tus repetidos.'
     });
 
-    this.xuxemonService.getMisXuxemons().subscribe({
-      next: (data: IXuxemon[]) => {
-        this.todosXuxemons = this.prepararXuxemons(data);
+    forkJoin({
+      catalogo: this.xuxemonService.getXuxemons(),
+      coleccion: this.xuxemonService.getMisXuxemons()
+    }).subscribe({
+      next: ({ catalogo, coleccion }) => {
+        this.todosXuxemons = this.prepararXuxemons(catalogo, coleccion);
         this.aplicarFiltros();
         this.cargando = false;
       },
@@ -113,20 +116,48 @@ export class Xuxedex implements OnInit {
     return tipo.charAt(0).toUpperCase() + tipo.slice(1);
   }
 
-  private prepararXuxemons(xuxemons: IXuxemon[]): IXuxemon[] {
+  private prepararXuxemons(catalogo: IXuxemon[], coleccion: IXuxemon[]): IXuxemon[] {
+    const coleccionPorId = new Map<number, IXuxemon>(
+      coleccion.map((xuxemon) => [xuxemon.id, xuxemon])
+    );
+
     return this.ordenarXuxemons(
-      xuxemons.map((xuxemon) => ({
-        ...xuxemon,
-        tamano: this.capitalizarTamano(this.normalizarTamano(xuxemon.tamano)),
-        cantidad: Math.max(1, xuxemon.cantidad || 1),
-        desbloqueado: true,
-        bloqueado: false
-      }))
+      catalogo.map((xuxemon) => {
+        const propio = coleccionPorId.get(xuxemon.id);
+
+        return {
+          ...xuxemon,
+          ...propio,
+          tamano: this.capitalizarTamano(
+            this.normalizarTamano(propio?.tamano || xuxemon.tamano)
+          ),
+          cantidad: propio ? Math.max(1, propio.cantidad || 1) : 0,
+          comidas: propio?.comidas ?? 0,
+          enfermedades: propio?.enfermedades || [],
+          enfermedad: propio?.enfermedad || undefined,
+          desbloqueado: !!propio,
+          bloqueado: !propio
+        };
+      })
     );
   }
 
   private ordenarXuxemons(xuxemons: IXuxemon[]): IXuxemon[] {
     return [...xuxemons].sort((a, b) => {
+      const aDesbloqueado = a.desbloqueado ? 1 : 0;
+      const bDesbloqueado = b.desbloqueado ? 1 : 0;
+
+      if (aDesbloqueado !== bDesbloqueado) {
+        return bDesbloqueado - aDesbloqueado;
+      }
+
+      const cantidadA = a.cantidad || 0;
+      const cantidadB = b.cantidad || 0;
+
+      if (cantidadA !== cantidadB) {
+        return cantidadB - cantidadA;
+      }
+
       return a.id - b.id;
     });
   }

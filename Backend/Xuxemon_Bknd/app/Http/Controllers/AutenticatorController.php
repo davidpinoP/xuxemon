@@ -3,19 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Services\DailyRewardService;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AutenticatorController extends Controller
 {
-    private DailyRewardService $dailyRewardService;
-
-    public function __construct(DailyRewardService $dailyRewardService)
-    {
-        $this->dailyRewardService = $dailyRewardService;
-    }
-
     public function login(Request $request)
     {
         $request->validate([
@@ -41,8 +33,6 @@ class AutenticatorController extends Controller
                 'error' => 'Tu cuenta está desactivada. Por favor, contacta con soporte.'
             ], 403);
         }
-
-        $this->checkDailyRewards($user);
 
         return response()->json([
             'access_token' => $token,
@@ -74,8 +64,6 @@ class AutenticatorController extends Controller
             'is_active' => true,
         ]);
 
-        $this->checkDailyRewards($user);
-
         $token = auth('api')->login($user);
 
         return response()->json([
@@ -105,11 +93,6 @@ class AutenticatorController extends Controller
         return response()->json([
             'message' => 'Sesion cerrada correctamente.'
         ]);
-    }
-
-    private function checkDailyRewards(User $user): void
-    {
-        $this->dailyRewardService->grantIfEligible($user);
     }
 
     private function generatePlayerId(string $name): string

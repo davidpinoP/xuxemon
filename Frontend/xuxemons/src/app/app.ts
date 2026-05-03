@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from './services/xuxemon';
 import { GameConfigService } from './services/game-config.service';
 import { LoadingService } from './services/loading.service';
 import { LoadingSpinnerComponent } from './components/loading-spinner/loading-spinner';
+import { filter } from 'rxjs';
+import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,19 +23,20 @@ export class App implements OnInit {
   constructor(
     private xuxemonService: Xuxemon,
     private gameConfigService: GameConfigService,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private authService: AuthService,
+    private router: Router
   ) {
     this.loading$ = this.loadingService.loading$;
   }
 
   ngOnInit() {
     this.gameConfigService.load().subscribe();
+    this.comprobarRecompensa();
 
-    this.xuxemonService.checkRewards().subscribe((res: any) => {
-      if (res.can_claim) {
-        this.showReward = true;
-      }
-    });
+    this.router.events
+      .pipe(filter((event) => event instanceof NavigationEnd))
+      .subscribe(() => this.comprobarRecompensa());
   }
 
   claim() {
@@ -51,5 +54,24 @@ export class App implements OnInit {
 
   get rewardXuxesAmount(): number {
     return this.gameConfigService.snapshot.reward_xuxes_amount;
+  }
+
+  private comprobarRecompensa(): void {
+    const token = this.authService.getToken();
+    const rutaActual = this.router.url;
+
+    if (!token || rutaActual === '/login' || rutaActual === '/register') {
+      this.showReward = false;
+      return;
+    }
+
+    this.xuxemonService.checkRewards().subscribe({
+      next: (res: any) => {
+        this.showReward = !!res.can_claim;
+      },
+      error: () => {
+        this.showReward = false;
+      }
+    });
   }
 }
