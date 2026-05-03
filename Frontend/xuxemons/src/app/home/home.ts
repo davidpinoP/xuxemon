@@ -57,19 +57,6 @@ export class Home implements OnInit {
     return ruta.trim().replace(/\.png$/i, '.webp');
   }
 
-  getTipoIcon(tipo: string): string {
-    if (!tipo) return '?';
-    switch (tipo.toLowerCase()) {
-      case 'agua': return '💧';
-      case 'fuego': return '🔥';
-      case 'planta': return '🌱';
-      case 'electrico': return '⚡';
-      case 'tierra': return '🪨';
-      case 'aire': return '💨';
-      default: return '⚪';
-    }
-  }
-
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

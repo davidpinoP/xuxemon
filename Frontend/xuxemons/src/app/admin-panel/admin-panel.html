@@ -1,7 +1,7 @@
 <div class="app-layout">
   <app-sidebar></app-sidebar>
 
-  <main class="main-content">
+  <main id="main-content" tabindex="-1" class="main-content">
     <h1 class="page-title">Panel de Control Admin</h1>
 
     <fieldset class="admin-box">
@@ -24,13 +24,16 @@
           <input type="number" formControlName="evolve_xuxes">
         </label>
         <label>
-          <span>Hora recompensa</span>
+          <span>Hora recompensa diaria</span>
           <input type="number" formControlName="reward_hour" min="0" max="23">
         </label>
         <label>
           <span>Xuxes diarios</span>
           <input type="number" formControlName="reward_xuxes_amount" min="1">
         </label>
+        <p class="config-help">
+          Esta hora se aplica a las dos recompensas automáticas: xuxes diarias y Xuxemon diario.
+        </p>
         <button type="submit">Guardar ajustes</button>
       </form>
     </fieldset>

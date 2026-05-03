@@ -35,6 +35,13 @@
   min-width: 180px;
 }
 
+.config-help {
+  width: 100%;
+  margin: -4px 0 0;
+  color: #5d6789;
+  font-size: 0.95rem;
+}
+
 .admin-form input,
 .admin-form select,
 .admin-form button,

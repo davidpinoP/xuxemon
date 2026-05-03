@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
 import { XuxemonService } from '../services/xuxemon.service';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { SeoService } from '../services/seo.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-perfil',
@@ -21,7 +22,7 @@ export class Perfil implements OnInit {
     surname: '',
     email: '',
     playerId: '',
-    role: 'Entrenador'
+    role: ''
   };
 
   formularioPerfil = new FormGroup({
@@ -38,9 +39,8 @@ export class Perfil implements OnInit {
   cargando = true;
   amigos: any[] = [];
   misXuxemons: IXuxemon[] = [];
+  totalCatalogo = 0;
   duoFavorito: IXuxemon[] = [];
-  xuxemonFavorito: IXuxemon | null = null;
-  batallasGanadas = 200;
   avatarXuxemon: IXuxemon | null = null;
   mostrarSelectorAvatar = false;
 
@@ -74,7 +74,7 @@ export class Perfil implements OnInit {
           surname: data.surname || '',
           email: data.email || '',
           playerId: data.player_id || localStorage.getItem('player_id') || '#Jugador0000',
-          role: 'Entrenador'
+          role: this.mapearRol(data.role)
         };
 
         this.userId = String(data.id);
@@ -108,26 +108,30 @@ export class Perfil implements OnInit {
   private _avatarIdPendiente: number | null = null;
 
   cargarXuxemons(): void {
-    this.xuxemonService.getMisXuxemons().subscribe({
-      next: (data: IXuxemon[]) => {
-        this.misXuxemons = data;
+    forkJoin({
+      coleccion: this.xuxemonService.getMisXuxemons(),
+      catalogo: this.xuxemonService.getXuxemons()
+    }).subscribe({
+      next: ({ coleccion, catalogo }) => {
+        this.misXuxemons = coleccion;
+        this.totalCatalogo = catalogo.length;
 
-        if (data.length > 0) {
-          this.duoFavorito = data.slice(0, 2);
-          this.xuxemonFavorito = data[0];
+        if (coleccion.length > 0) {
+          this.duoFavorito = coleccion.slice(0, 2);
         } else {
-          this.aplicarFavoritosDemo();
+          this.duoFavorito = [];
         }
 
         // Restaurar avatar pendiente
         if (this._avatarIdPendiente !== null) {
-          const encontrado = data.find(x => x.id === this._avatarIdPendiente);
+          const encontrado = coleccion.find(x => x.id === this._avatarIdPendiente);
           if (encontrado) this.avatarXuxemon = encontrado;
           this._avatarIdPendiente = null;
         }
       },
       error: () => {
-        this.aplicarFavoritosDemo();
+        this.totalCatalogo = 0;
+        this.duoFavorito = [];
       }
     });
   }
@@ -259,30 +263,24 @@ export class Perfil implements OnInit {
     return playerId.startsWith('#') ? playerId : `#${playerId}`;
   }
 
+  get progresoColeccionTexto(): string {
+    if (this.totalCatalogo <= 0) {
+      return `${this.misXuxemons.length}`;
+    }
+
+    return `${this.misXuxemons.length}/${this.totalCatalogo}`;
+  }
+
   getXuxemonImage(xuxemon: IXuxemon): string {
     return this.normalizarImagen(xuxemon.imagen) || `/imagenes/assets/${xuxemon.id}.webp`;
-  }
-
-  private crearXuxemonDemo(id: number, nombre: string): IXuxemon {
-    return {
-      id,
-      nombre,
-      tipo: 'agua',
-      tamano: 'pequeno',
-      imagen: `/imagenes/assets/${id}.webp`
-    };
-  }
-
-  private aplicarFavoritosDemo(): void {
-    this.duoFavorito = [
-      this.crearXuxemonDemo(4, 'Aquarion'),
-      this.crearXuxemonDemo(2, 'Terrock')
-    ];
-    this.xuxemonFavorito = this.crearXuxemonDemo(3, 'Ventus');
   }
 
   private normalizarImagen(ruta?: string): string | undefined {
     if (!ruta) return undefined;
     return ruta.trim().replace(/\.png$/i, '.webp');
+  }
+
+  private mapearRol(role?: string): string {
+    return role === 'admin' ? 'Administrador' : 'Jugador';
   }
 }
