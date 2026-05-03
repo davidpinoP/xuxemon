@@ -5,6 +5,7 @@ import { catchError, map, tap } from 'rxjs/operators';
 
 export interface GameConfig {
   pct_bajon_azucar: number;
+  pct_sobredosis_sucre: number;
   pct_atracon: number;
   evolve_xuxes: number;
   reward_hour: number;
@@ -13,6 +14,7 @@ export interface GameConfig {
 
 const DEFAULT_GAME_CONFIG: GameConfig = {
   pct_bajon_azucar: 0,
+  pct_sobredosis_sucre: 0,
   pct_atracon: 0,
   evolve_xuxes: 3,
   reward_hour: 8,
@@ -47,6 +49,7 @@ export class GameConfigService {
   private normalize(data: Partial<GameConfig> | null | undefined): GameConfig {
     const safe = data || {};
     const bajon = this.toNumber(safe.pct_bajon_azucar, DEFAULT_GAME_CONFIG.pct_bajon_azucar);
+    const sobredosis = this.toNumber(safe.pct_sobredosis_sucre, DEFAULT_GAME_CONFIG.pct_sobredosis_sucre);
     const atracon = this.toNumber(safe.pct_atracon, DEFAULT_GAME_CONFIG.pct_atracon);
     const evolve = this.toNumber(safe.evolve_xuxes, DEFAULT_GAME_CONFIG.evolve_xuxes);
     const reward = this.toNumber(safe.reward_hour, DEFAULT_GAME_CONFIG.reward_hour);
@@ -54,6 +57,7 @@ export class GameConfigService {
 
     return {
       pct_bajon_azucar: Math.max(0, Math.min(100, bajon)),
+      pct_sobredosis_sucre: Math.max(0, Math.min(100, sobredosis)),
       pct_atracon: Math.max(0, Math.min(100, atracon)),
       evolve_xuxes: evolve > 0 ? evolve : DEFAULT_GAME_CONFIG.evolve_xuxes,
       reward_hour: Math.max(0, Math.min(23, reward)),

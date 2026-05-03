@@ -1,9 +1,14 @@
-<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.evolucionando]="evolucionando" [class.bloqueado]="estaBloqueado" *ngIf="xuxemon" tabindex="0">
+<article class="tarjeta-xuxemon" [ngClass]="tipoClase" [class.bloqueado]="estaBloqueado" *ngIf="xuxemon" tabindex="0">
     <div class="tarjeta-cabecera">
         <span class="tarjeta-tipo-badge">
             {{ tipoIcono }} {{ tipoNombre }}
         </span>
-        <span class="tarjeta-id">#{{ xuxemon.id.toString().padStart(3, '0') }}</span>
+        <div class="tarjeta-meta">
+            @if ((xuxemon.cantidad || 1) > 1) {
+            <span class="tarjeta-cantidad">x{{ xuxemon.cantidad }}</span>
+            }
+            <span class="tarjeta-id">#{{ xuxemon.id.toString().padStart(3, '0') }}</span>
+        </div>
     </div>
 
     <div class="imagen-container">
@@ -30,9 +35,9 @@
         {{ estadoTexto }}
     </p>
 
-    @if (xuxemon.enfermedad) {
+    @if (enfermedadesTexto) {
     <div class="badge-enfermedad" aria-live="assertive">
-        🤒 <strong>Malito</strong> {{ xuxemon.enfermedad }}
+        🤒 <strong>Malito</strong> {{ enfermedadesTexto }}
     </div>
     }
     @if (xuxemon.descripcion) {
@@ -76,33 +81,19 @@
         <p class="tamano-texto">Tamano actual: {{ xuxemon.tamano | titlecase }}</p>
         @if (xuxesNecesarias > 0) {
         <p class="evolucion-info">
-            Necesitas <strong>{{ xuxesNecesarias }} xuxes</strong> para evolucionar a {{ siguienteTamano }}
+            Lleva <strong>{{ comidasActuales }}/{{ comidasObjetivo }}</strong> xuxes dadas para evolucionar a {{ siguienteTamano }}
         </p>
-        <button class="btn-evolucionar"
-            [disabled]="!puedeEvolucionar || evolucionando"
-            (click)="evolucionar()"
-            type="button"
-            [attr.aria-label]="'Evolucionar ' + xuxemon.nombre">
-            @if (evolucionando) {
-                Evolucionando...
-            } @else {
-                Evolucionar
-            }
-        </button>
+        <p class="evolucion-info">
+            Le faltan <strong>{{ xuxesRestantes }}</strong> para el siguiente tamano
+        </p>
+        <a class="btn-evolucionar"
+            routerLink="/inventory"
+            [attr.aria-label]="'Ir a la mochila para alimentar a ' + xuxemon.nombre">
+            Alimentar en mochila
+        </a>
         } @else {
         <p class="evolucion-info evolucion-max">Tamano maximo alcanzado</p>
         }
-    </div>
-    }
-
-    @if (evolucionando) {
-    <div class="evolucion-overlay">
-        <div class="particula"></div>
-        <div class="particula"></div>
-        <div class="particula"></div>
-        <div class="particula"></div>
-        <div class="particula"></div>
-        <span class="texto-evolucion">Evolucionando</span>
     </div>
     }
 

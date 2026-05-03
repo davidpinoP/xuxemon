@@ -10,12 +10,8 @@
             <h2 id="inventory-title" class="sr-only">Inventario de objetos</h2>
             <ul class="mochila-grid">
                 @for (slot of slots; track $index) {
-<<<<<<< HEAD
-                <article class="slot" [class.occupied]="slot"
+                <li class="slot" [class.occupied]="slot"
                     [attr.aria-label]="slot ? 'Hueco ocupado por ' + slot.nombre + ', cantidad ' + slot.cantidad : 'Hueco vacío de inventario'">
-=======
-                <li class="slot" [class.occupied]="slot" aria-label="Espacio de inventario">
->>>>>>> david
                     @if (slot) {
                     <div class="item-container">
                         <img [src]="slot.imagen" [alt]="slot.nombre" class="item-image">
@@ -49,7 +45,7 @@
                     <select id="select-enfermo" [(ngModel)]="xuxemonEnfermoSeleccionado">
                         <option [ngValue]="null">-- Elige un Xuxemon enfermo --</option>
                         @for (xuxe of getXuxemonsEnfermos(); track xuxe.id) {
-                        <option [ngValue]="xuxe">🤒 {{ xuxe.nombre }} ({{ xuxe.enfermedad }})</option>
+                        <option [ngValue]="xuxe">🤒 {{ xuxe.nombre }} ({{ getEnfermedadTexto(xuxe) }})</option>
                         }
                     </select>
                     @if (getXuxemonsEnfermos().length === 0) {
@@ -98,7 +94,7 @@
                     <select id="select-xuxemon" [(ngModel)]="xuxemonSeleccionado">
                         <option [ngValue]="null">-- Elige un Xuxemon --</option>
                         @for (xuxe of misXuxemons; track xuxe.id) {
-                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(xuxe.enfermedad){ 🤒 (Enfermo) } </option>
+                        <option [ngValue]="xuxe">{{ xuxe.nombre }} ({{ xuxe.tipo }}) @if(getEnfermedadTexto(xuxe)){ 🤒 ({{ getEnfermedadTexto(xuxe) }}) } </option>
                         }
                     </select>
                 </div>
@@ -162,9 +158,14 @@
                     ✨ Evolucionará a <strong>{{ getNuevoTamano() }}</strong>
                 </div>
                 }
-                @if (xuxemonSeleccionado?.enfermedad) {
+                @if (tieneBajonAzucar(xuxemonSeleccionado)) {
+                <div class="preview-evolucion-alert">
+                    🍬 Bajón de azúcar: esta etapa necesita <strong>{{ getStageRequirement(xuxemonSeleccionado) }}</strong> xuxes
+                </div>
+                }
+                @if (tieneAtracon(xuxemonSeleccionado)) {
                 <div class="error" style="margin-top: 10px; text-align: center;">
-                    ⚠️ Está enfermo. Intentar alimentarlo fallará.
+                    ⚠️ Tiene Atracón. No podrá comer hasta curarse.
                 </div>
                 }
             } 

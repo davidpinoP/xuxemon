@@ -10,6 +10,12 @@ use Carbon\Carbon;
 
 class DailyRewardService
 {
+    private const XUXE_TYPES = [
+        'Xuxe Caramelo',
+        'Xuxe CHOCO',
+        'Xuxe Menta',
+    ];
+
     public function canClaim(User $user, ?Carbon $now = null): bool
     {
         $now = $now ?: now();
@@ -49,13 +55,17 @@ class DailyRewardService
         }
 
         $xuxes = $this->getRewardXuxesAmount();
+        $rewardXuxeName = $this->pickRandomXuxeName();
 
-        $xuxeEntry = $user->mochila()->where('nombre', 'Xuxe')->first();
+        $xuxeEntry = $user->mochila()
+            ->where('tipo', 'item')
+            ->where('nombre', $rewardXuxeName)
+            ->first();
         if ($xuxeEntry) {
             $xuxeEntry->increment('cantidad', $xuxes);
         } else {
             $user->mochila()->create([
-                'nombre' => 'Xuxe',
+                'nombre' => $rewardXuxeName,
                 'tipo' => 'item',
                 'cantidad' => $xuxes
             ]);
@@ -75,7 +85,7 @@ class DailyRewardService
             ]);
 
             $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
-            $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeno';
+            $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
             $entradaMochila->save();
 
             UserXuxemon::firstOrCreate(
@@ -84,10 +94,11 @@ class DailyRewardService
                     'xuxemon_id' => $xuxemonAlea->id,
                 ],
                 [
-                    'tamano' => 'Pequeno',
+                    'tamano' => 'Pequeño',
                     'comidas' => 0,
                     'imagen' => $xuxemonAlea->imagen,
                     'enfermedad' => null,
+                    'enfermedades' => [],
                 ]
             );
         }
@@ -98,6 +109,7 @@ class DailyRewardService
         return [
             'ok' => true,
             'xuxes' => $xuxes,
+            'xuxe_name' => $rewardXuxeName,
             'xuxemon' => $xuxemonNombre,
             'xuxemon_id' => $xuxemonId,
             'reward_hour' => $this->getRewardHour(),
@@ -139,5 +151,10 @@ class DailyRewardService
             ->first();
 
         return $pendiente ?: Xuxemon::inRandomOrder()->first();
+    }
+
+    private function pickRandomXuxeName(): string
+    {
+        return self::XUXE_TYPES[array_rand(self::XUXE_TYPES)];
     }
 }

@@ -9,6 +9,11 @@ use Illuminate\Http\Request;
 
 class XuxemonController extends Controller
 {
+    private const LEGACY_XUXE_NAME = 'Xuxe';
+    private const DISEASE_BAJON = 'Bajón de azúcar';
+    private const DISEASE_SOBREDOSIS = 'Sobredosis de sucre';
+    private const DISEASE_ATRACON = 'Atracón';
+
     public function create(Request $request)
     {
         $data = $request->validate([
@@ -130,15 +135,24 @@ class XuxemonController extends Controller
                 continue;
             }
 
+            $cantidad = (int) $user->mochila()
+                ->where('tipo', 'xuxemon')
+                ->where('nombre', $registro->xuxemon->nombre)
+                ->sum('cantidad');
+
+            $enfermedades = $this->getDiseaseList($registro);
+
             $resultado[] = [
                 'id' => $registro->xuxemon->id,
                 'nombre' => $registro->xuxemon->nombre,
                 'tipo' => $registro->xuxemon->tipo,
                 'descripcion' => $registro->xuxemon->descripcion,
                 'imagen' => $registro->imagen ?: $registro->xuxemon->imagen,
-                'tamano' => $registro->tamano ?: 'Pequeño',
+                'tamano' => $this->normalizeSize($registro->tamano ?: 'Pequeño'),
                 'comidas' => $registro->comidas ?? 0,
-                'enfermedad' => $registro->enfermedad,
+                'cantidad' => max(1, $cantidad),
+                'enfermedades' => $enfermedades,
+                'enfermedad' => $enfermedades[0] ?? null,
                 'created_at' => $registro->xuxemon->created_at,
                 'updated_at' => $registro->xuxemon->updated_at,
             ];
@@ -168,10 +182,7 @@ class XuxemonController extends Controller
             ], 404);
         }
 
-        $itemXuxe = $user->mochila()
-            ->where('nombre', $datos['xuxe'])
-            ->where('tipo', '!=', 'xuxemon')
-            ->first();
+        $itemXuxe = $this->findInventoryItem($user, $datos['xuxe']);
 
         if (!$itemXuxe || $itemXuxe->cantidad < $datos['cantidad']) {
             return response()->json([
@@ -181,25 +192,20 @@ class XuxemonController extends Controller
 
         // Vacunas validas y qué enfermedad cura cada una
         $vacunas = [
-            'Xocolatina'     => 'Bajón de azúcar',
-            'Xal de fruites' => 'Atracón',
+            'Xocolatina'     => self::DISEASE_BAJON,
+            'Xal de fruites' => self::DISEASE_ATRACON,
             'Inxulina'       => '*',  // cura cualquier enfermedad
         ];
         $esVacuna = array_key_exists($datos['xuxe'], $vacunas);
+        $enfermedadesActuales = $this->getDiseaseList($registro);
 
         // LÓGICA DE ENFERMEDAD / VACUNA
-        if ($registro->enfermedad) {
-            if (!$esVacuna) {
-                return response()->json([
-                    'message' => 'El Xuxemon está enfermo de "' . $registro->enfermedad . '". ¡Cúralo primero!'
-                ], 400);
-            }
-
+        if ($esVacuna && $enfermedadesActuales !== []) {
             // Comprobar si la vacuna sirve para esta enfermedad
             $cura = $vacunas[$datos['xuxe']];
-            if ($cura !== '*' && $cura !== $registro->enfermedad) {
+            if ($cura !== '*' && !in_array($cura, $enfermedadesActuales, true)) {
                 return response()->json([
-                    'message' => $datos['xuxe'] . ' no cura "' . $registro->enfermedad . '". Prueba con otra vacuna.'
+                    'message' => $datos['xuxe'] . ' no cura las enfermedades actuales. Prueba con otra vacuna.'
                 ], 400);
             }
 
@@ -211,13 +217,20 @@ class XuxemonController extends Controller
                 $itemXuxe->save();
             }
 
-            $registro->enfermedad = null;
+            $enfermedadesRestantes = $cura === '*'
+                ? []
+                : array_values(array_filter(
+                    $enfermedadesActuales,
+                    fn (string $enfermedad) => $enfermedad !== $cura
+                ));
+
+            $this->syncDiseases($registro, $enfermedadesRestantes);
             $registro->save();
 
             return response()->json([
                 'message' => '¡Xuxemon curado con ' . $datos['xuxe'] . '!',
                 'curado' => true,
-                'xuxemon' => $registro
+                'xuxemon' => $this->buildOwnedXuxemonPayload($user, $registro)
             ]);
         }
 
@@ -228,50 +241,55 @@ class XuxemonController extends Controller
             ], 400);
         }
 
-        // LÓGICA DE ALIMENTACIÓN NORMAL (no está enfermo y no es vacuna)
-        $itemXuxe->cantidad -= $datos['cantidad'];
+        if (in_array(self::DISEASE_ATRACON, $enfermedadesActuales, true)) {
+            return response()->json([
+                'message' => 'El Xuxemon tiene Atracón y no puede alimentarse.'
+            ], 400);
+        }
+
+        $registro->tamano = $this->normalizeSize($registro->tamano ?: 'Pequeño');
+        $tamanoAnterior = $registro->tamano;
+        $cantidadConsumida = 0;
+        $seInfecto = false;
+        $feedStoppedByAtracon = false;
+        $nuevasEnfermedades = [];
+        $registro->comidas = (int) ($registro->comidas ?? 0);
+
+        for ($i = 0; $i < $datos['cantidad']; $i++) {
+            $registro->comidas++;
+            $cantidadConsumida++;
+
+            $this->applyEvolutionProgress($registro, $enfermedadesActuales);
+
+            foreach ($this->getDiseaseChances() as $nombre => $pct) {
+                if ($pct <= 0 || in_array($nombre, $enfermedadesActuales, true)) {
+                    continue;
+                }
+
+                if (random_int(1, 100) <= $pct) {
+                    $enfermedadesActuales[] = $nombre;
+                    $nuevasEnfermedades[] = $nombre;
+                    $seInfecto = true;
+                }
+            }
+
+            $enfermedadesActuales = array_values(array_unique($enfermedadesActuales));
+
+            if (in_array(self::DISEASE_ATRACON, $nuevasEnfermedades, true) && $i < ($datos['cantidad'] - 1)) {
+                $feedStoppedByAtracon = true;
+                break;
+            }
+        }
+
+        $this->syncDiseases($registro, $enfermedadesActuales);
+        $registro->save();
+
+        $itemXuxe->cantidad -= $cantidadConsumida;
         if ($itemXuxe->cantidad <= 0) {
             $itemXuxe->delete();
         } else {
             $itemXuxe->save();
         }
-
-        $tamanoAnterior = $registro->tamano ?: 'Pequeño';
-        $seInfecto = false;
-
-        // Roll por cada enfermedad al comer
-        $enfermedades = [
-            'Bajón de azúcar' => Config::getFloat('pct_bajon_azucar', 0),
-            'Atracón'         => Config::getFloat('pct_atracon', 0),
-        ];
-
-        foreach ($enfermedades as $nombre => $pct) {
-            if ($pct > 0 && random_int(1, 100) <= $pct) {
-                $registro->enfermedad = $nombre;
-                $seInfecto = true;
-                break;
-            }
-        }
-
-        // Solo aumenta comidas si no se infectó en este momento
-        $registro->comidas = ($registro->comidas ?? 0) + $datos['cantidad'];
-
-        // Evolución
-        $evolveBase = Config::getInt('evolve_xuxes', 3);
-        if ($evolveBase < 1) $evolveBase = 3;
-
-        $toMediano = $evolveBase;
-        $toGrande = $evolveBase + 2;
-
-        if ($registro->comidas >= $toGrande) {
-            $registro->tamano = 'Grande';
-        } elseif ($registro->comidas >= $toMediano) {
-            $registro->tamano = 'Mediano';
-        } else {
-            $registro->tamano = 'Pequeño';
-        }
-
-        $registro->save();
 
         // Sincronizar tamaño con la mochila
         $entradaMochila = $user->mochila()
@@ -285,10 +303,14 @@ class XuxemonController extends Controller
         }
 
         return response()->json([
-            'message' => 'Xuxemon alimentado correctamente.',
+            'message' => $feedStoppedByAtracon
+                ? 'El Xuxemon empezó a sufrir Atracón y dejó de comer antes de terminar.'
+                : 'Xuxemon alimentado correctamente.',
             'evoluciono' => $tamanoAnterior !== $registro->tamano,
             'se_infecto' => $seInfecto,
-            'xuxemon' => $registro
+            'enfermedades_nuevas' => array_values(array_unique($nuevasEnfermedades)),
+            'cantidad_consumida' => $cantidadConsumida,
+            'xuxemon' => $this->buildOwnedXuxemonPayload($user, $registro)
         ]);
     }
 
@@ -315,8 +337,142 @@ class XuxemonController extends Controller
                     'comidas' => 0,
                     'imagen' => $xuxemon->imagen,
                     'enfermedad' => null,
+                    'enfermedades' => [],
                 ]
             );
         }
+    }
+
+    private function findInventoryItem($user, string $itemName)
+    {
+        $query = $user->mochila()
+            ->where('tipo', '!=', 'xuxemon');
+
+        if ($itemName === 'Xuxe Caramelo') {
+            return $query
+                ->whereIn('nombre', [$itemName, self::LEGACY_XUXE_NAME])
+                ->orderByRaw("nombre = ? desc", [$itemName])
+                ->first();
+        }
+
+        return $query
+            ->where('nombre', $itemName)
+            ->first();
+    }
+
+    private function buildOwnedXuxemonPayload($user, UserXuxemon $registro): array
+    {
+        $cantidad = (int) $user->mochila()
+            ->where('tipo', 'xuxemon')
+            ->where('nombre', $registro->xuxemon->nombre)
+            ->sum('cantidad');
+
+        $enfermedades = $this->getDiseaseList($registro);
+
+        return [
+            'id' => $registro->xuxemon->id,
+            'nombre' => $registro->xuxemon->nombre,
+            'tipo' => $registro->xuxemon->tipo,
+            'descripcion' => $registro->xuxemon->descripcion,
+            'imagen' => $registro->imagen ?: $registro->xuxemon->imagen,
+            'tamano' => $this->normalizeSize($registro->tamano ?: 'Pequeño'),
+            'comidas' => (int) ($registro->comidas ?? 0),
+            'cantidad' => max(1, $cantidad),
+            'enfermedades' => $enfermedades,
+            'enfermedad' => $enfermedades[0] ?? null,
+            'created_at' => $registro->xuxemon->created_at,
+            'updated_at' => $registro->xuxemon->updated_at,
+        ];
+    }
+
+    private function getDiseaseList(UserXuxemon $registro): array
+    {
+        $enfermedades = $registro->enfermedades ?? [];
+
+        if (!is_array($enfermedades)) {
+            $enfermedades = [];
+        }
+
+        if ($registro->enfermedad && !in_array($registro->enfermedad, $enfermedades, true)) {
+            $enfermedades[] = $registro->enfermedad;
+        }
+
+        return array_values(array_unique(array_filter($enfermedades)));
+    }
+
+    private function syncDiseases(UserXuxemon $registro, array $enfermedades): void
+    {
+        $enfermedades = array_values(array_unique(array_filter($enfermedades)));
+        $registro->enfermedades = $enfermedades === [] ? null : $enfermedades;
+        $registro->enfermedad = $enfermedades[0] ?? null;
+    }
+
+    private function getDiseaseChances(): array
+    {
+        return [
+            self::DISEASE_BAJON => Config::getFloat('pct_bajon_azucar', 0),
+            self::DISEASE_SOBREDOSIS => Config::getFloat('pct_sobredosis_sucre', 0),
+            self::DISEASE_ATRACON => Config::getFloat('pct_atracon', 0),
+        ];
+    }
+
+    private function applyEvolutionProgress(UserXuxemon $registro, array $enfermedades): void
+    {
+        while (true) {
+            $tamanoActual = $this->normalizeSize($registro->tamano ?: 'Pequeño');
+            $siguienteTamano = $this->getNextSize($tamanoActual);
+
+            if (!$siguienteTamano) {
+                $registro->comidas = 0;
+                return;
+            }
+
+            $objetivo = $this->getStageRequirement($tamanoActual, $enfermedades);
+
+            if ($registro->comidas < $objetivo) {
+                return;
+            }
+
+            $registro->comidas -= $objetivo;
+            $registro->tamano = $siguienteTamano;
+        }
+    }
+
+    private function getStageRequirement(string $tamanoActual, array $enfermedades): int
+    {
+        $base = Config::getInt('evolve_xuxes', 3);
+        $base = $base > 0 ? $base : 3;
+        $tamanoActual = $this->normalizeSize($tamanoActual);
+
+        $objetivo = $tamanoActual === 'Mediano'
+            ? $base + 2
+            : $base;
+
+        if (in_array(self::DISEASE_BAJON, $enfermedades, true)) {
+            $objetivo += 2;
+        }
+
+        return $objetivo;
+    }
+
+    private function getNextSize(string $tamanoActual): ?string
+    {
+        return match ($this->normalizeSize($tamanoActual)) {
+            'Pequeño' => 'Mediano',
+            'Mediano' => 'Grande',
+            default => null,
+        };
+    }
+
+    private function normalizeSize(string $tamano): string
+    {
+        $valor = mb_strtolower(trim($tamano));
+
+        return match ($valor) {
+            'pequeno', 'pequeño', 'petit', 'small' => 'Pequeño',
+            'mediano', 'mediana', 'mitja', 'medium' => 'Mediano',
+            'grande', 'gran', 'big', 'large' => 'Grande',
+            default => 'Pequeño',
+        };
     }
 }

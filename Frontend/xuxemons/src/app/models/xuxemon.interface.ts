@@ -9,10 +9,12 @@ export interface IXuxemon {
     imagen_mediana?: string;
     imagen_grande?: string;
     tamano: string;
+    cantidad?: number;
     desbloqueado?: boolean;
     bloqueado?: boolean;
     created_at?: string;
     updated_at?: string;
     comidas?: number;
     enfermedad?: string;
+    enfermedades?: string[];
 }

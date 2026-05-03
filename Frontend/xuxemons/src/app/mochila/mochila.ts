@@ -40,7 +40,6 @@ export class Mochila implements OnInit {
   players: any[] = [];
   selectedPlayerId: number | null = null;
   tiposXuxe = [
-    { nombre: 'Xuxe', imagen: '/assets/images/caramel.png' },
     { nombre: 'Xuxe Caramelo', imagen: '/assets/images/caramel.png' },
     { nombre: 'Xuxe CHOCO', imagen: '/assets/images/choco.png' },
     { nombre: 'Xuxe Menta', imagen: '/assets/images/menta.png' }
@@ -168,22 +167,16 @@ export class Mochila implements OnInit {
       return false;
     }
 
+    if (this.tieneAtracon(this.xuxemonSeleccionado)) {
+      return false;
+    }
+
     const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar; // Suma de caramelos totales
+    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
+    const threshold = this.getStageRequirement(this.xuxemonSeleccionado);
     const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
-    const thresholds = this.getEvolveThresholds();
 
-    // Si es pequeño y supera el límite, devolverá TRUE (sí evoluciona)
-    if (tamanoActual === 'pequeño' && nuevasComidas >= thresholds.toMediano) {
-      return true;
-    }
-
-    // Si es mediano y supera el límite de los grandes, devuelve TRUE.
-    if (tamanoActual === 'mediano' && nuevasComidas >= thresholds.toGrande) {
-      return true;
-    }
-
-    return false;
+    return (tamanoActual === 'pequeño' || tamanoActual === 'mediano') && nuevasComidas >= threshold;
   }
 
   getNuevoTamano(): string {
@@ -191,15 +184,21 @@ export class Mochila implements OnInit {
       return '';
     }
 
-    const comidasActuales = this.xuxemonSeleccionado.comidas || 0;
-    const nuevasComidas = comidasActuales + this.cantidadAlimentar;
-    const thresholds = this.getEvolveThresholds();
-
-    if (nuevasComidas >= thresholds.toGrande) {
-      return 'Grande';
+    if (this.tieneAtracon(this.xuxemonSeleccionado)) {
+      return this.xuxemonSeleccionado.tamano || 'Pequeño';
     }
 
-    if (nuevasComidas >= thresholds.toMediano) {
+    if (this.vaAEvolucionar()) {
+      const tamanoActual = (this.xuxemonSeleccionado.tamano || 'Pequeño').toLowerCase();
+      if (tamanoActual === 'pequeño') {
+        return 'Mediano';
+      }
+      if (tamanoActual === 'mediano') {
+        return 'Grande';
+      }
+    }
+
+    if ((this.xuxemonSeleccionado.tamano || '').toLowerCase() === 'pequeño') {
       return 'Mediano';
     }
 
@@ -224,7 +223,12 @@ export class Mochila implements OnInit {
         const detalles: string[] = [];
 
         if (respuesta?.se_infecto) {
-          detalles.push('Se ha puesto malito (enfermo).');
+          const nuevas = Array.isArray(respuesta?.enfermedades_nuevas) ? respuesta.enfermedades_nuevas : [];
+          detalles.push(
+            nuevas.length > 0
+              ? `Se ha puesto malito: ${nuevas.join(', ')}.`
+              : 'Se ha puesto malito (enfermo).'
+          );
         }
 
         this.cargarInventario();
@@ -251,7 +255,7 @@ export class Mochila implements OnInit {
   }
 
   getXuxemonsEnfermos(): IXuxemon[] {
-    return this.misXuxemons.filter(x => x.enfermedad);
+    return this.misXuxemons.filter(x => this.getEnfermedades(x).length > 0);
   }
 
   getVacunasDisponibles(): Objeto[] {
@@ -286,14 +290,38 @@ export class Mochila implements OnInit {
     });
   }
 
-  private getEvolveThresholds(): { toMediano: number; toGrande: number } {
+  getEnfermedadTexto(xuxemon: IXuxemon | null): string {
+    return this.getEnfermedades(xuxemon).join(', ');
+  }
+
+  tieneAtracon(xuxemon: IXuxemon | null): boolean {
+    return this.getEnfermedades(xuxemon).includes('Atracón');
+  }
+
+  tieneBajonAzucar(xuxemon: IXuxemon | null): boolean {
+    return this.getEnfermedades(xuxemon).includes('Bajón de azúcar');
+  }
+
+  getStageRequirement(xuxemon: IXuxemon | null): number {
     const base = this.gameConfigService.snapshot.evolve_xuxes;
     const safeBase = base > 0 ? base : 3;
+    const tamanoActual = (xuxemon?.tamano || 'Pequeño').toLowerCase();
+    const baseEtapa = tamanoActual === 'mediano' ? safeBase + 2 : safeBase;
+    return baseEtapa + (this.tieneBajonAzucar(xuxemon) ? 2 : 0);
+  }
 
-    return {
-      toMediano: safeBase,
-      toGrande: safeBase + 2
-    };
+  private getEnfermedades(xuxemon: IXuxemon | null): string[] {
+    if (!xuxemon) {
+      return [];
+    }
+
+    const lista = Array.isArray(xuxemon.enfermedades) ? [...xuxemon.enfermedades] : [];
+
+    if (xuxemon.enfermedad && !lista.includes(xuxemon.enfermedad)) {
+      lista.push(xuxemon.enfermedad);
+    }
+
+    return lista;
   }
 
   @HostListener('document:keydown.escape')
@@ -362,52 +390,26 @@ export class Mochila implements OnInit {
   }
 
   addXuxesToPlayer() {
-    if (!this.selectedPlayerId) return;
-
-    const player = this.players.find(p => p.id === this.selectedPlayerId);
-    if (!player) return;
-
-    let inventory = player.inventory || [];
-    // 1. Calculamos cuántos slots reales ocupan las xuxes que ya tiene
-    const totalSlotsUsed = this.inventoryService.calculateSlotsUsed(inventory);
-    // 2. Calculamos los slots libres (máximo 20)
-    const availableSlots = 20 - totalSlotsUsed;
-
-    // 3. Si la mochila está llena, cerramos el grifo y descartamos
-    if (availableSlots <= 0) {
-      alert('La mochila del jugador está llena.');
+    if (!this.selectedPlayerId) {
+      alert('Selecciona un jugador.');
       return;
     }
 
-    const selectedXuxe = this.tiposXuxe.find(x => x.nombre === this.xuxeToAdd.nombre);
-
-    const newItem: Objeto = {
-      nombre: this.xuxeToAdd.nombre,
-      tipo: 'Xuxe',
-      cantidad: this.xuxeToAdd.cantidad,
-      stackable: true,
-      imagen: selectedXuxe?.imagen || ''
-    };
-
-    // 4. Calculamos cuántos slots nuevos vamos a gastar dividiendo entre 5
-    const slotsNeeded = Math.ceil(newItem.cantidad / 5);
-
-    // 5. Si gastamos más huecos de los que tenemos libres, le quitamos el exceso
-    if (slotsNeeded > availableSlots) {
-      const allowedAmount = availableSlots * 5;
-      alert(`Solo caben ${allowedAmount} Xuxes. El resto se descartará.`);
-      newItem.cantidad = allowedAmount; // Reemplazamos la cantidad por lo máximo que cabe
+    if (this.xuxeToAdd.cantidad < 1) {
+      alert('La cantidad debe ser mayor que 0.');
+      return;
     }
 
-    inventory.push(newItem);
-
-    // Guardamos en el backend de Laravel
-    this.authService.updateUserInventory(player.id, inventory).subscribe({
-      next: () => {
-        alert('Xuxes añadidas correctamente.');
+    this.xuxemonService.darXuxes(
+      this.selectedPlayerId,
+      this.xuxeToAdd.nombre,
+      this.xuxeToAdd.cantidad
+    ).subscribe({
+      next: (response: any) => {
+        alert(response?.mensaje || 'Xuxes añadidas correctamente.');
         this.loadPlayers();
       },
-      error: () => alert('Error al actualizar el inventario.')
+      error: (err: any) => alert(err?.error?.error || err?.error?.message || 'Error al actualizar el inventario.')
     });
   }
 
@@ -421,7 +423,8 @@ export class Mochila implements OnInit {
         continue; // Ignoramos a los bichos vivos, esto es el inventario de la mochila
       }
 
-      const nombre = item?.nombre || 'Item';
+      const nombreOriginal = item?.nombre || 'Item';
+      const nombre = nombreOriginal === 'Xuxe' ? 'Xuxe Caramelo' : nombreOriginal;
       
       const vacunasValidas = ['Xocolatina', 'Xal de fruites', 'Inxulina'];
       const esVacuna = item?.tipo === 'vacuna' || vacunasValidas.includes(nombre) || nombre.toLowerCase().includes('vacuna');

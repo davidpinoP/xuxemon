@@ -69,4 +69,14 @@ export class XuxemonService {
             headers: this.getHeaders()
         });
     }
+
+    darXuxes(userId: number, nombre: string, cantidad: number): Observable<any> {
+        return this.http.post<any>(`${this.apiUrl}/admin/dar-chuches`, {
+            user_id: userId,
+            nombre,
+            cantidad
+        }, {
+            headers: this.getHeaders()
+        });
+    }
 }

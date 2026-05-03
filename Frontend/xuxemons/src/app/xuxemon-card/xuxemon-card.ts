@@ -1,22 +1,20 @@
-import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewEncapsulation } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { IXuxemon } from '../models/xuxemon.interface';
 import { GameConfigService } from '../services/game-config.service';
 
 @Component({
   selector: 'app-xuxemon-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './xuxemon-card.html',
   styleUrl: './xuxemon-card.css',
   encapsulation: ViewEncapsulation.None
 })
 export class XuxemonCardComponent implements OnChanges {
   @Input() xuxemon!: IXuxemon;
-  @Input() xuxesDisponibles = 0;
-  @Output() evolucionar$ = new EventEmitter<{ xuxemonId: number; nuevoTamano: string; coste: number }>();
 
-  evolucionando = false;
   private indiceImagenActual = 0;
   private readonly placeholderImage = '/assets/images/xuxemon-mascot.png';
 
@@ -73,8 +71,8 @@ export class XuxemonCardComponent implements OnChanges {
       return 'Xuxemon bloqueado';
     }
 
-    if (this.xuxemon?.enfermedad) {
-      return `Estado: Enfermo - ${this.xuxemon.enfermedad}`;
+    if (this.enfermedadesTexto) {
+      return `Estado: Enfermo - ${this.enfermedadesTexto}`;
     }
 
     return 'Estado: Sano';
@@ -123,15 +121,34 @@ export class XuxemonCardComponent implements OnChanges {
 
     const tamano = this.normalizarTamano(this.xuxemon.tamano);
     const base = this.getEvolveBase();
+    const penalizacion = this.tieneBajonAzucar ? 2 : 0;
 
-    if (tamano === 'pequeno') return base;
-    if (tamano === 'mediano') return base + 2;
+    if (tamano === 'pequeno') return base + penalizacion;
+    if (tamano === 'mediano') return base + 2 + penalizacion;
 
     return 0;
   }
 
-  get puedeEvolucionar(): boolean {
-    return !this.estaBloqueado && this.xuxesNecesarias > 0 && this.xuxesDisponibles >= this.xuxesNecesarias;
+  get tieneBajonAzucar(): boolean {
+    return this.getEnfermedades().includes('Bajón de azúcar');
+  }
+
+  get enfermedadesTexto(): string {
+    return this.getEnfermedades().join(', ');
+  }
+
+  get comidasActuales(): number {
+    if (!this.xuxemon || this.estaBloqueado) return 0;
+    return Math.max(0, this.xuxemon.comidas || 0);
+  }
+
+  get comidasObjetivo(): number {
+    return this.xuxesNecesarias;
+  }
+
+  get xuxesRestantes(): number {
+    if (this.comidasObjetivo <= 0) return 0;
+    return Math.max(0, this.comidasObjetivo - this.comidasActuales);
   }
 
   get siguienteTamano(): string {
@@ -143,21 +160,6 @@ export class XuxemonCardComponent implements OnChanges {
     if (tamano === 'mediano') return 'Grande';
 
     return '';
-  }
-
-  evolucionar(): void {
-    if (!this.puedeEvolucionar || this.evolucionando) return;
-
-    this.evolucionando = true;
-
-    setTimeout(() => {
-      this.evolucionar$.emit({
-        xuxemonId: this.xuxemon.id,
-        nuevoTamano: this.siguienteTamano,
-        coste: this.xuxesNecesarias
-      });
-      this.evolucionando = false;
-    }, 1500);
   }
 
   onImageError(): void {
@@ -271,6 +273,22 @@ export class XuxemonCardComponent implements OnChanges {
 
   get bloqueoTexto(): string {
     return 'Desbloquealo para ver sus stats y evolucion.';
+  }
+
+  private getEnfermedades(): string[] {
+    if (!this.xuxemon) {
+      return [];
+    }
+
+    const lista = Array.isArray(this.xuxemon.enfermedades)
+      ? this.xuxemon.enfermedades
+      : [];
+
+    if (this.xuxemon.enfermedad && !lista.includes(this.xuxemon.enfermedad)) {
+      return [...lista, this.xuxemon.enfermedad];
+    }
+
+    return lista;
   }
 
   private getEvolveBase(): number {

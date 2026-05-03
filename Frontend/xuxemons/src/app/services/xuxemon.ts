@@ -41,6 +41,14 @@ export class Xuxemon {
     });
   }
 
+  darXuxes(userId: number, nombre: string, cantidad: number) {
+    return this.http.post('http://127.0.0.1:8000/api/admin/dar-chuches', {
+      user_id: userId,
+      nombre,
+      cantidad
+    });
+  }
+
   darXuxemonAleatorio(userId: string | number) {
     return this.http.post('http://127.0.0.1:8000/api/admin/dar-xuxemon-aleatorio', {
       user_id: userId
@@ -51,4 +59,3 @@ export class Xuxemon {
   checkRewards() { return this.http.get('http://127.0.0.1:8000/api/user/check-rewards'); }
   claimReward() { return this.http.post('http://127.0.0.1:8000/api/user/claim-reward', {}); }
 }
-

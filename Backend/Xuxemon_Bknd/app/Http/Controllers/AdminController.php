@@ -30,14 +30,14 @@ class AdminController extends Controller
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
+            'nombre' => 'required|string|in:Xuxe Caramelo,Xuxe CHOCO,Xuxe Menta',
             'cantidad' => 'required|integer|min:1|max:999'
         ]);
 
         $usuario = User::findOrFail($request->user_id);
 
         $slotsUsados = $this->calcularSlotsUsados($usuario);
-        $itemXuxe = \App\Models\Item::find(1);
-        $nombreXuxe = $itemXuxe ? $itemXuxe->nombre : 'Xuxe';
+        $nombreXuxe = $request->nombre;
 
         $mochilaEntry = $usuario->mochila()->firstOrNew([
             'nombre' => $nombreXuxe,
@@ -59,6 +59,7 @@ class AdminController extends Controller
 
         return response()->json([
             'mensaje' => 'Chuches añadidas al jugador',
+            'xuxe' => $nombreXuxe,
             'inventario' => $usuario->mochila
         ], 200);
     }
@@ -102,6 +103,7 @@ class AdminController extends Controller
                 'comidas' => 0,
                 'imagen' => $xuxemonAlea->imagen,
                 'enfermedad' => null,
+                'enfermedades' => [],
             ]
         );
 

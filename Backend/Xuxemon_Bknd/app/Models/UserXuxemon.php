@@ -13,6 +13,11 @@ class UserXuxemon extends Model
         'comidas',
         'imagen',
         'enfermedad',
+        'enfermedades',
+    ];
+
+    protected $casts = [
+        'enfermedades' => 'array',
     ];
 
     public function user()

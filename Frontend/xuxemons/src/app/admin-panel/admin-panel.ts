@@ -3,7 +3,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, FormsModule } 
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from '../services/xuxemon';
 import { AuthService } from '../services/auth.service';
-import { Objeto } from '../services/inventory.service';
 import { SidebarComponent } from '../components/sidebar/sidebar';
 import { SeoService } from '../services/seo.service';
 import { GameConfigService } from '../services/game-config.service';
@@ -49,6 +48,7 @@ export class AdminPanelComponent implements OnInit {
 
     this.fConfig = this.fb.group({
       pct_bajon_azucar: [0],
+      pct_sobredosis_sucre: [0],
       pct_atracon: [0],
       evolve_xuxes: [0],
       reward_hour: [0],
@@ -181,37 +181,17 @@ export class AdminPanelComponent implements OnInit {
       return;
     }
 
-    const player = this.users.find((user) => user.id === this.selectedPlayerId);
-
-    if (!player) {
-      alert('Jugador no encontrado.');
-      return;
-    }
-
-    const inventory = Array.isArray(player.inventory) ? [...player.inventory] : [];
-    const existingItem = inventory.find((item: any) => item.nombre === this.xuxeToAdd.nombre);
-
-    if (existingItem) {
-      existingItem.cantidad += this.xuxeToAdd.cantidad;
-    } else {
-      const nuevoItem: Objeto = {
-        nombre: this.xuxeToAdd.nombre,
-        tipo: 'Xuxe',
-        cantidad: this.xuxeToAdd.cantidad,
-        stackable: true,
-        imagen: ''
-      };
-
-      inventory.push(nuevoItem);
-    }
-
-    this.authService.updateUserInventory(player.id, inventory).subscribe({
-      next: () => {
-        player.inventory = inventory;
+    this.xuxemonService.darXuxes(
+      this.selectedPlayerId,
+      this.xuxeToAdd.nombre,
+      this.xuxeToAdd.cantidad
+    ).subscribe({
+      next: (response: any) => {
         this.xuxeToAdd = { nombre: 'Xuxe Caramelo', cantidad: 1 };
-        alert('Item anadido correctamente.');
+        this.mensajeRegalo = response?.mensaje || 'Xuxes añadidas correctamente.';
+        this.cargarUsuarios();
       },
-      error: () => alert('No se ha podido anadir el item.')
+      error: (err: any) => alert(err?.error?.error || err?.error?.message || 'No se han podido añadir las xuxes.')
     });
   }
 

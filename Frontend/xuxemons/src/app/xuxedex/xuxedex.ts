@@ -37,10 +37,10 @@ export class Xuxedex implements OnInit {
   ngOnInit(): void {
     this.seoService.update({
       title: 'Xuxedex',
-      description: 'Explora el catalogo de Xuxemons, filtra por tipo y descubre cuales has desbloqueado.'
+      description: 'Explora tu colección real de Xuxemons, filtra por tipo y revisa tus repetidos.'
     });
 
-    this.xuxemonService.getXuxemons().subscribe({
+    this.xuxemonService.getMisXuxemons().subscribe({
       next: (data: IXuxemon[]) => {
         this.todosXuxemons = this.prepararXuxemons(data);
         this.aplicarFiltros();
@@ -66,7 +66,7 @@ export class Xuxedex implements OnInit {
       const texto = this.textoBusqueda.toLowerCase().trim();
       resultado = resultado.filter((xuxemon) =>
         xuxemon.nombre.toLowerCase().includes(texto) ||
-        (this.estaDesbloqueado(xuxemon) && !!xuxemon.descripcion && xuxemon.descripcion.toLowerCase().includes(texto))
+        (!!xuxemon.descripcion && xuxemon.descripcion.toLowerCase().includes(texto))
       );
     }
 
@@ -76,7 +76,7 @@ export class Xuxedex implements OnInit {
 
     if (this.filtroTamano !== 'todos') {
       resultado = resultado.filter((xuxemon) =>
-        this.estaDesbloqueado(xuxemon) && this.normalizarTamano(xuxemon.tamano) === this.filtroTamano
+        this.normalizarTamano(xuxemon.tamano) === this.filtroTamano
       );
     }
 
@@ -118,27 +118,17 @@ export class Xuxedex implements OnInit {
       xuxemons.map((xuxemon) => ({
         ...xuxemon,
         tamano: this.capitalizarTamano(this.normalizarTamano(xuxemon.tamano)),
-        desbloqueado: xuxemon.desbloqueado !== false && xuxemon.bloqueado !== true,
-        bloqueado: xuxemon.bloqueado === true || xuxemon.desbloqueado === false
+        cantidad: Math.max(1, xuxemon.cantidad || 1),
+        desbloqueado: true,
+        bloqueado: false
       }))
     );
   }
 
   private ordenarXuxemons(xuxemons: IXuxemon[]): IXuxemon[] {
     return [...xuxemons].sort((a, b) => {
-      const desbloqueadoA = this.estaDesbloqueado(a) ? 1 : 0;
-      const desbloqueadoB = this.estaDesbloqueado(b) ? 1 : 0;
-
-      if (desbloqueadoA !== desbloqueadoB) {
-        return desbloqueadoB - desbloqueadoA;
-      }
-
       return a.id - b.id;
     });
-  }
-
-  private estaDesbloqueado(xuxemon: IXuxemon): boolean {
-    return xuxemon.desbloqueado !== false && xuxemon.bloqueado !== true;
   }
 
   private normalizarTamano(tamano?: string): 'pequeno' | 'mediano' | 'grande' {
