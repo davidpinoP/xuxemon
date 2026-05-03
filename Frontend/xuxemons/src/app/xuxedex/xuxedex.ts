@@ -45,6 +45,7 @@ export class Xuxedex implements OnInit {
       coleccion: this.xuxemonService.getMisXuxemons()
     }).subscribe({
       next: ({ catalogo, coleccion }) => {
+        // Mezclamos catalogo y coleccion para ver bloqueados, desbloqueados y repetidos en una sola pantalla.
         this.todosXuxemons = this.prepararXuxemons(catalogo, coleccion);
         this.aplicarFiltros();
         this.cargando = false;
@@ -126,11 +127,12 @@ export class Xuxedex implements OnInit {
         const propio = coleccionPorId.get(xuxemon.id);
 
         return {
-          ...xuxemon,
-          ...propio,
-          tamano: this.capitalizarTamano(
-            this.normalizarTamano(propio?.tamano || xuxemon.tamano)
-          ),
+            ...xuxemon,
+            ...propio,
+            // Si lo tiene el usuario, conservamos su estado real: tamano, comidas, enfermedades y cantidad.
+            tamano: this.capitalizarTamano(
+              this.normalizarTamano(propio?.tamano || xuxemon.tamano)
+            ),
           cantidad: propio ? Math.max(1, propio.cantidad || 1) : 0,
           comidas: propio?.comidas ?? 0,
           enfermedades: propio?.enfermedades || [],

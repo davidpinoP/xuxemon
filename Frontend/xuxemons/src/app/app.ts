@@ -32,6 +32,7 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.gameConfigService.load().subscribe();
+    // Al cargar la app comprobamos si toca ensenar la recompensa del dia.
     this.comprobarRecompensa();
 
     this.router.events
@@ -60,6 +61,7 @@ export class App implements OnInit {
     const token = this.authService.getToken();
     const rutaActual = this.router.url;
 
+    // Evitamos pedir recompensas en pantallas publicas como login o registro.
     if (!token || rutaActual === '/login' || rutaActual === '/register') {
       this.showReward = false;
       return;

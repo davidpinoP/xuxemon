@@ -21,6 +21,7 @@ class DailyRewardService
         $now = $now ?: now();
         $rewardHour = $this->getRewardHour();
 
+        // Solo se puede reclamar si ya paso la hora configurada y no la ha cobrado hoy.
         if ($now->hour < $rewardHour) {
             return false;
         }
@@ -54,6 +55,7 @@ class DailyRewardService
             ];
         }
 
+        // La recompensa diaria combina xuxes y un Xuxemon aleatorio pequeno.
         $xuxes = $this->getRewardXuxesAmount();
         $rewardXuxeName = $this->pickRandomXuxeName();
 

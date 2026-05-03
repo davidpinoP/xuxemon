@@ -9,7 +9,7 @@
   <section class="registration-form-section" aria-labelledby="registration-title">
     <h1 id="registration-title" class="sr-only">Crear cuenta</h1>
     <form class="d-flex flex-column align-items-center w-100 gap-3" [formGroup]="FormularioRegistro" (ngSubmit)="Submit()" aria-label="Formulario de registro">
-      <div class="input-group">
+      <div class="form-field">
         <label for="reg-nombre" class="sr-only">Nombre</label>
         <input class="form-control" id="reg-nombre" type="text" formControlName="nombre" placeholder="Nombre"
           autocomplete="given-name" aria-describedby="reg-nombre-error"
@@ -20,7 +20,7 @@
         }
       </div>
 
-      <div class="input-group">
+      <div class="form-field">
         <label for="reg-apellidos" class="sr-only">Apellidos</label>
         <input class="form-control" id="reg-apellidos" type="text" formControlName="apellidos" placeholder="Apellidos"
           autocomplete="family-name" aria-describedby="reg-apellidos-error"
@@ -31,7 +31,7 @@
         }
       </div>
 
-      <div class="input-group">
+      <div class="form-field">
         <label for="reg-correo" class="sr-only">Correo</label>
         <input class="form-control" id="reg-correo" type="email" formControlName="correo" placeholder="Correo"
           autocomplete="email" aria-describedby="reg-correo-error"
@@ -45,7 +45,7 @@
         }
       </div>
 
-      <div class="input-group">
+      <div class="form-field">
         <label for="reg-password" class="sr-only">Contraseña</label>
         <input class="form-control" id="reg-password" type="password" formControlName="password" placeholder="Contraseña"
           autocomplete="new-password" aria-describedby="reg-password-error"
@@ -59,7 +59,7 @@
         }
       </div>
 
-      <div class="input-group">
+      <div class="form-field">
         <label for="reg-confirmar" class="sr-only">Repite la contraseña</label>
         <input class="form-control" id="reg-confirmar" type="password" formControlName="confirmar_password"
           placeholder="Repite la contraseña" autocomplete="new-password"

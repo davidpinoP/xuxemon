@@ -72,7 +72,7 @@ form {
     max-width: 320px;
 }
 
-.input-group {
+.form-field {
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -10,6 +10,7 @@ class AutenticatorController extends Controller
 {
     public function login(Request $request)
     {
+        // El login del juego se hace con player_id, no con email.
         $request->validate([
             'player_id' => 'required|string',
             'password' => 'required|string',
@@ -26,6 +27,7 @@ class AutenticatorController extends Controller
 
         $user = auth('api')->user();
 
+        // Si la cuenta fue dada de baja, no permitimos volver a entrar.
         if (!$user->is_active) {
             auth('api')->logout();
 
@@ -52,6 +54,7 @@ class AutenticatorController extends Controller
             'role' => 'sometimes|in:admin,user',
         ]);
 
+        // El primer usuario del sistema se convierte automaticamente en admin.
         $isFirstUser = User::count() === 0;
 
         $user = User::create([
@@ -97,6 +100,7 @@ class AutenticatorController extends Controller
 
     private function generatePlayerId(string $name): string
     {
+        // El ID final sigue la forma #NombreXXXX y se comprueba que sea unico.
         $baseName = preg_replace('/\s+/', '', trim($name));
         $baseName = $baseName !== '' ? $baseName : 'Jugador';
 

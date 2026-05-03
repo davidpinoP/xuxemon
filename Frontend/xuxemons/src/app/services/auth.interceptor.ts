@@ -16,6 +16,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         loadingService.show();
     }
 
+    // Si existe token, clonamos la peticion y le anadimos el header Authorization.
     const requestToSend = token
         ? req.clone({
             setHeaders: {
@@ -27,6 +28,7 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     return next(requestToSend).pipe(
         catchError((error) => {
             if (error.status === 401) {
+                // Un 401 significa sesion caducada o invalida, asi que forzamos logout.
                 authService.logout();
                 router.navigate(['/login']);
             }
