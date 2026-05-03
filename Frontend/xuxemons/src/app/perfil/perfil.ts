@@ -73,7 +73,7 @@ export class Perfil implements OnInit {
           name: data.name || '',
           surname: data.surname || '',
           email: data.email || '',
-          playerId: data.player_id || localStorage.getItem('player_id') || '#Jugador0000',
+          playerId: data.player_id || localStorage.getItem('player_id') || '',
           role: this.mapearRol(data.role)
         };
 
@@ -254,12 +254,17 @@ export class Perfil implements OnInit {
   }
 
   get descripcionPerfil(): string {
-    const nombre = this.perfilUsuario.name || 'entrenador';
+    const nombre = this.perfilUsuario.name || 'jugador';
     return `Hola me llamo ${nombre.toLowerCase()}.`;
   }
 
   get playerIdVisible(): string {
-    const playerId = this.perfilUsuario.playerId || localStorage.getItem('player_id') || 'Jugador0000';
+    const playerId = this.perfilUsuario.playerId || localStorage.getItem('player_id') || '';
+
+    if (!playerId) {
+      return '-';
+    }
+
     return playerId.startsWith('#') ? playerId : `#${playerId}`;
   }
 

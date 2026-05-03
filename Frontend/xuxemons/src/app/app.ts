@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Xuxemon } from './services/xuxemon';
 import { GameConfigService } from './services/game-config.service';
@@ -33,11 +32,11 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.gameConfigService.load().subscribe();
-    this.comprobarRecompensaDiaria();
+    this.comprobarRecompensa();
 
     this.router.events
       .pipe(filter((event) => event instanceof NavigationEnd))
-      .subscribe(() => this.comprobarRecompensaDiaria());
+      .subscribe(() => this.comprobarRecompensa());
   }
 
   claim() {
@@ -57,7 +56,7 @@ export class App implements OnInit {
     return this.gameConfigService.snapshot.reward_xuxes_amount;
   }
 
-  private comprobarRecompensaDiaria(): void {
+  private comprobarRecompensa(): void {
     const token = this.authService.getToken();
     const rutaActual = this.router.url;
 

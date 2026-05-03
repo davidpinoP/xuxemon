@@ -136,7 +136,7 @@ export class Xuxedex implements OnInit {
           enfermedades: propio?.enfermedades || [],
           enfermedad: propio?.enfermedad || undefined,
           desbloqueado: !!propio,
-          bloqueado: !propio,
+          bloqueado: !propio
         };
       })
     );
@@ -151,8 +151,8 @@ export class Xuxedex implements OnInit {
         return bDesbloqueado - aDesbloqueado;
       }
 
-      const cantidadA = a.cantidad || 1;
-      const cantidadB = b.cantidad || 1;
+      const cantidadA = a.cantidad || 0;
+      const cantidadB = b.cantidad || 0;
 
       if (cantidadA !== cantidadB) {
         return cantidadB - cantidadA;
