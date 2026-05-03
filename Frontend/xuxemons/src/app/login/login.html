@@ -9,10 +9,10 @@
 
   <section class="login-form-section" aria-labelledby="login-title">
     <h1 id="login-title" class="sr-only">Iniciar sesión</h1>
-    <form [formGroup]="formulariLogin" (ngSubmit)="Submit()" aria-label="Formulario de inicio de sesión">
+    <form class="d-flex flex-column align-items-center gap-3 w-100" [formGroup]="formulariLogin" (ngSubmit)="Submit()" aria-label="Formulario de inicio de sesión">
       <div class="input-group">
         <label for="player_id" class="sr-only">Player ID</label>
-        <input id="player_id" type="text" formControlName="player_id" placeholder="Player ID"
+        <input class="form-control" id="player_id" type="text" formControlName="player_id" placeholder="Player ID"
           autocomplete="username" aria-describedby="player-id-error"
           [attr.aria-invalid]="formulariLogin.get('player_id')?.invalid && (formulariLogin.get('player_id')?.dirty || formulariLogin.get('player_id')?.touched)">
         @if (formulariLogin.get('player_id')?.invalid && (formulariLogin.get('player_id')?.dirty ||
@@ -23,7 +23,7 @@
 
       <div class="input-group">
         <label for="password" class="sr-only">Contraseña</label>
-        <input id="password" type="password" formControlName="password" placeholder="Contraseña"
+        <input class="form-control" id="password" type="password" formControlName="password" placeholder="Contraseña"
           autocomplete="current-password" aria-describedby="password-error"
           [attr.aria-invalid]="formulariLogin.get('password')?.invalid && (formulariLogin.get('password')?.dirty || formulariLogin.get('password')?.touched)">
         @if (formulariLogin.get('password')?.invalid && (formulariLogin.get('password')?.dirty ||
@@ -32,13 +32,13 @@
         }
       </div>
 
-      <button type="submit" [disabled]="formulariLogin.invalid">ENTRAR</button>
+      <button class="btn btn-primary" type="submit" [disabled]="formulariLogin.invalid">ENTRAR</button>
 
       @if (error_msg) {
-      <div class="error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
+      <div class="alert alert-danger error-service" role="alert" aria-live="polite">{{ error_msg }}</div>
       }
     </form>
   </section>
 
-  <button type="button" class="register-btn" (click)="goToRegister()">Registrarse</button>
+  <button type="button" class="register-btn btn btn-outline-primary" (click)="goToRegister()">Registrarse</button>
 </main>
