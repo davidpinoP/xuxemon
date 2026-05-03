@@ -61,7 +61,7 @@ class UserController extends Controller
         $users = User::query()
             ->where('id', '!=', $userId)
             ->where('is_active', true)
-            ->where('player_id', 'like', '%' . $query . '%')
+            ->whereRaw('LOWER(player_id) LIKE ?', ['%' . mb_strtolower($query) . '%'])
             ->whereNotIn('id', $friendIds)
             ->whereNotIn('id', $pendingUserIds)
             ->orderBy('player_id')
