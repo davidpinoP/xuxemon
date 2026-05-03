@@ -40,7 +40,7 @@ export class Xuxedex implements OnInit {
       description: 'Explora tu colección real de Xuxemons, filtra por tipo y revisa tus repetidos.'
     });
 
-    this.xuxemonService.getMisXuxemons().subscribe({
+    this.xuxemonService.getXuxemons().subscribe({
       next: (data: IXuxemon[]) => {
         this.todosXuxemons = this.prepararXuxemons(data);
         this.aplicarFiltros();
@@ -119,14 +119,15 @@ export class Xuxedex implements OnInit {
         ...xuxemon,
         tamano: this.capitalizarTamano(this.normalizarTamano(xuxemon.tamano)),
         cantidad: Math.max(1, xuxemon.cantidad || 1),
-        desbloqueado: true,
-        bloqueado: false
       }))
     );
   }
 
   private ordenarXuxemons(xuxemons: IXuxemon[]): IXuxemon[] {
     return [...xuxemons].sort((a, b) => {
+      const aDesbloqueado = a.desbloqueado ? 1 : 0;
+      const bDesbloqueado = b.desbloqueado ? 1 : 0;
+      if (aDesbloqueado !== bDesbloqueado) return bDesbloqueado - aDesbloqueado;
       return a.id - b.id;
     });
   }
