@@ -337,7 +337,6 @@ class XuxemonController extends Controller
                     'comidas' => 0,
                     'imagen' => $xuxemon->imagen,
                     'enfermedad' => null,
-                    'enfermedades' => [],
                 ]
             );
         }
@@ -403,7 +402,9 @@ class XuxemonController extends Controller
     private function syncDiseases(UserXuxemon $registro, array $enfermedades): void
     {
         $enfermedades = array_values(array_unique(array_filter($enfermedades)));
-        $registro->enfermedades = $enfermedades === [] ? null : $enfermedades;
+        if (UserXuxemon::hasEnfermedadesColumn()) {
+            $registro->enfermedades = $enfermedades === [] ? null : $enfermedades;
+        }
         $registro->enfermedad = $enfermedades[0] ?? null;
     }
 

@@ -251,6 +251,7 @@ class UserController extends Controller
 
         return response()->json([
             'ok' => true,
+            'can_claim' => false,
             'reward' => $result
         ]);
     }
