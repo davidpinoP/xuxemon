@@ -196,6 +196,16 @@
   box-shadow: 0 6px 24px rgba(124, 108, 240, 0.55);
 }
 
+.reward-button:disabled {
+  cursor: wait;
+  opacity: 0.72;
+}
+
+.reward-button:disabled:hover {
+  transform: none;
+  box-shadow: 0 4px 18px rgba(124, 108, 240, 0.4);
+}
+
 .reward-button:active {
   transform: translateY(0);
 }

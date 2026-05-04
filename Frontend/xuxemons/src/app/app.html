@@ -20,7 +20,9 @@
                 <span>1 Xuxemon</span>
             </div>
         </div>
-        <button (click)="claim()" class="reward-button">Reclamar</button>
+        <button (click)="claim()" class="reward-button" [disabled]="claimInProgress">
+            {{ claimInProgress ? 'Reclamando...' : 'Reclamar' }}
+        </button>
     </div>
 </div>
 }

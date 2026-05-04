@@ -103,7 +103,6 @@ class AdminController extends Controller
                 'comidas' => 0,
                 'imagen' => $xuxemonAlea->imagen,
                 'enfermedad' => null,
-                'enfermedades' => [],
             ]
         );
 

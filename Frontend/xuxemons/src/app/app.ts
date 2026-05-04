@@ -18,6 +18,7 @@ import { AuthService } from './services/auth.service';
 export class App implements OnInit {
   title = 'xuxemons';
   showReward = false;
+  claimInProgress = false;
   readonly loading$;
 
   constructor(
@@ -32,7 +33,6 @@ export class App implements OnInit {
 
   ngOnInit() {
     this.gameConfigService.load().subscribe();
-    // Al cargar la app comprobamos si toca ensenar la recompensa del dia.
     this.comprobarRecompensa();
 
     this.router.events
@@ -41,14 +41,23 @@ export class App implements OnInit {
   }
 
   claim() {
+    if (this.claimInProgress) {
+      return;
+    }
+
+    this.claimInProgress = true;
+
     this.xuxemonService.claimReward().subscribe({
       next: (response: any) => {
         this.showReward = false;
-        // Usamos la respuesta del backend para mostrar la cantidad real configurada por admin.
+        this.claimInProgress = false;
         const amount = response?.reward?.xuxes ?? this.rewardXuxesAmount;
-        alert(`recompensa recibida: ${amount} xuxes + 1 xuxemon pequeno.`);
+        const xuxemonText = response?.reward?.xuxemon ? ' + 1 xuxemon pequeno.' : '.';
+        alert(`recompensa recibida: ${amount} xuxes${xuxemonText}`);
       },
       error: (err) => {
+        this.showReward = false;
+        this.claimInProgress = false;
         alert(err?.error?.message || 'No puedes reclamar la recompensa en este momento.');
       }
     });
@@ -62,19 +71,22 @@ export class App implements OnInit {
     const token = this.authService.getToken();
     const rutaActual = this.router.url;
 
-    // Evitamos pedir recompensas en pantallas publicas como login o registro.
     if (!token || rutaActual === '/login' || rutaActual === '/register') {
       this.showReward = false;
+      this.claimInProgress = false;
       return;
     }
 
     this.xuxemonService.checkRewards().subscribe({
       next: (res: any) => {
-        // Si backend dice can_claim = true, abrimos el popup de recompensa diaria.
         this.showReward = !!res.can_claim;
+        if (!this.showReward) {
+          this.claimInProgress = false;
+        }
       },
       error: () => {
         this.showReward = false;
+        this.claimInProgress = false;
       }
     });
   }

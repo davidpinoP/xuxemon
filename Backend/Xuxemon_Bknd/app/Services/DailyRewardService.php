@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserXuxemon;
 use App\Models\Xuxemon;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class DailyRewardService
 {
@@ -51,11 +52,75 @@ class DailyRewardService
     {
         $now = $now ?: now();
 
-        if (!$this->canClaim($user, $now)) {
+        return DB::transaction(function () use ($user, $now) {
+            $lockedUser = User::query()
+                ->whereKey($user->getKey())
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if (!$this->canClaim($lockedUser, $now)) {
+                return [
+                    'ok' => false,
+                    'message' => 'No puedes reclamar la recompensa en este momento.'
+                ];
+            }
+
+            $xuxes = $this->getRewardXuxesAmount();
+            $rewardXuxeName = $this->pickRandomXuxeName();
+
+            $xuxeEntry = $lockedUser->mochila()
+                ->where('tipo', 'item')
+                ->where('nombre', $rewardXuxeName)
+                ->first();
+
+            if ($xuxeEntry) {
+                $xuxeEntry->increment('cantidad', $xuxes);
+            } else {
+                $lockedUser->mochila()->create([
+                    'nombre' => $rewardXuxeName,
+                    'tipo' => 'item',
+                    'cantidad' => $xuxes
+                ]);
+            }
+
+            $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($lockedUser);
+            $xuxemonNombre = null;
+            $xuxemonId = null;
+
+            if ($xuxemonAlea) {
+                $xuxemonNombre = $xuxemonAlea->nombre;
+                $xuxemonId = $xuxemonAlea->id;
+
+                $entradaMochila = $lockedUser->mochila()->firstOrNew([
+                    'nombre' => $xuxemonAlea->nombre,
+                    'tipo' => 'xuxemon',
+                ]);
+
+                $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
+                $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
+                $entradaMochila->save();
+
+                UserXuxemon::firstOrCreate(
+                    [
+                        'user_id' => $lockedUser->id,
+                        'xuxemon_id' => $xuxemonAlea->id,
+                    ],
+                    UserXuxemon::initialAttributesFor($xuxemonAlea)
+                );
+            }
+
+            $lockedUser->last_reward_at = $now;
+            $lockedUser->save();
+
             return [
-                'ok' => false,
-                'message' => 'No puedes reclamar la recompensa en este momento.'
+                'ok' => true,
+                'xuxes' => $xuxes,
+                'xuxe_name' => $rewardXuxeName,
+                'xuxemon' => $xuxemonNombre,
+                'xuxemon_id' => $xuxemonId,
+                'reward_hour' => $this->getRewardHour(),
             ];
+<<<<<<< Updated upstream
         }
 
         // La recompensa diaria combina xuxes y un Xuxemon aleatorio pequeno.
@@ -121,6 +186,9 @@ class DailyRewardService
             'xuxemon_id' => $xuxemonId,
             'reward_hour' => $this->getRewardHour(),
         ];
+=======
+        });
+>>>>>>> Stashed changes
     }
 
     public function getRewardHour(): int
