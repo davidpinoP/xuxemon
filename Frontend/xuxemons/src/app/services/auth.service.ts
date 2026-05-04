@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject, tap, catchError, of } from 'rxjs';
+import { Observable, BehaviorSubject, tap, catchError, throwError } from 'rxjs';
 
 @Injectable({
     providedIn: 'root'
@@ -64,7 +64,7 @@ export class AuthService {
                 if (err.status === 401) {
                     this.logout();
                 }
-                return of(null);
+                return throwError(() => err);
             })
         );
     }
