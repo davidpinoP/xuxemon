@@ -44,6 +44,7 @@ export class App implements OnInit {
     this.xuxemonService.claimReward().subscribe({
       next: (response: any) => {
         this.showReward = false;
+        // Usamos la respuesta del backend para mostrar la cantidad real configurada por admin.
         const amount = response?.reward?.xuxes ?? this.rewardXuxesAmount;
         alert(`recompensa recibida: ${amount} xuxes + 1 xuxemon pequeno.`);
       },
@@ -69,6 +70,7 @@ export class App implements OnInit {
 
     this.xuxemonService.checkRewards().subscribe({
       next: (res: any) => {
+        // Si backend dice can_claim = true, abrimos el popup de recompensa diaria.
         this.showReward = !!res.can_claim;
       },
       error: () => {

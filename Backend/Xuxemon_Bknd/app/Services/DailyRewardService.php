@@ -10,6 +10,7 @@ use Carbon\Carbon;
 
 class DailyRewardService
 {
+    // Tipos de xuxe que se pueden regalar de forma aleatoria en la recompensa diaria.
     private const XUXE_TYPES = [
         'Xuxe Caramelo',
         'Xuxe CHOCO',
@@ -37,6 +38,8 @@ class DailyRewardService
     {
         $now = $now ?: now();
 
+        // Este helper se usa cuando queremos dar la recompensa automaticamente si corresponde,
+        // por ejemplo al iniciar sesion o al comprobar estados del usuario.
         if (!$this->canClaim($user, $now)) {
             return null;
         }
@@ -59,6 +62,7 @@ class DailyRewardService
         $xuxes = $this->getRewardXuxesAmount();
         $rewardXuxeName = $this->pickRandomXuxeName();
 
+        // Primero regalamos las xuxes diarias como item normal de mochila.
         $xuxeEntry = $user->mochila()
             ->where('tipo', 'item')
             ->where('nombre', $rewardXuxeName)
@@ -78,6 +82,7 @@ class DailyRewardService
         $xuxemonId = null;
 
         if ($xuxemonAlea) {
+            // Despues regalamos un Xuxemon pequeno y lo sincronizamos tambien en user_xuxemons.
             $xuxemonNombre = $xuxemonAlea->nombre;
             $xuxemonId = $xuxemonAlea->id;
 
@@ -135,6 +140,7 @@ class DailyRewardService
 
     public function getRewardXuxesAmount(): int
     {
+        // Esta cantidad sale de la configuracion global del admin, no esta hardcodeada.
         $amount = Config::getInt('reward_xuxes_amount', 10);
 
         return $amount > 0 ? $amount : 10;
@@ -157,6 +163,7 @@ class DailyRewardService
 
     private function pickRandomXuxeName(): string
     {
+        // Elegimos un tipo de xuxe al azar para que la recompensa no sea siempre identica.
         return self::XUXE_TYPES[array_rand(self::XUXE_TYPES)];
     }
 }
