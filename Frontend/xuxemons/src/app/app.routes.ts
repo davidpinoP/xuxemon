@@ -10,6 +10,8 @@ import { FriendsBasic } from './friends-basic/friends-basic';
 import { AdminPanelComponent } from './admin-panel/admin-panel';
 import { adminGuard } from './guards/admin-guard';
 
+// Mapa principal de pantallas Angular. Aqui decidimos que componente se renderiza
+// en cada URL y que rutas exigen login o rol admin.
 export const routes: Routes = [
   { path: 'login', component: Login, title: 'Entrar - Xuxemons' },
   { path: 'register', component: Registro, title: 'Registro - Xuxemons' },

@@ -18,6 +18,9 @@ class IsActiveMiddleware
         // El usuario ya debe estar autenticado por ApiAuth antes de este middleware
         $user = $request->user();
 
+        // Si la cuenta esta desactivada bloqueamos cualquier accion protegida,
+        // aunque el token sea valido.
+
         if (!$user || !$user->is_active) {
             return response()->json([
                 'message' => 'Acceso denegado: Tu cuenta está desactivada'

@@ -18,6 +18,7 @@ class FriendRequestController extends Controller
         $senderId = (int) $request->user()->id;
         $receiverId = (int) $request->receiver_id;
 
+        // Regla basica: nadie puede mandarse una solicitud a si mismo.
         if ($senderId === $receiverId) {
             return response()->json([
                 'message' => 'No puedes enviarte una solicitud a ti mismo.',
@@ -35,6 +36,8 @@ class FriendRequestController extends Controller
             })
             ->exists();
 
+        // Si ya existe amistad en cualquiera de los dos sentidos, no tiene
+        // sentido crear una solicitud nueva.
         if ($alreadyFriends) {
             return response()->json([
                 'message' => 'Ya sois amigos.',
@@ -54,6 +57,8 @@ class FriendRequestController extends Controller
             })
             ->exists();
 
+        // Tambien bloqueamos duplicados cuando la solicitud pendiente existe
+        // en el sentido inverso, para evitar cruces o spam.
         if ($pendingRequestExists) {
             return response()->json([
                 'message' => 'Ya existe una solicitud pendiente entre estos usuarios.',
@@ -76,6 +81,8 @@ class FriendRequestController extends Controller
     {
         $userId = (int) $request->user()->id;
 
+        // Cargamos tambien datos basicos del emisor para que el frontend pueda
+        // pintar la tarjeta sin hacer peticiones extra por cada solicitud.
         $requests = FriendRequest::query()
             ->with('sender:id,name,surname,player_id,email')
             ->where('receiver_id', $userId)
@@ -102,6 +109,8 @@ class FriendRequestController extends Controller
             ], 404);
         }
 
+        // La transaccion evita estados a medias: o se acepta y se crean las dos
+        // amistades, o no se guarda nada.
         DB::transaction(function () use ($friendRequest) {
             $friendRequest->update(['status' => 'accepted']);
 
@@ -137,6 +146,7 @@ class FriendRequestController extends Controller
             ], 404);
         }
 
+        // Rechazar no borra historico: simplemente marca la solicitud como rechazada.
         $friendRequest->update(['status' => 'rejected']);
 
         return response()->json([

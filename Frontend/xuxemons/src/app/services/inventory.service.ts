@@ -11,6 +11,7 @@ export interface Objeto {
 
 @Injectable({ providedIn: 'root' })
 export class InventoryService {
+    // Estado compartido de los 20 huecos visibles de la mochila.
     private slotsSubject = new BehaviorSubject<(Objeto | null)[]>(Array(20).fill(null)); //control d huecos libres en la mochila
     slots$ = this.slotsSubject.asObservable();
 

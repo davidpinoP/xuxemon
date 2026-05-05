@@ -13,6 +13,8 @@ class RoleMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
+    // Middleware reutilizable para cualquier rol. En este proyecto se usa sobre
+    // todo para proteger las rutas del panel admin.
   public function handle(Request $request, Closure $next, string $role): Response
 {
     // Verificamos si el usuario está logueado y si tiene el rol necesario
