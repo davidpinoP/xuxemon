@@ -23,24 +23,18 @@ class DailyRewardService
      */
     public function canClaim(User $user, ?Carbon $now = null): bool
     {
-        // PASO 1: Establecer la hora actual (por defecto la del sistema)
         $now = $now ?: now();
+        $rewardHour = $this->getRewardHour(); // Obtenemos la hora configurada por el admin desde la BD
         
-        // PASO 2: Leer la hora de recompensa desde la base de datos (configurada por Admin)
-        $rewardHour = $this->getRewardHour();
-
-        // PASO 3: Validación de la hora. Si son antes de las 8 AM (o la hora configurada), se rechaza.
         if ($now->hour < $rewardHour) {
-            return false;
+            return false; // Aún no es la hora permitida para reclamar el premio
         }
 
-        // PASO 4: Validación de cobro único por día. Si ya lo cobró "hoy" (isToday), se rechaza.
         if ($user->last_reward_at && $user->last_reward_at->isToday()) {
-            return false;
+            return false; // Evitamos duplicados: ya ha cobrado su premio hoy
         }
 
-        // Si supera ambas barreras, significa que es apto para recibir su recompensa diaria.
-        return true;
+        return true; // Ha pasado todos los filtros, puede cobrar
     }
 
     public function grantIfEligible(User $user, ?Carbon $now = null): ?array
@@ -58,7 +52,6 @@ class DailyRewardService
     {
         $now = $now ?: now();
 
-        // PASO 1: Doble comprobación de seguridad (por si alguien llama directamente a la API)
         if (!$this->canClaim($user, $now)) {
             return [
                 'ok' => false,
@@ -66,34 +59,28 @@ class DailyRewardService
             ];
         }
 
-        // ==========================================
-        // PARTE 1: ENTREGA DE XUXES
-        // ==========================================
-        // Leemos la cantidad de la base de datos (Configuración de Admin)
+        // 1. Entregar Xuxes dinámicas
+        // Leemos cuántas xuxes tocan desde la configuración del admin
         $xuxes = $this->getRewardXuxesAmount();
         $rewardXuxeName = $this->pickRandomXuxeName();
 
-        // Comprobamos si el usuario ya tiene este tipo de xuxe en su mochila
         $xuxeEntry = $user->mochila()
             ->where('tipo', 'item')
             ->where('nombre', $rewardXuxeName)
             ->first();
             
         if ($xuxeEntry) {
-            // Si ya la tiene, solo incrementamos la cantidad
-            $xuxeEntry->increment('cantidad', $xuxes);
+            $xuxeEntry->increment('cantidad', $xuxes); // Si ya tiene de esta xuxe, le sumamos la cantidad
         } else {
-            // Si no la tiene, creamos un nuevo bloque/hueco en la mochila
             $user->mochila()->create([
                 'nombre' => $rewardXuxeName,
                 'tipo' => 'item',
-                'cantidad' => $xuxes
+                'cantidad' => $xuxes // Si es nueva, le creamos el hueco en la mochila
             ]);
         }
 
-        // ==========================================
-        // PARTE 2: ENTREGA DEL XUXEMON ALEATORIO
-        // ==========================================
+        // 2. Entregar Xuxemon
+        // Usa una query que intenta buscar Xuxemons que el usuario aún NO tenga desbloqueados
         $xuxemonAlea = $this->obtenerXuxemonAleatorioParaUsuario($user);
         $xuxemonNombre = null;
         $xuxemonId = null;
@@ -102,20 +89,18 @@ class DailyRewardService
             $xuxemonNombre = $xuxemonAlea->nombre;
             $xuxemonId = $xuxemonAlea->id;
 
-            // Buscamos si ya tiene este Xuxemon en la mochila, si no, preparamos para crearlo
             $entradaMochila = $user->mochila()->firstOrNew([
                 'nombre' => $xuxemonAlea->nombre,
                 'tipo' => 'xuxemon',
             ]);
 
-            // Añadimos +1 a la cantidad en la mochila y lo forzamos a nacer "Pequeño"
+            // Lo metemos en la mochila, garantizando que entra con tamaño "Pequeño"
             $entradaMochila->cantidad = ($entradaMochila->cantidad ?? 0) + 1;
             $entradaMochila->tamano = $entradaMochila->tamano ?: 'Pequeño';
             $entradaMochila->save();
 
-            // Lo registramos en la colección (UserXuxemon) o en la "Xuxedex"
-            // firstOrCreate evita crear duplicados en la Xuxedex si ya lo tenía,
-            // pero inicializa sus stats (comidas, enfermedades) si es la primera vez.
+            // 3. Registrar en la Xuxedex (UserXuxemon)
+            // firstOrCreate inicializa las estadísticas (comidas, enfermedades) a 0 si es la primera vez que lo atrapa
             UserXuxemon::firstOrCreate(
                 [
                     'user_id' => $user->id,
@@ -131,14 +116,11 @@ class DailyRewardService
             );
         }
 
-        // ==========================================
-        // PARTE 3: MARCAR COMO COBRADO
-        // ==========================================
-        // Actualizamos la fecha de último cobro para que no pueda volver a cobrar hoy
+        // 4. Registrar cobro
+        // Guardamos la fecha actual en la BD para bloquear futuros reclamos hasta mañana
         $user->last_reward_at = $now;
         $user->save();
 
-        // Retornamos los datos para mostrarlos en el frontend modal
         return [
             'ok' => true,
             'xuxes' => $xuxes,
