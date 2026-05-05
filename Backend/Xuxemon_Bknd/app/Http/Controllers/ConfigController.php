@@ -10,12 +10,16 @@ class ConfigController extends Controller
     // obtener todas las configs
     public function index()
     {
+        // Devuelve key => value para que el panel admin pueda cargar y editar
+        // todos los ajustes globales en un solo formulario.
         return response()->json(Config::all()->pluck('value', 'key'));
     }
 
     // obtener configs de juego para usuarios autenticados
     public function publicIndex()
     {
+        // Exponemos solo las claves que necesita el cliente para pintar reglas
+        // visibles, sin abrir todo el catalogo interno de configuracion.
         return response()->json([
             'pct_bajon_azucar'      => Config::getFloat('pct_bajon_azucar', 0),
             'pct_sobredosis_sucre'  => Config::getFloat('pct_sobredosis_sucre', 0),
@@ -45,6 +49,8 @@ class ConfigController extends Controller
             'reward_xuxes_amount.min' => 'La cantidad diaria de xuxes debe ser al menos 1.',
         ]);
 
+        // updateOrCreate permite guardar varias claves en bloque desde el panel
+        // sin depender de que ya existan filas previas en la tabla configs.
         foreach ($data as $key => $value) {
             Config::updateOrCreate(['key' => $key], ['value' => $value]);
         }

@@ -12,6 +12,8 @@ class AdminController extends Controller
 {
     private function calcularSlotsUsados(User $usuario): int
     {
+        // La mochila tiene 20 casillas visuales: los xuxes se apilan de 5 en 5
+        // y las vacunas ocupan 1 casilla por unidad.
         $slots = 0;
         foreach ($usuario->mochila as $item) {
             if ($item->tipo === 'xuxemon') continue;
@@ -47,7 +49,9 @@ class AdminController extends Controller
         $cantidadAnterior = $mochilaEntry->cantidad ?? 0;
         $slotsItemAnterior = (int) ceil($cantidadAnterior / 5);
         $slotsItemNuevos = (int) ceil(($cantidadAnterior + $request->cantidad) / 5);
-        
+
+        // Recalculamos solo los slots del item que estamos modificando para no
+        // rechazar regalos validos cuando el resto de la mochila ya esta ocupada.
         if (($slotsUsados - $slotsItemAnterior + $slotsItemNuevos) > 20) {
             return response()->json([
                 'error' => 'La mochila del jugador está llena (límite de 20 casillas).'
@@ -84,6 +88,7 @@ class AdminController extends Controller
             ->exists();
 
         // Se lo guarda al usuario en tamaño pequeño en la mochila
+        // Este regalo tambien sirve para desbloquear criaturas nuevas en la coleccion.
         $entradaMochila = $usuario->mochila()->firstOrNew([
             'nombre' => $xuxemonAlea->nombre,
             'tipo' => 'xuxemon',
@@ -126,6 +131,7 @@ class AdminController extends Controller
 
         $u = User::findOrFail($request->user_id);
         
+        // Las vacunas no se apilan: cada una consume una casilla propia.
         if ($this->calcularSlotsUsados($u) >= 20) {
             return response()->json([
                 'ok'      => false,
@@ -152,6 +158,8 @@ class AdminController extends Controller
         $desbloqueados = UserXuxemon::where('user_id', $usuario->id)
             ->pluck('xuxemon_id');
 
+        // Priorizamos criaturas nuevas para que el regalo sirva para progresar en
+        // la coleccion; si ya las tiene todas, devolvemos una cualquiera.
         $pendiente = Xuxemon::query()
             ->when($desbloqueados->isNotEmpty(), function ($query) use ($desbloqueados) {
                 $query->whereNotIn('id', $desbloqueados);

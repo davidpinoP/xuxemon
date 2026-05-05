@@ -16,10 +16,13 @@ export class SidebarComponent implements OnInit {
   constructor(private authService: AuthService, private router: Router) {}
 
   ngOnInit(): void {
+    // Guardamos una copia simple del rol para decidir si se muestra el acceso
+    // al panel admin en el menu lateral.
     this.isAdmin = localStorage.getItem('userRole') === 'admin';
   }
 
   logout(): void {
+    // Cierra sesion en backend/frontend y devuelve al usuario a login.
     this.authService.logout();
     this.router.navigate(['/login']);
   }

@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\DB;
 class FriendController extends Controller
 {
     /**
-     * List all friends of the authenticated user.
+     * Lista los amigos reales del usuario autenticado.
+     * Se apoya en la relacion friends() del modelo User.
      */
     public function index(Request $request)
     {
@@ -21,7 +22,8 @@ class FriendController extends Controller
     }
 
     /**
-     * Remove a friendship (bidirectional).
+     * Elimina la amistad en ambos sentidos porque el proyecto la guarda como
+     * dos filas simetricas: A->B y B->A.
      */
     public function destroy(Request $request, $id)
     {

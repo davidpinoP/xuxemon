@@ -11,6 +11,8 @@ export class FriendRequestService {
 
   constructor(private http: HttpClient) { }
 
+  // Servicio dedicado al flujo de solicitudes recibidas/enviadas.
+  // Mantiene los nombres legacy del backend para no romper la integracion actual.
   //  Enviar solicitud
   sendRequest(receiverId: number): Observable<any> {
     return this.http.post(`${this.apiUrl}/send`, { receiver_id: receiverId });

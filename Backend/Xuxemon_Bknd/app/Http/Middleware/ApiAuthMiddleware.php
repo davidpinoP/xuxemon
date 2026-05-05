@@ -14,6 +14,7 @@ class ApiAuthMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         try {
+            // userOrFail valida el JWT del guard "api" y resuelve el usuario autenticado.
             auth('api')->userOrFail();
         } catch (TokenExpiredException $e) {
             return response()->json([

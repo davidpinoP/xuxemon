@@ -19,6 +19,7 @@ export class XuxemonService {
     constructor(private http: HttpClient) { }
 
     private getHeaders(): HttpHeaders {
+        // Recuperamos el JWT guardado en login para adjuntarlo a las rutas privadas.
         const token = localStorage.getItem('auth_token');
         return new HttpHeaders({
             'Authorization': `Bearer ${token}`
@@ -44,12 +45,15 @@ export class XuxemonService {
     }
 
     getMisXuxemons(): Observable<IXuxemon[]> {
+        // Devuelve solo la coleccion desbloqueada por el usuario autenticado.
         return this.http.get<IXuxemon[]>(`${this.apiUrl}/user/xuxemons`, {
             headers: this.getHeaders()
         });
     }
 
     alimentarXuxemon(id: number, xuxe: string, cantidad: number): Observable<any> {
+        // La logica de comidas, enfermedades y evolucion se decide en backend;
+        // Angular solo envia el intento de alimentar y pinta la respuesta.
         return this.http.post<any>(`${this.apiUrl}/xuxemons/${id}/alimentar`, {
             xuxe,
             cantidad
@@ -65,12 +69,14 @@ export class XuxemonService {
     }
 
     darXuxemonAleatorio(userId: number): Observable<any> {
+        // Accion de admin para regalar una criatura aleatoria a un jugador.
         return this.http.post<any>(`${this.apiUrl}/admin/dar-xuxemon-aleatorio`, { user_id: userId }, {
             headers: this.getHeaders()
         });
     }
 
     darXuxes(userId: number, nombre: string, cantidad: number): Observable<any> {
+        // Accion de admin para inyectar xuxes en la mochila de un jugador.
         return this.http.post<any>(`${this.apiUrl}/admin/dar-chuches`, {
             user_id: userId,
             nombre,
