@@ -69,6 +69,12 @@ export class Perfil implements OnInit {
   cargarPerfil(): void {
     this.authService.getProfile().subscribe({
       next: (data: any) => {
+        if (!data) {
+          this.mensajeError = 'No se pudo cargar el perfil.';
+          this.cargando = false;
+          return;
+        }
+
         // El perfil mezcla datos reales de backend con pequenos extras guardados en localStorage.
         this.perfilUsuario = {
           name: data.name || '',

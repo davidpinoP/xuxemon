@@ -34,6 +34,7 @@ export class FriendsService {
   constructor(private http: HttpClient) {}
 
   getFriends(): Observable<FriendSearchUser[]> {
+    // Cargamos la lista de amistades ya aceptadas y la dejamos en memoria compartida.
     return this.http.get<FriendSearchUser[]>(`${this.apiUrl}/friends`).pipe(
       tap((friends) => {
         this.friendsSubject.next(friends);
@@ -46,6 +47,7 @@ export class FriendsService {
   }
 
   searchUsers(query: string): Observable<FriendSearchUser[]> {
+    // Esta busqueda consulta por player_id y el backend ya excluye amigos y pendientes.
     return this.http
       .get<FriendSearchUser[]>(`${this.apiUrl}/friends/search`, {
         params: { q: query }
@@ -62,12 +64,14 @@ export class FriendsService {
   }
 
   sendFriendRequest(receiverId: number): Observable<FriendRequestResponse> {
+    // Usamos la ruta legacy porque sigue siendo compatible con el backend actual.
     return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests/send`, {
       receiver_id: receiverId
     });
   }
 
   getPendingFriendRequests(): Observable<PendingFriendRequest[]> {
+    // Guarda en estado local las solicitudes recibidas para badges y refrescos de UI.
     return this.http.get<PendingFriendRequest[]>(`${this.apiUrl}/friend-requests/pending`).pipe(
       tap((requests) => {
         this.pendingRequestsSubject.next(requests);
@@ -76,6 +80,7 @@ export class FriendsService {
   }
 
   acceptFriendRequest(requestId: number): Observable<FriendRequestResponse> {
+    // Al aceptar, backend crea la amistad en ambos sentidos.
     return this.http.post<FriendRequestResponse>(`${this.apiUrl}/friend-requests/${requestId}/accept`, {});
   }
 

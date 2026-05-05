@@ -9,9 +9,11 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\XuxemonController;
 use Illuminate\Support\Facades\Route;
 
+// Rutas publicas: no requieren token porque son la puerta de entrada a la app.
 Route::post('/login', [AutenticatorController::class, 'login']);
 Route::post('/register', [AutenticatorController::class, 'apiRegister']);
 
+// A partir de aqui todo requiere JWT valido y que la cuenta siga activa.
 Route::middleware([
     \App\Http\Middleware\ApiAuthMiddleware::class,
     \App\Http\Middleware\IsActiveMiddleware::class,
@@ -29,10 +31,12 @@ Route::middleware([
 
     Route::get('/configs', [ConfigController::class, 'publicIndex']);
 
+    // Catalogo general y coleccion propia del jugador.
     Route::get('/xuxemons', [XuxemonController::class, 'index']);
     Route::get('/user/xuxemons', [XuxemonController::class, 'misXuxemons']);
     Route::post('/xuxemons/{id}/alimentar', [XuxemonController::class, 'alimentar']);
 
+    // Se mantienen rutas legacy y limpias para no romper frontend mientras evoluciona el proyecto.
     Route::post('/friend-requests/send', [FriendRequestController::class, 'send']);
     Route::get('/friend-requests/pending', [FriendRequestController::class, 'pending']);
     Route::post('/friend-requests/{id}/accept', [FriendRequestController::class, 'accept']);
@@ -48,6 +52,7 @@ Route::middleware([
     Route::get('/friends', [FriendController::class, 'index']);
     Route::delete('/friends/{id}', [FriendController::class, 'destroy']);
 
+    // El panel admin tiene una proteccion extra por rol.
     Route::middleware([\App\Http\Middleware\RoleMiddleware::class . ':admin'])->group(function () {
         Route::post('/xuxemons', [XuxemonController::class, 'create']);
         Route::put('/xuxemons/{id}', [XuxemonController::class, 'update']);

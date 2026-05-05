@@ -33,7 +33,9 @@ export class Xuxemon {
     });
   }
 
-  // recompensas
+  // Recompensa diaria:
+  // - checkRewards solo pregunta si toca ensenar el popup
+  // - claimReward reclama de verdad la recompensa y devuelve el detalle entregado
   checkRewards() { return this.http.get('http://127.0.0.1:8000/api/user/check-rewards'); }
   claimReward() { return this.http.post('http://127.0.0.1:8000/api/user/claim-reward', {}); }
 }

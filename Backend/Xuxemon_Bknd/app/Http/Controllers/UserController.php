@@ -243,7 +243,8 @@ class UserController extends Controller
     public function claimReward(Request $request)
     {
         $u = $request->user();
-        // Aqui ya no solo comprobamos: tambien entregamos la recompensa del dia.
+        // Aqui ya no solo comprobamos: tambien entregamos la recompensa del dia y devolvemos
+        // al frontend cuanto se ha dado para que pueda mostrarlo en el popup/alerta.
         $result = $this->dailyRewardService->grant($u);
 
         if (!$result['ok']) {
@@ -255,6 +256,7 @@ class UserController extends Controller
 
         return response()->json([
             'ok' => true,
+            'can_claim' => false,
             'reward' => $result
         ]);
     }
