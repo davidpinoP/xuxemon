@@ -12,6 +12,7 @@ import { GameConfigService } from '../services/game-config.service';
   styleUrl: './xuxemon-card.css',
   encapsulation: ViewEncapsulation.None
 })
+// Definición principal del componente de la carta, que recibe un Xuxemon de un componente padre (ej. Xuxedex)
 export class XuxemonCardComponent implements OnChanges {
   @Input() xuxemon!: IXuxemon;
 
@@ -26,6 +27,7 @@ export class XuxemonCardComponent implements OnChanges {
     }
   }
 
+  // Getter que devuelve un emoji representativo según el tipo de Xuxemon (agua, tierra, aire)
   get tipoIcono(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return '?';
 
@@ -41,17 +43,20 @@ export class XuxemonCardComponent implements OnChanges {
     }
   }
 
+  // Devuelve el nombre del tipo formateado con la primera letra en mayúscula
   get tipoNombre(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return 'Desconocido';
     const tipo = this.xuxemon.tipo;
     return tipo.charAt(0).toUpperCase() + tipo.slice(1).toLowerCase();
   }
 
+  // Genera el nombre de la clase CSS que pintará la cabecera del color correspondiente al tipo
   get tipoClase(): string {
     if (!this.xuxemon || !this.xuxemon.tipo) return 'tipo-desconocido';
     return 'tipo-' + this.xuxemon.tipo.toLowerCase();
   }
 
+  // Verifica si el usuario no posee este Xuxemon (para mostrarlo ensombrecido)
   get estaBloqueado(): boolean {
     return this.xuxemon?.bloqueado === true || this.xuxemon?.desbloqueado === false;
   }
@@ -66,6 +71,7 @@ export class XuxemonCardComponent implements OnChanges {
     return `Imagen de ${nombre}, tipo ${this.tipoNombre}, tamano ${this.getTamanoTexto()}`;
   }
 
+  // Devuelve un texto descriptivo del estado actual para mostrar en la interfaz
   get estadoTexto(): string {
     if (this.estaBloqueado) {
       return 'Xuxemon bloqueado';
@@ -92,11 +98,13 @@ export class XuxemonCardComponent implements OnChanges {
     return 'tamano-render-pequeno';
   }
 
+  // Obtiene la ruta de la imagen actual. Si falla al cargar, intentará con la siguiente en la lista de rutas generadas.
   get imagenMostrada(): string {
     const rutas = this.getRutasImagen();
     return rutas[this.indiceImagenActual] || this.placeholderImage;
   }
 
+  // Genera estadísticas fijas pero únicas para cada Xuxemon usando su ID como "semilla" matemática.
   getStatValue(stat: string): number {
     if (!this.xuxemon) return 50;
 
@@ -116,6 +124,7 @@ export class XuxemonCardComponent implements OnChanges {
     }
   }
 
+  // Calcula cuántos caramelos (xuxes) hacen falta para evolucionar, aplicando penalizaciones si está enfermo
   get xuxesNecesarias(): number {
     if (!this.xuxemon || this.estaBloqueado) return 0;
 
@@ -129,28 +138,34 @@ export class XuxemonCardComponent implements OnChanges {
     return 0;
   }
 
+  // Comprueba específicamente si tiene la penalización de Bajón de Azúcar
   get tieneBajonAzucar(): boolean {
     return this.getEnfermedades().includes('Bajón de azúcar');
   }
 
+  // Une todas las enfermedades en un solo string separado por comas
   get enfermedadesTexto(): string {
     return this.getEnfermedades().join(', ');
   }
 
+  // Devuelve cuántas chuches se le han dado ya al Xuxemon
   get comidasActuales(): number {
     if (!this.xuxemon || this.estaBloqueado) return 0;
     return Math.max(0, this.xuxemon.comidas || 0);
   }
 
+  // Devuelve la meta de chuches para poder evolucionar
   get comidasObjetivo(): number {
     return this.xuxesNecesarias;
   }
 
+  // Calcula cuántas chuches exactas le faltan para la evolución
   get xuxesRestantes(): number {
     if (this.comidasObjetivo <= 0) return 0;
     return Math.max(0, this.comidasObjetivo - this.comidasActuales);
   }
 
+  // Determina cuál será la siguiente etapa evolutiva en base al tamaño actual
   get siguienteTamano(): string {
     if (this.estaBloqueado) return '';
 
@@ -162,6 +177,7 @@ export class XuxemonCardComponent implements OnChanges {
     return '';
   }
 
+  // Si la imagen falla (ej. error 404), este método salta automáticamente a la siguiente ruta de fallback (WebP alternativo o placeholder)
   onImageError(): void {
     const ultimaRuta = this.getRutasImagen().length - 1;
 
@@ -170,6 +186,8 @@ export class XuxemonCardComponent implements OnChanges {
     }
   }
 
+  // Lógica principal de búsqueda de imágenes: crea un array de rutas ordenadas por prioridad
+  // Intenta cargar primero imágenes específicas del tamaño actual, si no, genéricas, y por último el placeholder.
   private getRutasImagen(): string[] {
     if (!this.xuxemon) {
       return [this.placeholderImage];
@@ -219,6 +237,7 @@ export class XuxemonCardComponent implements OnChanges {
     };
   }
 
+  // Limpia y normaliza cualquier ruta de imagen, forzando la extensión .webp para optimizar peso
   private normalizarRutaImagen(ruta?: string): string | undefined {
     if (!ruta) {
       return undefined;
